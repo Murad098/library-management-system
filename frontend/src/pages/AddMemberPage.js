@@ -18,7 +18,7 @@ const AddMember = () => {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:5000/api/members/add", form);
+      await axios.post("https://library-management-system-9stqk8hig.vercel.app/api/members/add", form);
 
       alert("Member Added Successfully!");
 
