@@ -1,3 +1,4 @@
+import Expenses from "./pages/Expenses";
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Menu } from "lucide-react";
@@ -11,7 +12,12 @@ import Sidebar from "./components/Sidebar";
 function AppShell({ onLogout }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-  const title = location.pathname === "/members" || location.pathname === "/add" ? "Members" : "Overview";
+  const title =
+    location.pathname === "/members" || location.pathname === "/add"
+      ? "Members"
+      : location.pathname === "/expenses"
+      ? "Expenses"
+      : "Overview";
 
   return (
     <div className="min-h-screen bg-[#f5f6fa] text-slate-900">
@@ -25,7 +31,15 @@ function AppShell({ onLogout }) {
           </div>
           <div className="flex items-center gap-3"><span className="hidden items-center gap-2 text-xs font-medium text-slate-500 sm:flex"><span className="h-2 w-2 rounded-full bg-emerald-500" /> System operational</span><span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">AD</span></div>
         </header>
-        <div className="mx-auto max-w-[1400px] p-4 sm:p-8"><Routes><Route path="/" element={<DashboardPage />} /><Route path="/members" element={<MembersPage />} /><Route path="/add" element={<><MembersPage /><AddMemberPage /></>} /><Route path="*" element={<Navigate to="/" />} /></Routes></div>
+        <div className="mx-auto max-w-[1400px] p-4 sm:p-8">
+          <Routes>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="/members" element={<MembersPage />} />
+            <Route path="/add" element={<><MembersPage /><AddMemberPage /></>} />
+            <Route path="/expenses" element={<Expenses />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </div>
       </main>
     </div>
   );

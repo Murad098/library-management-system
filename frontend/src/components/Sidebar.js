@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, UserPlus, Users, LogOut } from "lucide-react";
+import { LayoutDashboard, UserPlus, Users, LogOut, Wallet } from "lucide-react";
 
 const Sidebar = ({ onLogout, menuOpen, closeMenu }) => {
   const location = useLocation();
@@ -9,6 +9,7 @@ const Sidebar = ({ onLogout, menuOpen, closeMenu }) => {
     { name: "Dashboard", path: "/", icon: LayoutDashboard },
     { name: "Add Member", path: "/add", icon: UserPlus },
     { name: "Members", path: "/members", icon: Users },
+    { name: "Expenses", path: "/expenses", icon: Wallet },
   ];
 
   return (
