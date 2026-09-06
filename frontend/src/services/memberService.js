@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const membersApi = axios.create({ baseURL: 'https://library-management-system-9stqk8hig.vercel.app/api/members' });
+const membersApi = axios.create({ baseURL: 'https://library-management-system-pink-eight.vercel.app/api/members' });
 
 export const getMembers = () => membersApi.get('/all');
 export const addMember = (member) => membersApi.post('/add', member);

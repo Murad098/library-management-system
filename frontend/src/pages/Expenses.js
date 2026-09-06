@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Plus, Trash2 } from "lucide-react";
 
-const API_URL = "https://library-management-system-9stqk8hig.vercel.app/api/expenses";
+const API_URL = "https://library-management-system-pink-eight.vercel.app/api/expenses";
 
 function Expenses() {
   const [expenses, setExpenses] = useState([]);

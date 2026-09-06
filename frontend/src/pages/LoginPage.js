@@ -21,12 +21,13 @@ function LoginPage({ onLogin }) {
     setLoading(true);
     try {
       const res = await axios.post(
-        'https://library-management-system-9stqk8hig.vercel.app/api/auth/login',
+        'https://library-management-system-pink-eight.vercel.app/api/auth/login',
         { email: form.email, password: form.password }
       );
       localStorage.setItem('token', res.data.token);
       onLogin();
     } catch (err) {
+      console.error(err);
       if (err.response && err.response.status === 401) {
         setError('Invalid email or password.');
       } else {
