@@ -7,6 +7,7 @@ const cors = require("cors");
 // Routes
 const memberRoutes = require("./routes/memberRoutes");
 const authRoutes = require("./routes/auth");
+const expenseRoutes = require("./routes/expenseRoutes");
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 // Routes
 app.use("/api/members", memberRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/expenses", expenseRoutes);
 
 // DB 
 console.log("MONGO_URI:", process.env.MONGO_URI);

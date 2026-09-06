@@ -32,8 +32,22 @@ function AppShell({ onLogout }) {
 }
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  return <Router>{!isLoggedIn ? <LoginPage onLogin={() => setIsLoggedIn(true)} /> : <AppShell onLogout={() => setIsLoggedIn(false)} />}</Router>;
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+  };
+
+  return (
+    <Router>
+      {!isLoggedIn ? (
+        <LoginPage onLogin={() => setIsLoggedIn(true)} />
+      ) : (
+        <AppShell onLogout={handleLogout} />
+      )}
+    </Router>
+  );
 }
 
 export default App;
