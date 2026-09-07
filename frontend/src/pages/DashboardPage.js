@@ -1,55 +1,33 @@
 import React from "react";
+import DashboardLayout from "../layout/DashboardLayout";
 import "../styles/theme.css";
 
-const Dashboard = () => {
+const DashboardPage = () => {
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>Dashboard</h2>
-
-      <div style={styles.grid}>
-        <div style={styles.card}>
+    <DashboardLayout>
+      <div className="cards">
+        <div className="card">
           <h4>Total Members</h4>
-          <p>120</p>
+          <h2>120</h2>
         </div>
 
-        <div style={styles.card}>
+        <div className="card">
           <h4>Paid Members</h4>
-          <p style={{ color: "var(--success)" }}>90</p>
+          <h2 style={{ color: "#22c55e" }}>90</h2>
         </div>
 
-        <div style={styles.card}>
+        <div className="card">
           <h4>Unpaid Members</h4>
-          <p style={{ color: "var(--danger)" }}>30</p>
+          <h2 style={{ color: "#ef4444" }}>30</h2>
         </div>
 
-        <div style={styles.card}>
+        <div className="card">
           <h4>Total Revenue</h4>
-          <p>PKR 50,000</p>
+          <h2>PKR 50,000</h2>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 
-const styles = {
-  container: {
-    padding: "30px",
-  },
-  heading: {
-    marginBottom: "20px",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-    gap: "20px",
-  },
-  card: {
-    background: "var(--card)",
-    padding: "20px",
-    borderRadius: "10px",
-    boxShadow: "var(--shadow)",
-    textAlign: "center",
-  },
-};
-
-export default Dashboard;
+export default DashboardPage;
