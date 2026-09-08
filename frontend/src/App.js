@@ -7,7 +7,7 @@ import {
   useLocation,
 } from "react-router-dom";
 
-import { Menu } from "lucide-react";
+import { Bell, Menu, Search } from "lucide-react";
 
 // Pages
 import LoginPage from "./pages/LoginPage";
@@ -31,7 +31,7 @@ function AppShell({ onLogout }) {
       : "Overview";
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="app-shell">
 
       <Sidebar
         onLogout={onLogout}
@@ -40,34 +40,24 @@ function AppShell({ onLogout }) {
       />
 
       {/* Mobile overlay */}
-      {menuOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-30 lg:hidden"
-          onClick={() => setMenuOpen(false)}
-        />
-      )}
+      {menuOpen && <div className="mobile-overlay" onClick={() => setMenuOpen(false)} />}
 
-      <main className="lg:ml-64">
+      <main className="app-main">
 
         {/* Topbar */}
-        <header className="flex justify-between items-center p-4 bg-white shadow">
-          <div className="flex items-center gap-2">
-            <button onClick={() => setMenuOpen(true)} className="lg:hidden">
-              <Menu />
+        <header className="topbar">
+          <div className="topbar-start">
+            <button onClick={() => setMenuOpen(true)} className="icon-button menu-toggle" aria-label="Open navigation">
+              <Menu size={20} />
             </button>
-            <h1 className="font-semibold text-lg">{title}</h1>
+            <div><p className="eyebrow">Library operations</p><h1 className="page-title">{title}</h1></div>
           </div>
 
-          <button
-            onClick={onLogout}
-            className="text-sm bg-red-500 text-white px-3 py-1 rounded"
-          >
-            Logout
-          </button>
+          <div className="topbar-actions"><label className="search-box"><Search size={17} /><input type="search" placeholder="Search library..." aria-label="Search library" /></label><button className="icon-button notification-button" aria-label="Notifications"><Bell size={18} /><span /></button><div className="profile"><span className="avatar">AD</span><span className="profile-copy"><strong>Admin</strong><small>Administrator</small></span></div></div>
         </header>
 
         {/* Pages */}
-        <div className="p-4">
+        <div className="page-content">
           <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/members" element={<MembersPage />} />

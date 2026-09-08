@@ -2,7 +2,6 @@ import { useState } from "react";
 import axios from "axios";
 import { ArrowRight, LockKeyhole, Mail, Loader2 } from "lucide-react";
 import BASE_URL from "../config/api";
-import bg from "../assets/books.jpg";
 
 function LoginPage({ onLogin }) {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -32,62 +31,73 @@ function LoginPage({ onLogin }) {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="login-page">
 
-      {/* LEFT SIDE WITH BACKGROUND */}
+      {/* LEFT SIDE */}
       <div
-        className="hidden lg:flex w-[42%] p-12 text-white flex-col justify-between"
+        className="login-visual"
         style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${bg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundColor: "#17243a",
         }}
       >
-        <h1 className="text-4xl font-bold">LibraryHQ</h1>
+        <h1 className="login-brand">LibraryHQ</h1>
 
-        <p className="text-4xl font-semibold">
+        <p className="login-quote">
           Make every member count.
         </p>
 
-        <p className="text-sm">LIBRARY MANAGEMENT SYSTEM</p>
+        <p className="login-kicker">LIBRARY MANAGEMENT SYSTEM <span>•</span> 2026</p>
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="flex flex-1 items-center justify-center">
+      <div className="login-form-wrap">
         <form
           onSubmit={submit}
-          className="bg-white p-8 rounded-xl shadow w-[350px]"
+          className="login-card"
         >
-          <h2 className="text-xl font-bold mb-6">Login</h2>
+          <p className="eyebrow accent">Welcome back</p><h2>Sign in to LibraryHQ</h2><p className="login-form-copy">Enter your details to continue to your dashboard.</p>
 
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full mb-3 p-2 border rounded"
-            value={form.email}
-            onChange={(e) =>
-              setForm({ ...form, email: e.target.value })
-            }
-          />
+          <div className="login-field">
+            <Mail size={16} />
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={form.email}
+              onChange={(e) =>
+                setForm({ ...form, email: e.target.value })
+              }
+            />
+          </div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full mb-3 p-2 border rounded"
-            value={form.password}
-            onChange={(e) =>
-              setForm({ ...form, password: e.target.value })
-            }
-          />
+          <div className="login-field">
+            <LockKeyhole size={16} />
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={form.password}
+              onChange={(e) =>
+                setForm({ ...form, password: e.target.value })
+              }
+            />
+          </div>
 
-          {error && <p className="text-red-500">{error}</p>}
+          {error && <p className="form-error">{error}</p>}
 
           <button
-            className="w-full bg-blue-600 text-white p-2 rounded mt-3"
+            className="primary-button login-button"
             disabled={loading}
           >
-            {loading ? "Loading..." : "Login"}
-          </button>
+            {loading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Loading...
+              </>
+            ) : (
+              <>
+                Login <ArrowRight size={16} />
+              </>
+            )}
+          </button><p className="secure-note"><LockKeyhole size={13} /> Your connection is secure</p>
         </form>
       </div>
     </div>
