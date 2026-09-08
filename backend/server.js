@@ -1,4 +1,4 @@
-require("dotenv").config();  // MUST BE LINE 1
+require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -19,21 +19,24 @@ app.use("/api/members", memberRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/expenses", expenseRoutes);
 
-// DB 
-console.log("MONGO_URI:", process.env.MONGO_URI);
-mongoose.connect(process.env.MONGO_URI)
+// Database
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected Successfully"))
-  .catch(err => console.log("DB Error:", err));
+  .catch((err) => console.log("DB Error:", err));
 
-// Test
+// Test route
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-const PORT = process.env.PORT || 5000;
+// Local development
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
 module.exports = app;
