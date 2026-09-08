@@ -13,11 +13,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/members", memberRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/expenses", expenseRoutes);
-
-// MongoDB connection
 let isConnected = false;
 
 async function connectDB() {
@@ -36,18 +31,23 @@ async function connectDB() {
   }
 }
 
-// Make sure DB connects before every API request
+// CONNECT DATABASE BEFORE API ROUTES
 app.use(async (req, res, next) => {
   try {
     await connectDB();
     next();
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       error: "MongoDB connection failed",
       details: error.message,
     });
   }
 });
+
+// Routes
+app.use("/api/members", memberRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/expenses", expenseRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
