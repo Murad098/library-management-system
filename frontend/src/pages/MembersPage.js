@@ -1,18 +1,26 @@
-import React from "react";
-import "../styles/theme.css";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import BASE_URL from "../config/api";
+
+const API_URL = `${BASE_URL}/members`;
 
 const MembersPage = () => {
-  // temporary data (later backend se ayega)
-  const members = [
-    { name: "Ali", phone: "03001234567", fee: 2000, status: "paid" },
-    { name: "Ahmed", phone: "03111234567", fee: 2000, status: "unpaid" },
-  ];
+  const [members, setMembers] = useState([]);
+
+  useEffect(() => {
+    fetchMembers();
+  }, []);
+
+  const fetchMembers = async () => {
+    const res = await axios.get(API_URL);
+    setMembers(res.data);
+  };
 
   return (
-    <div style={styles.container}>
+    <div style={{ padding: "20px" }}>
       <h2>Members</h2>
 
-      <table style={styles.table}>
+      <table>
         <thead>
           <tr>
             <th>Name</th>
@@ -23,40 +31,18 @@ const MembersPage = () => {
         </thead>
 
         <tbody>
-          {members.map((m, index) => (
-            <tr key={index}>
+          {members.map((m) => (
+            <tr key={m._id}>
               <td>{m.name}</td>
               <td>{m.phone}</td>
               <td>{m.fee}</td>
-              <td
-                style={{
-                  color:
-                    m.status === "paid"
-                      ? "var(--success)"
-                      : "var(--danger)",
-                }}
-              >
-                {m.status}
-              </td>
+              <td>{m.status}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    padding: "30px",
-  },
-  table: {
-    width: "100%",
-    background: "var(--card)",
-    borderRadius: "10px",
-    boxShadow: "var(--shadow)",
-    overflow: "hidden",
-  },
 };
 
 export default MembersPage;
