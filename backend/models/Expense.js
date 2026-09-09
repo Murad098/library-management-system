@@ -3,17 +3,27 @@ const mongoose = require("mongoose");
 const expenseSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true, // e.g. "Rent", "Electricity", "Internet"
+    required: true,
   },
+
   amount: {
     type: Number,
     required: true,
   },
+
   category: {
     type: String,
-    enum: ["Rent", "Electricity", "Internet", "Maintenance", "Other"],
+    enum: [
+      "Food",
+      "Transport",
+      "Shopping",
+      "Bills",
+      "Entertainment",
+      "Other",
+    ],
     default: "Other",
   },
+
   date: {
     type: Date,
     default: Date.now,
