@@ -5,6 +5,7 @@ import {
   RefreshCw,
   Users,
   Phone,
+  Mail,
   CreditCard,
 } from "lucide-react";
 
@@ -21,7 +22,6 @@ const MembersPage = () => {
       setError("");
 
       const response = await axios.get(API_URL);
-
       setMembers(response.data);
     } catch (err) {
       console.error("Error fetching members:", err);
@@ -49,14 +49,11 @@ const MembersPage = () => {
 
   return (
     <section className="page-section">
-      {/* HEADER */}
       <div className="page-heading">
         <div>
           <p className="eyebrow accent">Directory</p>
 
-          <h2 className="section-title">
-            Members
-          </h2>
+          <h2 className="section-title">Members</h2>
 
           <p className="section-subtitle">
             Your library community, all in one place.
@@ -78,14 +75,12 @@ const MembersPage = () => {
         </button>
       </div>
 
-      {/* ERROR */}
       {error && (
         <div className="alert error-alert">
           {error}
         </div>
       )}
 
-      {/* SUMMARY */}
       {!loading && !error && members.length > 0 && (
         <div className="member-summary">
           <div className="member-summary-item">
@@ -123,7 +118,6 @@ const MembersPage = () => {
         </div>
       )}
 
-      {/* LOADING */}
       {loading && (
         <div className="state-card">
           <span className="spinner" />
@@ -132,7 +126,6 @@ const MembersPage = () => {
         </div>
       )}
 
-      {/* EMPTY */}
       {!loading && !error && members.length === 0 && (
         <div className="state-card">
           <Users size={30} />
@@ -145,7 +138,6 @@ const MembersPage = () => {
         </div>
       )}
 
-      {/* TABLE */}
       {!loading && !error && members.length > 0 && (
         <div className="table-card">
           <div className="table-header">
@@ -159,9 +151,7 @@ const MembersPage = () => {
 
             <span>
               {members.length}{" "}
-              {members.length === 1
-                ? "member"
-                : "members"}
+              {members.length === 1 ? "member" : "members"}
             </span>
           </div>
 
@@ -170,6 +160,7 @@ const MembersPage = () => {
               <thead>
                 <tr>
                   <th>Member</th>
+                  <th>Email</th>
                   <th>Phone</th>
                   <th>Membership fee</th>
                   <th>Status</th>
@@ -179,16 +170,12 @@ const MembersPage = () => {
               <tbody>
                 {members.map((member) => {
                   const initial =
-                    member.name
-                      ?.charAt(0)
-                      ?.toUpperCase() || "?";
+                    member.name?.charAt(0)?.toUpperCase() || "?";
 
-                  const isPaid =
-                    member.status === "paid";
+                  const isPaid = member.status === "paid";
 
                   return (
                     <tr key={member._id}>
-                      {/* NAME */}
                       <td>
                         <div className="member-cell">
                           <span className="member-avatar">
@@ -196,28 +183,33 @@ const MembersPage = () => {
                           </span>
 
                           <div className="member-info">
-                            <strong>
-                              {member.name}
-                            </strong>
+                            <strong>{member.name}</strong>
 
-                            <small>
-                              Library member
-                            </small>
+                            <small>Library member</small>
                           </div>
                         </div>
                       </td>
 
-                      {/* PHONE */}
+                      <td>
+                        <div className="table-contact">
+                          <Mail size={14} />
+
+                          <span>
+                            {member.email || "—"}
+                          </span>
+                        </div>
+                      </td>
+
                       <td>
                         <div className="table-contact">
                           <Phone size={14} />
+
                           <span>
                             {member.phone || "—"}
                           </span>
                         </div>
                       </td>
 
-                      {/* FEE */}
                       <td>
                         <strong className="fee-value">
                           PKR{" "}
@@ -227,19 +219,15 @@ const MembersPage = () => {
                         </strong>
                       </td>
 
-                      {/* STATUS */}
                       <td>
                         <span
                           className={`status-pill ${
-                            isPaid
-                              ? "paid"
-                              : "unpaid"
+                            isPaid ? "paid" : "unpaid"
                           }`}
                         >
                           <span className="status-dot" />
-                          {isPaid
-                            ? "Paid"
-                            : "Unpaid"}
+
+                          {isPaid ? "Paid" : "Unpaid"}
                         </span>
                       </td>
                     </tr>

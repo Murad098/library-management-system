@@ -8,6 +8,7 @@ const API_URL = `${BASE_URL}/members`;
 const AddMember = () => {
   const [form, setForm] = useState({
     name: "",
+    email: "",
     phone: "",
     fee: "",
     status: "unpaid",
@@ -34,6 +35,7 @@ const AddMember = () => {
     try {
       await axios.post(`${API_URL}/add`, {
         name: form.name.trim(),
+        email: form.email.trim(),
         phone: form.phone.trim(),
         fee: Number(form.fee),
         status: form.status,
@@ -43,6 +45,7 @@ const AddMember = () => {
 
       setForm({
         name: "",
+        email: "",
         phone: "",
         fee: "",
         status: "unpaid",
@@ -86,9 +89,7 @@ const AddMember = () => {
           <div>
             <h3>Member details</h3>
 
-            <p>
-              Enter the member information below.
-            </p>
+            <p>Enter the member information below.</p>
           </div>
         </div>
 
@@ -100,6 +101,18 @@ const AddMember = () => {
               name="name"
               placeholder="e.g. Aisha Khan"
               value={form.name}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <label>
+            Email
+            <input
+              type="email"
+              name="email"
+              placeholder="e.g. aisha@gmail.com"
+              value={form.email}
               onChange={handleChange}
               required
             />
@@ -125,7 +138,7 @@ const AddMember = () => {
               placeholder="Enter fee"
               value={form.fee}
               onChange={handleChange}
-              min="1"
+              min="0"
               required
             />
           </label>
