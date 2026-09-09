@@ -1,10 +1,20 @@
 import { useState } from "react";
 import axios from "axios";
-import { ArrowRight, LockKeyhole, Mail, Loader2 } from "lucide-react";
+import {
+  ArrowRight,
+  LockKeyhole,
+  Mail,
+  Loader2,
+  Library,
+} from "lucide-react";
 import BASE_URL from "../config/api";
 
 function LoginPage({ onLogin }) {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -13,7 +23,8 @@ function LoginPage({ onLogin }) {
     setError("");
 
     if (!form.email || !form.password) {
-      return setError("Enter email & password");
+      setError("Please enter your email and password.");
+      return;
     }
 
     setLoading(true);
@@ -22,9 +33,12 @@ function LoginPage({ onLogin }) {
       const res = await axios.post(`${BASE_URL}/auth/login`, form);
 
       localStorage.setItem("token", res.data.token);
+
       onLogin();
     } catch (err) {
-      setError("Invalid email or password");
+      setError(
+        err.response?.data?.message || "Invalid email or password."
+      );
     } finally {
       setLoading(false);
     }
@@ -32,73 +46,141 @@ function LoginPage({ onLogin }) {
 
   return (
     <div className="login-page">
+      {/* LEFT VISUAL PANEL */}
+      <div className="login-visual">
+        <div className="login-visual-overlay"></div>
 
-      {/* LEFT SIDE */}
-      <div
-        className="login-visual"
-        style={{
-          backgroundColor: "#17243a",
-        }}
-      >
-        <h1 className="login-brand">LibraryHQ</h1>
+        <div className="login-visual-content">
+          <div className="login-logo-mark">
+            <Library size={24} strokeWidth={1.8} />
+          </div>
 
-        <p className="login-quote">
-          Make every member count.
-        </p>
+          <h1 className="login-brand">LibraryHQ</h1>
 
-        <p className="login-kicker">LIBRARY MANAGEMENT SYSTEM <span>•</span> 2026</p>
+          <p className="login-quote">
+            Make every member count.
+          </p>
+
+          <div className="login-visual-line"></div>
+
+          <p className="login-kicker">
+            LIBRARY MANAGEMENT SYSTEM
+            <span> • </span>
+            2026
+          </p>
+        </div>
       </div>
 
-      {/* RIGHT SIDE */}
+      {/* RIGHT LOGIN PANEL */}
       <div className="login-form-wrap">
-        <form
-          onSubmit={submit}
-          className="login-card"
-        >
-          <p className="eyebrow accent">Welcome back</p><h2>Sign in to LibraryHQ</h2><p className="login-form-copy">Enter your details to continue to your dashboard.</p>
+        <div className="login-form-inner">
+          <div className="login-mobile-brand">
+            <div className="login-logo-mark">
+              <Library size={21} strokeWidth={1.8} />
+            </div>
 
-          <div className="login-field">
-            <Mail size={16} />
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={form.email}
-              onChange={(e) =>
-                setForm({ ...form, email: e.target.value })
-              }
-            />
+            <span>LibraryHQ</span>
           </div>
 
-          <div className="login-field">
-            <LockKeyhole size={16} />
-            <input
-              type="password"
-              placeholder="Enter your password"
-              value={form.password}
-              onChange={(e) =>
-                setForm({ ...form, password: e.target.value })
-              }
-            />
-          </div>
+          <form onSubmit={submit} className="login-card">
+            <div className="login-heading">
+              <p className="eyebrow accent">Welcome back</p>
 
-          {error && <p className="form-error">{error}</p>}
+              <h2>Sign in to LibraryHQ</h2>
 
-          <button
-            className="primary-button login-button"
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <Loader2 size={16} className="animate-spin" />
-                Loading...
-              </>
-            ) : (
-              <>
-                Login <ArrowRight size={16} />
-              </>
+              <p className="login-form-copy">
+                Enter your credentials to continue to your dashboard.
+              </p>
+            </div>
+
+            <div className="login-fields">
+              {/* EMAIL */}
+              <div className="login-input-group">
+                <label htmlFor="email">Email address</label>
+
+                <div className="login-field">
+                  <Mail size={17} strokeWidth={1.8} />
+
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={form.email}
+                    autoComplete="email"
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        email: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* PASSWORD */}
+              <div className="login-input-group">
+                <label htmlFor="password">Password</label>
+
+                <div className="login-field">
+                  <LockKeyhole size={17} strokeWidth={1.8} />
+
+                  <input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={form.password}
+                    autoComplete="current-password"
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        password: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ERROR */}
+            {error && (
+              <div className="form-error">
+                {error}
+              </div>
             )}
-          </button><p className="secure-note"><LockKeyhole size={13} /> Your connection is secure</p>
-        </form>
+
+            {/* LOGIN BUTTON */}
+            <button
+              type="submit"
+              className="primary-button login-button"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2
+                    size={17}
+                    className="animate-spin"
+                  />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  Sign in
+                  <ArrowRight size={17} />
+                </>
+              )}
+            </button>
+
+            {/* SECURITY NOTE */}
+            <div className="secure-note">
+              <LockKeyhole size={14} strokeWidth={1.8} />
+              <span>Your connection is secure</span>
+            </div>
+          </form>
+
+          <p className="login-footer">
+            LibraryHQ · Library Management System
+          </p>
+        </div>
       </div>
     </div>
   );

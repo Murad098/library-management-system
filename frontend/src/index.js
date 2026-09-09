@@ -1,3 +1,4 @@
+import "./index.css";
 import "./styles/theme.css";
 import React from 'react';
 import ReactDOM from 'react-dom/client';
