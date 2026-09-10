@@ -1,17 +1,17 @@
 :root {
-  --bg: #081226;
-  --surface: #101d35;
-  --surface-2: #152541;
-  --line: rgba(148, 163, 184, 0.14);
-  --text: #f4f7fb;
-  --muted: #8ea0bd;
-  --blue: #4d8dff;
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface-2: #1e293b;
+  --line: rgba(148, 163, 184, 0.2);
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --blue: #f59e0b;
   --green: #36d399;
   --red: #ff647c;
   --purple: #9b7bff;
 
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -361,16 +361,18 @@ button:disabled {
   display: flex;
   width: 256px;
   flex-direction: column;
-  padding: 26px 18px;
-  background: #071226;
+  padding: 22px 16px;
+  background: #0d1117;
   border-right: 1px solid var(--line);
 }
 
 .main,
 .app-main {
   width: 100%;
+  min-width: 0;
   min-height: 100vh;
   margin-left: 256px;
+  background: #090d13;
 }
 
 .topbar {
@@ -379,13 +381,15 @@ button:disabled {
   justify-content: space-between;
   min-height: 78px;
   padding: 18px 42px;
-  background: rgba(8, 18, 38, 0.9);
+  background: rgba(13, 17, 23, 0.94);
   border-bottom: 1px solid var(--line);
 }
 
 .content,
 .page-content {
+  min-width: 0;
   padding: 38px 42px 60px;
+  background: #090d13;
 }
 
 button {
@@ -656,7 +660,37 @@ a {
 }
 
 .brand strong {
-  color: var(--blue);
+  color: #f59e0b;
+}
+
+.topbar-start {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-title {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.menu-toggle {
+  display: none;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(2, 8, 20, 0.68);
 }
 
 .brand-mark,
@@ -671,8 +705,9 @@ a {
 .brand-mark {
   width: 34px;
   height: 34px;
-  color: white;
-  background: var(--blue);
+  color: #f59e0b;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
   border-radius: 9px;
 }
 
@@ -709,13 +744,13 @@ a {
 .nav-link:hover,
 .nav-link.active {
   color: white;
-  background: rgba(77, 141, 255, 0.14);
-  border-color: rgba(77, 141, 255, 0.18);
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.24);
 }
 
 .nav-link.active svg,
 .nav-link:hover svg {
-  color: var(--blue);
+  color: #f59e0b;
 }
 
 .sidebar-footer {
@@ -1041,8 +1076,8 @@ a {
 .form-icon {
   width: 40px;
   height: 40px;
-  color: var(--blue);
-  background: rgba(77, 141, 255, 0.14);
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.12);
   border-radius: 9px;
 }
 
@@ -1078,8 +1113,37 @@ a {
 .form-grid input:focus,
 .form-grid select:focus,
 .control:focus {
-  border-color: rgba(77, 141, 255, 0.8);
-  box-shadow: 0 0 0 3px rgba(77, 141, 255, 0.12);
+  border-color: rgba(245, 158, 11, 0.8);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12);
+}
+
+.member-form {
+  max-width: 860px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.member-form .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.member-form .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.member-form .primary-button {
+  min-width: 150px;
+  color: #111827;
+  background: #f59e0b;
+  box-shadow: 0 10px 22px rgba(245, 158, 11, 0.18);
+}
+
+.member-form .primary-button:hover:not(:disabled) {
+  background: #fbbf24;
 }
 
 .state-card {
@@ -1143,14 +1207,19 @@ a {
 
 @media (max-width: 760px) {
   .menu-btn { display: inline-grid; }
+  .menu-toggle { display: inline-grid; }
   .close-sidebar { display: inline-grid; }
-  .topbar-left { min-width: 0; }
+  .topbar-left,
+  .topbar-start { min-width: 0; }
   .topbar-right .status { display: none; }
   .page-heading, .welcome-row { align-items: flex-start; flex-direction: column; }
   .date-chip { align-self: stretch; text-align: center; }
   .summary-grid { grid-template-columns: 1fr; }
   .welcome-panel { min-height: 0; }
   .snapshot-orbit { width: 78px; height: 78px; }
+  .member-form .form-grid { grid-template-columns: 1fr; }
+  .member-form .form-actions { justify-content: stretch; }
+  .member-form .primary-button { width: 100%; }
 }
 
 @media (max-width: 560px) {

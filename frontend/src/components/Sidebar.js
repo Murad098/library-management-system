@@ -1,5 +1,5 @@
 import {
-  ChartNoAxesCombined,
+  BookOpen,
   LayoutDashboard,
   LogOut,
   Plus,
@@ -22,11 +22,11 @@ function Sidebar({ onLogout, menuOpen, closeMenu }) {
       <div className="brand-row">
         <div className="brand">
           <span className="brand-mark">
-            <ChartNoAxesCombined size={19} />
+            <BookOpen size={19} />
           </span>
 
           <span>
-            Library<strong>HQ</strong>
+            Libra<strong>HQ</strong>
           </span>
         </div>
 
