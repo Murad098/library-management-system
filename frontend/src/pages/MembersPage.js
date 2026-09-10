@@ -167,7 +167,7 @@ const StudentsScreen = ({
                   </td>
 
                   <td className="py-4 px-5 text-right font-bold text-white tabular-nums">
-                    ₹{s.monthlyFee.toLocaleString('en-IN')}
+                    PKR {s.monthlyFee.toLocaleString('en-PK')}
                   </td>
 
                   <td className="py-4 px-4 text-center whitespace-nowrap">
@@ -279,7 +279,7 @@ const StudentsScreen = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Monthly Fee (₹)</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Monthly Fee (PKR)</label>
                   <input
                     type="number"
                     value={monthlyFee}

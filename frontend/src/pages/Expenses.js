@@ -83,7 +83,7 @@ const ExpensesScreen = ({
     setTitle('');
     setSubtitle('');
     setAmount('');
-    setSuccessMessage(`Recorded voucher: ${newExpense.title} (₹${parsedAmount.toLocaleString('en-IN')})`);
+    setSuccessMessage(`Recorded voucher: ${newExpense.title} (PKR ${parsedAmount.toLocaleString('en-PK')})`);
     setTimeout(() => setSuccessMessage(null), 3500);
   };
 
@@ -173,7 +173,7 @@ const ExpensesScreen = ({
               May 2026 Burn
             </div>
             <div className="text-2xl font-bold text-white mt-1 tabular-nums">
-              ₹{totalBurn.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              PKR {totalBurn.toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           </div>
           <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
@@ -229,7 +229,7 @@ const ExpensesScreen = ({
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 text-sm font-semibold">
-                  ₹
+                  PKR
                 </span>
                 <input
                   type="number"
@@ -391,7 +391,7 @@ const ExpensesScreen = ({
 
                       {/* Amount */}
                       <td className="py-4 px-5 text-right whitespace-nowrap font-bold text-white tabular-nums text-base">
-                        ₹{item.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        PKR {item.amount.toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </td>
 
                       {/* Actions */}

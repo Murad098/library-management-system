@@ -142,7 +142,7 @@ const DashboardScreen = ({
               {/* Inner Center Label */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                 <span className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-none">
-                  ₹3.1K
+                  PKR 3.1K
                 </span>
                 <span className="text-[10px] font-bold tracking-widest text-slate-400 mt-1 uppercase">
                   PROFIT
@@ -188,10 +188,10 @@ const DashboardScreen = ({
           <div className="mt-4 mb-2 flex items-end justify-between h-36 pt-4 relative">
             {/* Y-Axis scale marks */}
             <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[10px] text-slate-400 font-medium">
-              <span>₹3.4K</span>
-              <span>₹1.7K</span>
-              <span>₹850</span>
-              <span>₹0</span>
+              <span>PKR 3.4K</span>
+              <span>PKR 1.7K</span>
+              <span>PKR 850</span>
+              <span>PKR 0</span>
             </div>
 
             {/* Background horizontal grid lines */}
@@ -273,11 +273,11 @@ const DashboardScreen = ({
             <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
               Collected • May
             </div>
-            <div className="text-2xl font-bold text-amber-400 mt-1">₹3.3K</div>
+            <div className="text-2xl font-bold text-amber-400 mt-1">PKR 3.3K</div>
             <div className="text-xs text-slate-400 mt-0.5">11 payments</div>
           </div>
           <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-            <span className="font-bold text-base">₹</span>
+            <span className="font-bold text-base">PKR</span>
           </div>
         </div>
 
@@ -287,7 +287,7 @@ const DashboardScreen = ({
             <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
               Outstanding
             </div>
-            <div className="text-2xl font-bold text-white mt-1">₹0</div>
+            <div className="text-2xl font-bold text-white mt-1">PKR 0</div>
             <div className="text-xs text-slate-400 mt-0.5">0 students • 0 overdue</div>
           </div>
           <div className="w-10 h-10 rounded-xl bg-[#1e293b] border border-[#2d3545] flex items-center justify-center text-slate-400">
