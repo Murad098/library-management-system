@@ -45,7 +45,7 @@ const StudentsScreen = ({
       id: `stu-${Date.now()}`,
       name: name.trim(),
       email: email.trim() || `${name.toLowerCase().replace(/\s+/g, '.')}@example.com`,
-      phone: phone.trim() || '+91 98765 00000',
+      phone: phone.trim() || '+92 300 0000000',
       seatNumber,
       hall,
       shift,
@@ -209,7 +209,7 @@ const StudentsScreen = ({
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Rahul Verma"
+                  placeholder="e.g. Ahmed Khan"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full h-10 px-3.5 rounded-lg bg-[#10141d] border border-[#2d3545] text-xs text-white focus:outline-none focus:border-amber-400"
@@ -231,7 +231,7 @@ const StudentsScreen = ({
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Phone Number</label>
                   <input
                     type="tel"
-                    placeholder="+91 98765 43210"
+                    placeholder="+92 300 1234567"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className="w-full h-10 px-3.5 rounded-lg bg-[#10141d] border border-[#2d3545] text-xs text-white focus:outline-none focus:border-amber-400"

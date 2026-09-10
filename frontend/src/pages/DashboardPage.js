@@ -397,7 +397,7 @@ const DashboardScreen = ({
 
       {/* Brand Footer matching Image 3 */}
       <footer className="pt-6 pb-2 text-center text-xs text-slate-400">
-        © 2026 LibraHQ • LibVertex • Made with ❤️ for India's study libraries
+        © 2026 LibraHQ • LibVertex • Made for modern study libraries
       </footer>
     </div>
   );
