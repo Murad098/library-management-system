@@ -1,20 +1,39 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, CheckCircle2, Zap, BookOpen } from 'lucide-react';
+import BASE_URL from '../config/api';
 
 const SignInScreen = ({ onSignInSuccess }) => {
-  const [email, setEmail] = useState('admin@gmail.com');
-  const [password, setPassword] = useState('secretpassword');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    setErrorMessage('');
+
+    try {
+      const response = await axios.post(`${BASE_URL}/auth/login`, {
+        email,
+        password,
+      });
+
+      if (rememberMe) {
+        localStorage.setItem('token', response.data.token);
+      } else {
+        sessionStorage.setItem('token', response.data.token);
+      }
+
       onSignInSuccess();
-    }, 450);
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || 'Unable to sign in. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -191,18 +210,12 @@ const SignInScreen = ({ onSignInSuccess }) => {
               <span>{isLoading ? 'Verifying credentials...' : 'Sign in'}</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
             </button>
+            {errorMessage && (
+              <p className="text-sm text-red-400" role="alert">
+                {errorMessage}
+              </p>
+            )}
           </form>
-
-          {/* Quick Demo Fill Pill */}
-          <div className="mt-4 pt-3 border-t border-slate-800 flex justify-center">
-            <button
-              type="button"
-              onClick={onSignInSuccess}
-              className="text-xs text-slate-400 hover:text-amber-400 transition-colors underline decoration-dotted"
-            >
-              Fast-track: Enter Dashboard directly as Administrator
-            </button>
-          </div>
 
           {/* Card Bottom Security Badge */}
           <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center justify-center gap-1.5 text-xs text-slate-400">
