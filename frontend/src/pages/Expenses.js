@@ -1,464 +1,490 @@
-import React, { useState } from 'react';
-import { 
-  FileText, 
-  Plus, 
-  TrendingUp, 
-  Zap, 
-  Wifi, 
-  Wrench, 
-  BookOpen, 
-  Tag, 
-  MoreVertical, 
+import React, { useMemo, useState } from "react";
+import {
+  AlertCircle,
+  BookOpen,
+  Bus,
   CheckCircle2,
+  FileText,
+  Plus,
+  Receipt,
+  ShoppingBag,
+  Tag,
   Trash2,
-  Edit2
-} from 'lucide-react';
+  TrendingUp,
+  Utensils,
+} from "lucide-react";
+
+import { getErrorMessage } from "../services/api";
+import {
+  formatCurrency,
+  formatCurrencyPrecise,
+  formatDate,
+  formatMonthYear,
+  isSameMonth,
+  toDateInputValue,
+} from "../utils/format";
+
+const CATEGORY_META = {
+  Food: {
+    icon: Utensils,
+    iconTone: "text-emerald-400",
+    badge: "border border-emerald-800/60 bg-emerald-950/70 text-emerald-400",
+  },
+  Transport: {
+    icon: Bus,
+    iconTone: "text-sky-400",
+    badge: "border border-sky-800/60 bg-sky-950/70 text-sky-400",
+  },
+  Shopping: {
+    icon: ShoppingBag,
+    iconTone: "text-purple-400",
+    badge: "border border-purple-800/60 bg-purple-950/70 text-purple-400",
+  },
+  Bills: {
+    icon: Receipt,
+    iconTone: "text-brand",
+    badge: "border border-brand/30 bg-brand/10 text-brand",
+  },
+  Entertainment: {
+    icon: BookOpen,
+    iconTone: "text-rose-400",
+    badge: "border border-rose-800/60 bg-rose-950/70 text-rose-400",
+  },
+  Other: {
+    icon: Tag,
+    iconTone: "text-slate-400",
+    badge: "border border-slate-700 bg-slate-800 text-slate-300",
+  },
+};
+
+const CATEGORIES = Object.keys(CATEGORY_META);
+const FILTERS = ["All", "This month", ...CATEGORIES];
+
 const ExpensesScreen = ({
-  selectedBranch,
   expenses = [],
-  onAddExpense = () => {},
+  loading = false,
+  onAddExpense,
   onDeleteExpense,
 }) => {
-  // Form State
-  const [title, setTitle] = useState('');
-  const [subtitle, setSubtitle] = useState('');
-  const [amount, setAmount] = useState('');
-  const [date, setDate] = useState('2026-05-15');
-  const [category, setCategory] = useState('Other');
-  const [paymentType] = useState('Operational');
-  const [activeTab, setActiveTab] = useState('All');
-  const [actionMenuId, setActionMenuId] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
+  const [title, setTitle] = useState("");
+  const [amount, setAmount] = useState("");
+  const [date, setDate] = useState(() => toDateInputValue());
+  const [category, setCategory] = useState("Other");
+  const [filter, setFilter] = useState("All");
+  const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  // Total calculation
-  const totalBurn = expenses.reduce((acc, curr) => acc + curr.amount, 0);
+  const totalAll = useMemo(
+    () => expenses.reduce((sum, expense) => sum + expense.amount, 0),
+    [expenses]
+  );
 
-  // Filtered expenses
-  const filteredExpenses = expenses.filter((item) => {
-    if (activeTab === 'All') return true;
-    if (activeTab === 'This Month') return item.date.includes('May');
-    if (activeTab === 'Food') return item.category === 'Food';
-    if (activeTab === 'Transport') return item.category === 'Transport';
-    if (activeTab === 'Bills') return item.category === 'Bills';
-    return true;
-  });
+  const totalThisMonth = useMemo(
+    () =>
+      expenses
+        .filter((expense) => isSameMonth(expense.date))
+        .reduce((sum, expense) => sum + expense.amount, 0),
+    [expenses]
+  );
 
-  const handleRecordExpense = (e) => {
+  const filtered = useMemo(
+    () =>
+      expenses.filter((expense) => {
+        if (filter === "All") return true;
+        if (filter === "This month") return isSameMonth(expense.date);
+        return expense.category === filter;
+      }),
+    [expenses, filter]
+  );
+
+  const filteredTotal = filtered.reduce((sum, expense) => sum + expense.amount, 0);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim() || !amount) return;
+    setSubmitting(true);
+    setError("");
+    setSuccess("");
 
-    const parsedAmount = parseFloat(amount) || 0;
-    if (parsedAmount <= 0) return;
+    try {
+      const expense = await onAddExpense({
+        title: title.trim(),
+        amount: Number(amount),
+        category,
+        date,
+      });
 
-    // Determine icon
-    let iconType = 'tag';
-    if (category === 'Bills') {
-      iconType = title.toLowerCase().includes('wifi') || title.toLowerCase().includes('internet') ? 'wifi' : 'zap';
-    } else if (category === 'Shopping') {
-      iconType = 'tag';
-    } else if (category === 'Entertainment') {
-      iconType = 'book';
-    }
-
-    // Format date nicely
-    const dateObj = new Date(date);
-    const formattedDate = dateObj.toLocaleDateString('en-US', {
-      month: 'short',
-      day: '2-digit',
-      year: 'numeric',
-    });
-
-    const newExpense = {
-      id: `exp-${Date.now()}`,
-      title: title.trim(),
-      subtitle: subtitle.trim() || `${category} allocation voucher`,
-      category,
-      date: formattedDate,
-      paymentType,
-      amount: parsedAmount,
-      iconType,
-    };
-
-    onAddExpense(newExpense);
-    setTitle('');
-    setSubtitle('');
-    setAmount('');
-    setSuccessMessage(`Recorded voucher: ${newExpense.title} (PKR ${parsedAmount.toLocaleString('en-PK')})`);
-    setTimeout(() => setSuccessMessage(null), 3500);
-  };
-
-  const getCategoryBadge = (cat) => {
-    switch (cat) {
-      case 'Utilities':
-        return (
-          <span className="px-2.5 py-1 text-xs font-semibold rounded-md bg-blue-950/70 text-blue-400 border border-blue-800/60">
-            Utilities
-          </span>
-        );
-      case 'Repairs':
-        return (
-          <span className="px-2.5 py-1 text-xs font-semibold rounded-md bg-emerald-950/70 text-emerald-400 border border-emerald-800/60">
-            Repairs
-          </span>
-        );
-      case 'Subscriptions':
-        return (
-          <span className="px-2.5 py-1 text-xs font-semibold rounded-md bg-purple-950/70 text-purple-400 border border-purple-800/60">
-            Subscriptions
-          </span>
-        );
-      case 'Rent':
-        return (
-          <span className="px-2.5 py-1 text-xs font-semibold rounded-md bg-amber-950/70 text-amber-400 border border-amber-800/60">
-            Rent
-          </span>
-        );
-      default:
-        return (
-          <span className="px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-800 text-slate-300 border border-slate-700">
-            {cat}
-          </span>
-        );
+      setSuccess(
+        `Recorded "${expense.title}" for ${formatCurrency(expense.amount)}.`
+      );
+      setTitle("");
+      setAmount("");
+    } catch (err) {
+      setError(getErrorMessage(err, "Unable to record expense."));
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const getPaymentTypeDot = (type) => {
-    switch (type) {
-      case 'Operational':
-        return <span className="w-2 h-2 rounded-full bg-amber-400"></span>;
-      case 'Monthly':
-        return <span className="w-2 h-2 rounded-full bg-emerald-400"></span>;
-      case 'Annual':
-        return <span className="w-2 h-2 rounded-full bg-purple-400"></span>;
-      default:
-        return <span className="w-2 h-2 rounded-full bg-slate-400"></span>;
-    }
-  };
+  const handleDelete = async (expense) => {
+    const confirmed = window.confirm(
+      `Delete expense "${expense.title}"? This cannot be undone.`
+    );
 
-  const renderIcon = (type) => {
-    switch (type) {
-      case 'zap':
-        return <Zap className="w-4 h-4 text-amber-400" />;
-      case 'wifi':
-        return <Wifi className="w-4 h-4 text-sky-400" />;
-      case 'tool':
-        return <Wrench className="w-4 h-4 text-emerald-400" />;
-      case 'book':
-        return <BookOpen className="w-4 h-4 text-purple-400" />;
-      default:
-        return <Tag className="w-4 h-4 text-slate-400" />;
+    if (!confirmed) return;
+
+    setDeletingId(expense.id);
+    setError("");
+
+    try {
+      await onDeleteExpense(expense.id);
+    } catch (err) {
+      setError(getErrorMessage(err, "Unable to delete expense."));
+    } finally {
+      setDeletingId(null);
     }
   };
 
   return (
-    <div className="w-full min-w-0 max-w-7xl mx-auto space-y-7 px-4 py-5 sm:px-6 sm:py-7 lg:px-8 animate-in fade-in duration-300">
-      {/* Top Banner Row */}
-      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mx-auto w-full max-w-7xl space-y-6">
+      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div className="min-w-0">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-amber-400 block mb-1">
-            LIBRARY OPERATIONS
-          </span>
-          <h1 className="text-3xl font-bold tracking-tight text-white">
+          <span className="eyebrow-tag">Library operations</span>
+          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
             Expenses
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="mt-1 text-sm text-slate-400">
             Track the operating costs and financial outflows of your library.
           </p>
         </div>
 
-        {/* Top Right: May 2026 Burn Card matching Image 5 */}
-        <div className="flex w-full min-w-0 items-center justify-between gap-4 rounded-2xl border border-[#1e293b] bg-[#131c31] p-4 sm:w-auto sm:min-w-[240px] sm:gap-6">
-          <div>
+        <div className="card flex w-full items-center justify-between gap-4 p-4 lg:w-auto lg:min-w-[260px]">
+          <div className="min-w-0">
             <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              May 2026 Burn
+              {formatMonthYear()}
             </div>
-            <div className="text-2xl font-bold text-white mt-1 tabular-nums">
-              PKR {totalBurn.toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            <div className="mt-1 truncate text-2xl font-bold text-white tabular-nums">
+              {formatCurrency(totalThisMonth)}
+            </div>
+            <div className="mt-0.5 truncate text-xs text-slate-400">
+              {formatCurrency(totalAll)} recorded in total
             </div>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-            <TrendingUp className="w-5 h-5" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand">
+            <TrendingUp className="h-5 w-5" />
           </div>
         </div>
       </div>
 
-      {/* Success Notification Alert */}
-      {successMessage && (
-        <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2 animate-in slide-in-from-top-2">
-          <CheckCircle2 className="w-4 h-4 shrink-0" />
-          <span>{successMessage}</span>
+      {(error || success) && (
+        <div
+          className={`flex items-start gap-2 rounded-xl border px-4 py-3 text-sm ${
+            error
+              ? "border-red-500/30 bg-red-500/10 text-red-300"
+              : "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+          }`}
+        >
+          {error ? (
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          ) : (
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+          )}
+          <span>{error || success}</span>
         </div>
       )}
 
-      {/* FORM CARD: Log an expense matching Image 5 */}
-      <div className="relative rounded-2xl border border-[#1e293b] bg-[#131c31] p-4 sm:p-6">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-9 h-9 rounded-xl bg-[#1e293b] border border-[#2d3545] flex items-center justify-center text-amber-400">
-            <FileText className="w-4 h-4" />
+      <form onSubmit={handleSubmit} className="card p-4 sm:p-5">
+        <div className="mb-5 flex items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-raised text-brand">
+            <FileText className="h-4 w-4" />
           </div>
-          <div>
+          <div className="min-w-0">
             <h2 className="text-sm font-bold text-white">Log an expense</h2>
             <p className="text-xs text-slate-400">
-              Record a new library expense voucher into the ledger.
+              Record a new library expense into the ledger.
             </p>
           </div>
         </div>
 
-        {/* Input Form Fields */}
-        <form onSubmit={handleRecordExpense}>
-          <div className="grid min-w-0 grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-12">
-            {/* Expense title */}
-            <div className="min-w-0 lg:col-span-4">
-              <label className="block text-xs font-semibold text-slate-300 mb-2">
-                Expense title
-              </label>
+        <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <label className="field-label" htmlFor="expense-title">
+              Expense title
+            </label>
+            <input
+              id="expense-title"
+              type="text"
+              className="input"
+              placeholder="e.g. Electricity bill"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="lg:col-span-2">
+            <label className="field-label" htmlFor="expense-amount">
+              Amount
+            </label>
+            <div className="relative">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-semibold text-slate-400">
+                PKR
+              </span>
               <input
-                type="text"
+                id="expense-amount"
+                type="number"
+                className="input pl-12"
+                placeholder="0.00"
+                min="0.01"
+                step="0.01"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
                 required
-                placeholder="e.g. Electricity bill"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-lg bg-[#10141d] border border-[#2d3545] text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
               />
             </div>
-
-            {/* Amount */}
-            <div className="min-w-0 lg:col-span-2">
-              <label className="block text-xs font-semibold text-slate-300 mb-2">
-                Amount
-              </label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 text-sm font-semibold">
-                  PKR
-                </span>
-                <input
-                  type="number"
-                  step="0.01"
-                  required
-                  placeholder="0.00"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full h-11 pl-8 pr-3.5 rounded-lg bg-[#10141d] border border-[#2d3545] text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
-                />
-              </div>
-            </div>
-
-            {/* Date */}
-            <div className="min-w-0 lg:col-span-2">
-              <label className="block text-xs font-semibold text-slate-300 mb-2">
-                Date
-              </label>
-              <div className="relative">
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-lg bg-[#10141d] border border-[#2d3545] text-sm text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 [color-scheme:dark]"
-                />
-              </div>
-            </div>
-
-            {/* Category */}
-            <div className="min-w-0 lg:col-span-2">
-              <label className="block text-xs font-semibold text-slate-300 mb-2">
-                Category
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-lg bg-[#10141d] border border-[#2d3545] text-sm text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
-              >
-                <option value="Other">Other</option>
-                <option value="Food">Food</option>
-                <option value="Transport">Transport</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Bills">Bills</option>
-                <option value="Entertainment">Entertainment</option>
-              </select>
-            </div>
-
-            {/* Submit Button */}
-            <div className="min-w-0 lg:col-span-2">
-              <button
-                type="submit"
-                className="w-full h-11 px-4 rounded-lg bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-bold text-sm flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20 transition-all cursor-pointer"
-              >
-                <Plus className="w-4 h-4 stroke-[2.5]" />
-                <span>Record Expense</span>
-              </button>
-            </div>
           </div>
-        </form>
-      </div>
 
-      {/* SECTION 2: All Expenses Table & Filter Tabs matching Image 5 */}
+          <div className="lg:col-span-2">
+            <label className="field-label" htmlFor="expense-date">
+              Date
+            </label>
+            <input
+              id="expense-date"
+              type="date"
+              className="input [color-scheme:dark]"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="lg:col-span-2">
+            <label className="field-label" htmlFor="expense-category">
+              Category
+            </label>
+            <select
+              id="expense-category"
+              className="input"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              {CATEGORIES.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="lg:col-span-2">
+            <button type="submit" disabled={submitting} className="btn-primary w-full">
+              <Plus className="h-4 w-4" />
+              {submitting ? "Recording..." : "Record"}
+            </button>
+          </div>
+        </div>
+      </form>
+
       <div className="space-y-4">
-        {/* Section Header & Filters */}
-        <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 block mb-0.5">
-              RECENT ACTIVITY
-            </span>
-            <div className="flex min-w-0 flex-wrap items-center gap-3">
-              <h2 className="text-2xl font-bold tracking-tight text-white">
+            <span className="eyebrow-tag">Ledger</span>
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
                 All expenses
               </h2>
-              <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-[#161b22] border border-[#2d3545] text-slate-300">
-                {expenses.length} logged this month
+              <span className="rounded-full border border-line-strong bg-raised px-2.5 py-1 text-xs font-medium text-slate-300">
+                {expenses.length} total
               </span>
             </div>
           </div>
 
-          {/* Filter Pills */}
-          <div className="flex max-w-full self-start overflow-x-auto rounded-xl border border-[#2d3545] bg-[#161b22] p-1 sm:self-auto">
-            {['All', 'This Month', 'Utilities', 'Repairs', 'Subscriptions'].map((tab) => (
+          <div className="flex w-full max-w-full gap-1 overflow-x-auto rounded-xl border border-line-strong bg-raised p-1 sm:w-auto">
+            {FILTERS.map((option) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
-                  activeTab === tab
-                    ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
-                    : 'text-slate-400 hover:text-white hover:bg-[#1e293b]'
+                key={option}
+                type="button"
+                onClick={() => setFilter(option)}
+                aria-pressed={filter === option}
+                className={`h-9 shrink-0 whitespace-nowrap rounded-lg px-3 text-xs font-medium transition-colors ${
+                  filter === option
+                    ? "bg-brand font-bold text-slate-950"
+                    : "text-slate-400 hover:bg-line hover:text-white"
                 }`}
               >
-                {tab}
+                {option}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Expenses Data Table */}
-        <div className="overflow-hidden rounded-2xl border border-[#1e293b] bg-[#131c31]">
-          <div className="w-full overflow-x-auto">
-            <table className="w-full min-w-[760px] border-collapse text-left">
-              <thead>
-                <tr className="border-b border-[#1e293b] text-[11px] font-bold uppercase tracking-wider text-slate-400 bg-[#0f172a]/50">
-                  <th className="py-3.5 px-5">Expense Details</th>
-                  <th className="py-3.5 px-4">Category</th>
-                  <th className="py-3.5 px-4">Date</th>
-                  <th className="py-3.5 px-4">Payment Type</th>
-                  <th className="py-3.5 px-5 text-right">Amount</th>
-                  <th className="py-3.5 px-4 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#1e293b]/60 text-sm">
-                {filteredExpenses.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="py-12 text-center text-slate-400 text-sm">
-                      No expenses found matching the "{activeTab}" filter.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredExpenses.map((item) => (
-                    <tr
-                      key={item.id}
-                      className="hover:bg-[#18223c]/50 transition-colors group"
-                    >
-                      {/* Details with Icon */}
-                      <td className="py-4 px-5">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-[#1e293b] border border-[#2d3545] flex items-center justify-center shrink-0">
-                            {renderIcon(item.iconType)}
-                          </div>
-                          <div>
-                            <div className="font-semibold text-white group-hover:text-amber-400 transition-colors">
-                              {item.title}
+        <div className="card overflow-hidden">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-20 text-slate-400">
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-brand/25 border-t-brand" />
+              <p className="text-sm">Loading expenses...</p>
+            </div>
+          ) : expenses.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-3 px-6 py-20 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-line-strong bg-raised text-slate-400">
+                <Receipt className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">
+                  No expenses recorded
+                </p>
+                <p className="mt-1 text-xs text-slate-400">
+                  Log your first expense using the form above.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <>
+              {filtered.length === 0 ? (
+                <div className="px-6 py-16 text-center text-sm text-slate-400">
+                  No expenses match the "{filter}" filter.
+                </div>
+              ) : (
+                <>
+                  {/* Mobile: card list */}
+                  <ul className="divide-y divide-line/60 md:hidden">
+                    {filtered.map((expense) => {
+                      const meta =
+                        CATEGORY_META[expense.category] || CATEGORY_META.Other;
+                      const Icon = meta.icon;
+
+                      return (
+                        <li key={expense.id} className="p-4">
+                          <div className="flex items-start gap-3">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-raised">
+                              <Icon className={`h-4 w-4 ${meta.iconTone}`} />
                             </div>
-                            <div className="text-xs text-slate-400 mt-0.5">
-                              {item.subtitle}
+
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-baseline justify-between gap-3">
+                                <p className="truncate text-sm font-semibold text-white">
+                                  {expense.title}
+                                </p>
+                                <span className="shrink-0 text-sm font-bold text-white tabular-nums">
+                                  {formatCurrencyPrecise(expense.amount)}
+                                </span>
+                              </div>
+
+                              <div className="mt-2.5 flex items-center justify-between gap-3">
+                                <div className="flex min-w-0 items-center gap-2">
+                                  <span
+                                    className={`badge shrink-0 ${meta.badge}`}
+                                  >
+                                    {expense.category}
+                                  </span>
+                                  <span className="truncate text-xs text-slate-400">
+                                    {formatDate(expense.date)}
+                                  </span>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleDelete(expense)}
+                                  disabled={deletingId === expense.id}
+                                  aria-label={`Delete ${expense.title}`}
+                                  className="-mb-2 -mr-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
+                        </li>
+                      );
+                    })}
+                  </ul>
 
-                      {/* Category Badge */}
-                      <td className="py-4 px-4 whitespace-nowrap">
-                        {getCategoryBadge(item.category)}
-                      </td>
+                  {/* Tablet and up: table */}
+                  <div className="hidden w-full overflow-x-auto md:block">
+                    <table className="w-full min-w-[660px] border-collapse text-left">
+                      <thead>
+                        <tr className="border-b border-line bg-inset/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                          <th className="px-5 py-3.5">Expense</th>
+                          <th className="px-4 py-3.5">Category</th>
+                          <th className="px-4 py-3.5">Date</th>
+                          <th className="px-5 py-3.5 text-right">Amount</th>
+                          <th className="px-4 py-3.5 text-center">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-line/60 text-sm">
+                        {filtered.map((expense) => {
+                          const meta =
+                            CATEGORY_META[expense.category] || CATEGORY_META.Other;
+                          const Icon = meta.icon;
 
-                      {/* Date */}
-                      <td className="py-4 px-4 whitespace-nowrap text-xs text-slate-300">
-                        {item.date}
-                      </td>
-
-                      {/* Payment Type */}
-                      <td className="py-4 px-4 whitespace-nowrap text-xs text-slate-300">
-                        <div className="flex items-center gap-2">
-                          {getPaymentTypeDot(item.paymentType)}
-                          <span>{item.paymentType}</span>
-                        </div>
-                      </td>
-
-                      {/* Amount */}
-                      <td className="py-4 px-5 text-right whitespace-nowrap font-bold text-white tabular-nums text-base">
-                        PKR {item.amount.toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-4 px-4 text-center whitespace-nowrap relative">
-                        <button
-                          onClick={() => setActionMenuId(actionMenuId === item.id ? null : item.id)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#1e293b] transition-colors"
-                        >
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
-
-                        {/* Dropdown Action Menu */}
-                        {actionMenuId === item.id && (
-                          <div className="absolute right-6 top-10 mt-1 w-32 bg-[#161b22] border border-[#2d3545] rounded-xl shadow-2xl py-1 z-50 text-left">
-                            <button
-                              onClick={() => {
-                                alert(`Editing ${item.title}`);
-                                setActionMenuId(null);
-                              }}
-                              className="w-full px-3 py-1.5 text-xs text-slate-300 hover:text-white hover:bg-[#1e293b] flex items-center gap-2"
+                          return (
+                            <tr
+                              key={expense.id}
+                              className="transition-colors hover:bg-raised/40"
                             >
-                              <Edit2 className="w-3.5 h-3.5 text-slate-400" />
-                              <span>Edit</span>
-                            </button>
-                            {onDeleteExpense && (
-                              <button
-                                onClick={() => {
-                                  onDeleteExpense(item.id);
-                                  setActionMenuId(null);
-                                }}
-                                className="w-full px-3 py-1.5 text-xs text-red-400 hover:bg-red-500/10 flex items-center gap-2"
-                              >
-                                <Trash2 className="w-3.5 h-3.5 text-red-400" />
-                                <span>Delete</span>
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                              <td className="px-5 py-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-raised">
+                                    <Icon className={`h-4 w-4 ${meta.iconTone}`} />
+                                  </div>
+                                  <div className="font-semibold text-white">
+                                    {expense.title}
+                                  </div>
+                                </div>
+                              </td>
 
-          {/* Pagination bar matching Image 5 */}
-          <div className="flex flex-col gap-3 border-t border-[#1e293b] p-4 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              Showing <span className="font-semibold text-white">{filteredExpenses.length}</span> of{' '}
-              <span className="font-semibold text-white">{expenses.length}</span> expenses
-            </div>
-            <div className="flex items-center gap-2 self-end sm:self-auto">
-              <button
-                disabled
-                className="px-3.5 py-1.5 rounded-lg border border-[#2d3545] bg-[#161b22] text-slate-600 cursor-not-allowed font-medium"
-              >
-                Previous
-              </button>
-              <button
-                disabled
-                className="px-3.5 py-1.5 rounded-lg border border-[#2d3545] bg-[#161b22] text-slate-600 cursor-not-allowed font-medium"
-              >
-                Next
-              </button>
-            </div>
-          </div>
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <span className={`badge ${meta.badge}`}>
+                                  {expense.category}
+                                </span>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4 text-xs text-slate-300">
+                                {formatDate(expense.date)}
+                              </td>
+
+                              <td className="whitespace-nowrap px-5 py-4 text-right font-bold text-white tabular-nums">
+                                {formatCurrencyPrecise(expense.amount)}
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => handleDelete(expense)}
+                                  disabled={deletingId === expense.id}
+                                  aria-label={`Delete ${expense.title}`}
+                                  title="Delete expense"
+                                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
+
+              <div className="flex flex-col gap-1 border-t border-line p-4 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+                <span>
+                  Showing{" "}
+                  <span className="font-semibold text-white">{filtered.length}</span>{" "}
+                  of <span className="font-semibold text-white">{expenses.length}</span>{" "}
+                  expenses
+                </span>
+                <span>
+                  Filtered total:{" "}
+                  <span className="font-semibold text-white tabular-nums">
+                    {formatCurrencyPrecise(filteredTotal)}
+                  </span>
+                </span>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

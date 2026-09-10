@@ -1,13 +1,44 @@
-const router = require("express").Router();
+const express = require("express");
+const router = express.Router();
 
 const Expense = require("../models/Expense");
 
+const CATEGORIES = [
+  "Food",
+  "Transport",
+  "Shopping",
+  "Bills",
+  "Entertainment",
+  "Other",
+];
+
 // Add new expense
 router.post("/add", async (req, res) => {
+  const title = typeof req.body.title === "string" ? req.body.title.trim() : "";
+  const amount = Number(req.body.amount);
+
+  if (!title) {
+    return res.status(400).json({
+      message: "Expense title is required.",
+    });
+  }
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return res.status(400).json({
+      message: "Amount must be greater than zero.",
+    });
+  }
+
+  const parsedDate = req.body.date ? new Date(req.body.date) : new Date();
+
   try {
     const expense = new Expense({
-      ...req.body,
-      amount: Number(req.body.amount),
+      title,
+      amount,
+      category: CATEGORIES.includes(req.body.category)
+        ? req.body.category
+        : "Other",
+      date: Number.isNaN(parsedDate.getTime()) ? new Date() : parsedDate,
     });
 
     await expense.save();
@@ -17,8 +48,7 @@ router.post("/add", async (req, res) => {
     console.error("Error adding expense:", err);
 
     res.status(500).json({
-      message: "Error adding expense",
-      error: err.message,
+      message: "Unable to add expense.",
     });
   }
 });
@@ -35,8 +65,7 @@ router.get("/", async (req, res) => {
     console.error("Error fetching expenses:", err);
 
     res.status(500).json({
-      message: "Error fetching expenses",
-      error: err.message,
+      message: "Unable to load expenses.",
     });
   }
 });
@@ -44,25 +73,22 @@ router.get("/", async (req, res) => {
 // Delete expense
 router.delete("/:id", async (req, res) => {
   try {
-    const expense = await Expense.findByIdAndDelete(
-      req.params.id
-    );
+    const expense = await Expense.findByIdAndDelete(req.params.id);
 
     if (!expense) {
       return res.status(404).json({
-        message: "Expense not found",
+        message: "Expense not found.",
       });
     }
 
     res.status(200).json({
-      message: "Expense deleted",
+      message: "Expense deleted.",
     });
   } catch (err) {
     console.error("Error deleting expense:", err);
 
     res.status(500).json({
-      message: "Error deleting expense",
-      error: err.message,
+      message: "Unable to delete expense.",
     });
   }
 });

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   BookOpen,
   LayoutDashboard,
@@ -9,16 +10,34 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
+const LINKS = [
+  ["/", "Dashboard", LayoutDashboard],
+  ["/members", "Members", Users],
+  ["/add", "Add member", Plus],
+  ["/expenses", "Expenses", Receipt],
+];
+
 function Sidebar({ onLogout, menuOpen, closeMenu }) {
-  const links = [
-    ["/", "Dashboard", LayoutDashboard],
-    ["/members", "Members", Users],
-    ["/add", "Add member", Plus],
-    ["/expenses", "Expenses", Receipt],
-  ];
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") closeMenu();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [menuOpen, closeMenu]);
 
   return (
-    <aside className={`sidebar ${menuOpen ? "sidebar-open" : ""}`}>
+    <aside id="app-sidebar" className={`sidebar ${menuOpen ? "sidebar-open" : ""}`}>
       <div className="brand-row">
         <div className="brand">
           <span className="brand-mark">
@@ -31,6 +50,7 @@ function Sidebar({ onLogout, menuOpen, closeMenu }) {
         </div>
 
         <button
+          type="button"
           className="icon-button close-sidebar"
           onClick={closeMenu}
           aria-label="Close navigation"
@@ -41,16 +61,14 @@ function Sidebar({ onLogout, menuOpen, closeMenu }) {
 
       <p className="nav-label">Workspace</p>
 
-      <nav className="nav-list">
-        {links.map(([to, label, Icon]) => (
+      <nav className="nav-list" aria-label="Main navigation">
+        {LINKS.map(([to, label, Icon]) => (
           <NavLink
             key={to}
             to={to}
             end={to === "/"}
             onClick={closeMenu}
-            className={({ isActive }) =>
-              `nav-link ${isActive ? "active" : ""}`
-            }
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
           >
             <Icon size={18} />
             <span>{label}</span>
@@ -64,10 +82,7 @@ function Sidebar({ onLogout, menuOpen, closeMenu }) {
           System online
         </div>
 
-        <button
-          onClick={onLogout}
-          className="nav-link logout-link"
-        >
+        <button type="button" onClick={onLogout} className="nav-link logout-link">
           <LogOut size={18} />
           <span>Logout</span>
         </button>

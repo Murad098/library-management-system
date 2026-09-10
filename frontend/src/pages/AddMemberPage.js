@@ -1,187 +1,178 @@
 import React, { useState } from "react";
-import axios from "axios";
-import BASE_URL from "../config/api";
-import { UserPlus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { AlertCircle, CheckCircle2, UserPlus } from "lucide-react";
 
-const API_URL = `${BASE_URL}/members`;
+import { getErrorMessage } from "../services/api";
 
-const AddMember = () => {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    fee: "",
-    status: "unpaid",
-  });
+const EMPTY_FORM = {
+  name: "",
+  email: "",
+  phone: "",
+  fee: "",
+  status: "unpaid",
+};
 
+const AddMemberScreen = ({ onAddMember }) => {
+  const navigate = useNavigate();
+  const [form, setForm] = useState(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm((current) => ({ ...current, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
     setError("");
     setSuccess("");
 
     try {
-      await axios.post(`${API_URL}/add`, {
+      const member = await onAddMember({
         name: form.name.trim(),
         email: form.email.trim(),
         phone: form.phone.trim(),
-        fee: Number(form.fee),
+        fee: Number(form.fee) || 0,
         status: form.status,
       });
 
-      setSuccess("Member added successfully.");
+      setSuccess(`${member.name} was added to the member directory.`);
+      setForm(EMPTY_FORM);
 
-      setForm({
-        name: "",
-        email: "",
-        phone: "",
-        fee: "",
-        status: "unpaid",
-      });
-    } catch (error) {
-      console.error("Add member error:", error);
-
-      setError(
-        error.response?.data?.message ||
-          error.response?.data?.error ||
-          "Unable to add member."
-      );
+      window.setTimeout(() => navigate("/members"), 900);
+    } catch (err) {
+      setError(getErrorMessage(err, "Unable to add member."));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section className="page-section">
-      <div className="page-heading">
-        <div>
-          <p className="eyebrow accent">Directory</p>
-
-          <h2 className="section-title">Add member</h2>
-
-          <p className="section-subtitle">
-            Create a new member record for your library.
-          </p>
-        </div>
+    <div className="mx-auto max-w-3xl space-y-6">
+      <div>
+        <span className="eyebrow-tag">Member directory</span>
+        <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          Add member
+        </h1>
+        <p className="mt-1 text-sm text-slate-400">
+          Create a new member record for your library.
+        </p>
       </div>
 
-      <form
-        className="form-card member-form"
-        onSubmit={handleSubmit}
-      >
-        <div className="form-intro">
-          <span className="form-icon">
-            <UserPlus size={21} />
+      <form onSubmit={handleSubmit} className="card p-5 sm:p-6">
+        <div className="mb-6 flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand">
+            <UserPlus className="h-5 w-5" />
           </span>
-
           <div>
-            <h3>Member details</h3>
-
-            <p>Enter the member information below.</p>
+            <h2 className="text-sm font-bold text-white">Member details</h2>
+            <p className="text-xs text-slate-400">
+              All fields except status are required.
+            </p>
           </div>
         </div>
 
-        <div className="form-grid">
-          <label>
-            Name
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label className="sm:col-span-2">
+            <span className="field-label">Full name</span>
             <input
               type="text"
               name="name"
               placeholder="e.g. Aisha Khan"
               value={form.name}
               onChange={handleChange}
+              className="input"
               required
             />
           </label>
 
           <label>
-            Email
+            <span className="field-label">Email</span>
             <input
               type="email"
               name="email"
-              placeholder="e.g. aisha@gmail.com"
+              placeholder="e.g. aisha@example.com"
               value={form.email}
               onChange={handleChange}
+              className="input"
               required
             />
           </label>
 
           <label>
-            Phone
+            <span className="field-label">Phone</span>
             <input
-              type="text"
+              type="tel"
               name="phone"
               placeholder="e.g. +92 300 1234567"
               value={form.phone}
               onChange={handleChange}
+              className="input"
               required
             />
           </label>
 
           <label>
-            Membership fee
+            <span className="field-label">Monthly fee (PKR)</span>
             <input
               type="number"
               name="fee"
-              placeholder="Enter fee"
+              placeholder="e.g. 1200"
               value={form.fee}
               onChange={handleChange}
+              className="input"
               min="0"
+              step="1"
               required
             />
           </label>
 
           <label>
-            Status
+            <span className="field-label">Fee status</span>
             <select
               name="status"
               value={form.status}
               onChange={handleChange}
+              className="input"
             >
-              <option value="paid">Paid</option>
               <option value="unpaid">Unpaid</option>
+              <option value="paid">Paid</option>
             </select>
           </label>
         </div>
 
         {error && (
-          <div className="alert error-alert">
-            {error}
+          <div className="mt-5 flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3.5 py-2.5 text-sm text-red-300">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 
         {success && (
-          <div className="alert success-alert">
-            {success}
+          <div className="mt-5 flex items-start gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2.5 text-sm text-emerald-300">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{success}</span>
           </div>
         )}
 
-        <div className="form-actions">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
           <button
-            type="submit"
-            className="primary-button"
-            disabled={loading}
+            type="button"
+            onClick={() => navigate("/members")}
+            className="btn-ghost order-2 sm:order-1"
           >
-            <UserPlus size={17} />
-
+            Cancel
+          </button>
+          <button type="submit" disabled={loading} className="btn-primary order-1 sm:order-2">
+            <UserPlus className="h-4 w-4" />
             {loading ? "Adding member..." : "Add member"}
           </button>
         </div>
       </form>
-    </section>
+    </div>
   );
 };
 
-export default AddMember;
+export default AddMemberScreen;

@@ -1,404 +1,334 @@
-import React from 'react';
-import { 
-  LayoutGrid, 
-  TrendingUp, 
-  Users, 
-  Clock, 
-  DollarSign, 
-  UserCheck, 
-  AlertTriangle, 
-  AlertCircle, 
-  Zap, 
-  MapPin, 
-  UserPlus
-} from 'lucide-react';
-const DashboardScreen = ({
-  selectedBranch = null,
-  onNavigate = () => {},
-  activities = [],
-  expensesTotal = 8649,
-}) => {
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  AlertCircle,
+  ArrowRight,
+  CheckCircle2,
+  Receipt,
+  TrendingUp,
+  UserPlus,
+  Users,
+  Wallet,
+} from "lucide-react";
+
+import { formatCurrency, formatDate, formatMonthYear, initials } from "../utils/format";
+
+const StatCard = ({ label, value, hint, icon: Icon, tone = "default" }) => {
+  const tones = {
+    default: "text-slate-400 bg-raised border-line-strong",
+    brand: "text-brand bg-brand/10 border-brand/20",
+    green: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+    red: "text-red-400 bg-red-500/10 border-red-500/20",
+  };
+
   return (
-    <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-300">
-      {/* Top Header Row */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="card p-4 sm:flex sm:items-center sm:justify-between sm:gap-4 sm:p-5">
+      <div
+        className={`mb-3 flex h-9 w-9 items-center justify-center rounded-xl border sm:order-2 sm:mb-0 sm:h-10 sm:w-10 sm:shrink-0 ${tones[tone]}`}
+      >
+        <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+      </div>
+      <div className="min-w-0 sm:order-1">
+        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          {label}
+        </div>
+        <div className="mt-1 truncate text-lg font-bold text-white tabular-nums sm:text-2xl">
+          {value}
+        </div>
+        <div className="mt-0.5 truncate text-xs text-slate-400">{hint}</div>
+      </div>
+    </div>
+  );
+};
+
+const Panel = ({ title, subtitle, action, children }) => (
+  <div className="card flex flex-col p-4 sm:p-5">
+    <div className="mb-4 flex items-start justify-between gap-4">
+      <div className="min-w-0">
+        <h2 className="text-sm font-semibold text-white">{title}</h2>
+        {subtitle && <p className="mt-0.5 text-xs text-slate-400">{subtitle}</p>}
+      </div>
+      {action}
+    </div>
+    {children}
+  </div>
+);
+
+const EmptyNote = ({ children }) => (
+  <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-line py-8 text-center text-xs text-slate-400">
+    {children}
+  </div>
+);
+
+const DashboardScreen = ({ members = [], expenses = [], loading = false }) => {
+  const navigate = useNavigate();
+
+  const paidMembers = members.filter((member) => member.status === "paid");
+  const unpaidMembers = members.filter((member) => member.status !== "paid");
+
+  const expected = members.reduce((sum, member) => sum + member.fee, 0);
+  const collected = paidMembers.reduce((sum, member) => sum + member.fee, 0);
+  const outstanding = expected - collected;
+  const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const net = collected - totalExpenses;
+  const collectionRate = expected > 0 ? Math.round((collected / expected) * 100) : 0;
+
+  const comparisonMax = Math.max(collected, totalExpenses, 1);
+  const collectedWidth = Math.round((collected / comparisonMax) * 100);
+  const expensesWidth = Math.round((totalExpenses / comparisonMax) * 100);
+
+  const recentMembers = members.slice(0, 4);
+  const recentExpenses = expenses.slice(0, 4);
+
+  if (loading) {
+    return (
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-3 py-28 text-slate-400">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand/25 border-t-brand" />
+        <p className="text-sm">Loading library data...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+          <span className="eyebrow-tag">Library operations</span>
+          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
             Dashboard
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            May 2026{selectedBranch?.name ? ` • ${selectedBranch.name}` : ''}
+          <p className="mt-1 text-sm text-slate-400">
+            Overview for {formatMonthYear()}
           </p>
         </div>
-
-        {/* Live Tracking Beacon */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-semibold">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          <span>Live Tracking</span>
-        </div>
+        <button
+          onClick={() => navigate("/add")}
+          className="btn-primary w-full sm:w-auto"
+        >
+          <UserPlus className="h-4 w-4" />
+          Add member
+        </button>
       </div>
 
-      {/* ROW 1: 3 Analytics Visual Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Card 1: Seat Occupancy Donut */}
-        <div className="bg-[#131c31] border border-[#1e293b] rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-semibold text-white">Seat Occupancy</h2>
-            <button 
-              onClick={() => onNavigate('halls')}
-              className="p-1.5 rounded-lg bg-[#1e293b]/60 text-slate-400 hover:text-white hover:bg-[#1e293b] transition-colors"
-              title="View Hall Layout"
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Donut Chart Visual */}
-          <div className="my-4 flex flex-col items-center justify-center">
-            <div className="relative w-36 h-36 flex items-center justify-center">
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                {/* Background Ring (Free Seats) */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  stroke="#1e293b"
-                  strokeWidth="11"
-                  fill="transparent"
-                />
-                {/* Active Ring (Occupied Seats ~ 3%) */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  stroke="#f59e0b"
-                  strokeWidth="11"
-                  strokeDasharray="238.76"
-                  strokeDashoffset={238.76 * (1 - 0.03)}
-                  strokeLinecap="round"
-                  fill="transparent"
-                />
-              </svg>
-              {/* Inner Center Label */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <span className="text-3xl font-bold tracking-tight text-white leading-none">
-                  3%
-                </span>
-                <span className="text-xs text-slate-400 mt-1 font-medium">
-                  {selectedBranch ? `${selectedBranch.occupiedSeats}/${selectedBranch.totalSeats}` : '—'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Donut Legend */}
-          <div className="flex items-center justify-center gap-6 pt-2 border-t border-[#1e293b]/60 text-xs text-slate-400">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-              <span>Occupied</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-slate-700"></span>
-              <span>Free</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 2: Monthly P&L */}
-        <div className="bg-[#131c31] border border-[#1e293b] rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-semibold text-white">Monthly P&L</h2>
-            <div className="p-1.5 rounded-lg bg-[#1e293b]/60 text-slate-400">
-              <TrendingUp className="w-4 h-4" />
-            </div>
-          </div>
-
-          {/* Donut Chart Visual */}
-          <div className="my-4 flex flex-col items-center justify-center">
-            <div className="relative w-36 h-36 flex items-center justify-center">
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                {/* Background Ring */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  stroke="#1e293b"
-                  strokeWidth="11"
-                  fill="transparent"
-                />
-                {/* Collected Ring */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  stroke="#f59e0b"
-                  strokeWidth="11"
-                  strokeDasharray="238.76"
-                  strokeDashoffset={238.76 * (1 - 0.78)}
-                  strokeLinecap="round"
-                  fill="transparent"
-                />
-              </svg>
-              {/* Inner Center Label */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <span className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-none">
-                  PKR 3.1K
-                </span>
-                <span className="text-[10px] font-bold tracking-widest text-slate-400 mt-1 uppercase">
-                  PROFIT
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* P&L Legend */}
-          <div className="flex items-center justify-center gap-6 pt-2 border-t border-[#1e293b]/60 text-xs text-slate-400">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-              <span>Collected</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-slate-700"></span>
-              <span>Expenses</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 3: Revenue vs Expenses Bar Chart */}
-        <div className="bg-[#131c31] border border-[#1e293b] rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-1">
-            <div>
-              <h2 className="text-sm font-semibold text-white">Revenue vs Expenses</h2>
-              <p className="text-[11px] text-slate-400">Last 6 months</p>
-            </div>
-            {/* Chart Legend */}
-            <div className="flex items-center gap-3 text-xs text-slate-400">
-              <div className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-                <span className="text-[11px]">Collected</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-slate-700"></span>
-                <span className="text-[11px]">Expenses</span>
-              </div>
-            </div>
-          </div>
-
-          {/* High-Fidelity Custom Bar Chart matching Image 3 */}
-          <div className="mt-4 mb-2 flex items-end justify-between h-36 pt-4 relative">
-            {/* Y-Axis scale marks */}
-            <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[10px] text-slate-400 font-medium">
-              <span>PKR 3.4K</span>
-              <span>PKR 1.7K</span>
-              <span>PKR 850</span>
-              <span>PKR 0</span>
-            </div>
-
-            {/* Background horizontal grid lines */}
-            <div className="absolute left-10 right-0 top-1.5 h-[1px] bg-[#1e293b]/50"></div>
-            <div className="absolute left-10 right-0 top-1/3 h-[1px] bg-[#1e293b]/40"></div>
-            <div className="absolute left-10 right-0 top-2/3 h-[1px] bg-[#1e293b]/40"></div>
-            <div className="absolute left-10 right-0 bottom-6 h-[1px] bg-[#1e293b]"></div>
-
-            {/* Month Bars Container */}
-            <div className="pl-12 w-full flex items-end justify-between h-full pb-6">
-              {/* Dec */}
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-5 h-1.5 bg-[#1e293b] rounded-t-sm"></div>
-                <span className="text-[10px] text-slate-400">Dec</span>
-              </div>
-              {/* Jan */}
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-5 h-1.5 bg-[#1e293b] rounded-t-sm"></div>
-                <span className="text-[10px] text-slate-400">Jan</span>
-              </div>
-              {/* Feb */}
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-5 h-1.5 bg-[#1e293b] rounded-t-sm"></div>
-                <span className="text-[10px] text-slate-400">Feb</span>
-              </div>
-              {/* Mar */}
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-5 h-1.5 bg-[#1e293b] rounded-t-sm"></div>
-                <span className="text-[10px] text-slate-400">Mar</span>
-              </div>
-              {/* Apr */}
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-5 h-2 bg-[#1e293b] rounded-t-sm"></div>
-                <span className="text-[10px] text-slate-400">Apr</span>
-              </div>
-              {/* May (Current active month, tall amber bar) */}
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-5 h-24 bg-amber-500 rounded-t shadow-lg shadow-amber-500/20"></div>
-                <span className="text-[10px] font-bold text-white">May</span>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 gap-3 xs:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+        <StatCard
+          label="Members"
+          value={members.length}
+          hint={`${paidMembers.length} paid • ${unpaidMembers.length} unpaid`}
+          icon={Users}
+        />
+        <StatCard
+          label="Fees collected"
+          value={formatCurrency(collected)}
+          hint={`of ${formatCurrency(expected)} expected`}
+          icon={Wallet}
+          tone="brand"
+        />
+        <StatCard
+          label="Outstanding"
+          value={formatCurrency(outstanding)}
+          hint={`${unpaidMembers.length} member${
+            unpaidMembers.length === 1 ? "" : "s"
+          } unpaid`}
+          icon={AlertCircle}
+          tone={outstanding > 0 ? "red" : "green"}
+        />
+        <StatCard
+          label="Expenses"
+          value={formatCurrency(totalExpenses)}
+          hint={`${expenses.length} record${expenses.length === 1 ? "" : "s"}`}
+          icon={Receipt}
+        />
       </div>
 
-      {/* ROW 2: 4 Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Metric 1: ACTIVE STUDENTS */}
-        <div className="bg-[#131c31] border border-[#1e293b] rounded-2xl p-4 flex items-center justify-between">
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Active Students
-            </div>
-            <div className="text-2xl font-bold text-white mt-1">6</div>
-            <div className="text-xs text-slate-400 mt-0.5">all seats filled</div>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-[#1e293b] border border-[#2d3545] flex items-center justify-center text-slate-400">
-            <Users className="w-5 h-5" />
-          </div>
-        </div>
-
-        {/* Metric 2: PENDING APPROVALS */}
-        <div className="bg-[#131c31] border border-[#1e293b] rounded-2xl p-4 flex items-center justify-between">
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Pending Approvals
-            </div>
-            <div className="text-2xl font-bold text-white mt-1">0</div>
-            <div className="text-xs text-slate-400 mt-0.5">awaiting review</div>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-[#1e293b] border border-[#2d3545] flex items-center justify-center text-slate-400">
-            <Clock className="w-5 h-5" />
-          </div>
-        </div>
-
-        {/* Metric 3: COLLECTED • MAY */}
-        <div className="bg-[#131c31] border border-[#1e293b] rounded-2xl p-4 flex items-center justify-between">
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Collected • May
-            </div>
-            <div className="text-2xl font-bold text-amber-400 mt-1">PKR 3.3K</div>
-            <div className="text-xs text-slate-400 mt-0.5">11 payments</div>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-            <span className="font-bold text-base">PKR</span>
-          </div>
-        </div>
-
-        {/* Metric 4: OUTSTANDING */}
-        <div className="bg-[#131c31] border border-[#1e293b] rounded-2xl p-4 flex items-center justify-between">
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Outstanding
-            </div>
-            <div className="text-2xl font-bold text-white mt-1">PKR 0</div>
-            <div className="text-xs text-slate-400 mt-0.5">0 students • 0 overdue</div>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-[#1e293b] border border-[#2d3545] flex items-center justify-center text-slate-400">
-            <DollarSign className="w-5 h-5" />
-          </div>
-        </div>
-      </div>
-
-      {/* ROW 3: 3 Action & Alert Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Pending Approvals */}
-        <div className="bg-[#131c31] border border-[#1e293b] rounded-2xl p-5 flex flex-col justify-between min-h-[130px]">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-amber-400 font-semibold text-xs">
-              <UserCheck className="w-4 h-4" />
-              <span>Pending Approvals</span>
-            </div>
-            <button 
-              onClick={() => onNavigate('students')}
-              className="text-xs text-slate-400 hover:text-white transition-colors"
-            >
-              View all →
-            </button>
-          </div>
-          <div className="text-center py-4 text-xs text-slate-400">
-            All caught up
-          </div>
-        </div>
-
-        {/* Grace Ending Soon */}
-        <div className="bg-[#131c31] border border-[#1e293b] rounded-2xl p-5 flex flex-col justify-between min-h-[130px]">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-amber-400 font-semibold text-xs">
-              <AlertTriangle className="w-4 h-4" />
-              <span>Grace Ending Soon</span>
-            </div>
-            <button 
-              onClick={() => onNavigate('fees')}
-              className="text-xs text-slate-400 hover:text-white transition-colors"
-            >
-              View all →
-            </button>
-          </div>
-          <div className="text-center py-4 text-xs text-slate-400">
-            No grace endings soon
-          </div>
-        </div>
-
-        {/* Overdue Fees */}
-        <div className="bg-[#131c31] border border-[#1e293b] rounded-2xl p-5 flex flex-col justify-between min-h-[130px]">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-red-400 font-semibold text-xs">
-              <AlertCircle className="w-4 h-4" />
-              <span>Overdue Fees</span>
-            </div>
-            <button 
-              onClick={() => onNavigate('fees')}
-              className="text-xs text-slate-400 hover:text-white transition-colors"
-            >
-              View all →
-            </button>
-          </div>
-          <div className="text-center py-4 text-xs text-slate-400">
-            No overdue fees
-          </div>
-        </div>
-      </div>
-
-      {/* ROW 4: Recent Activity Section */}
-      <div className="bg-[#131c31] border border-[#1e293b] rounded-2xl p-5">
-        <div className="flex items-center gap-2 mb-4 text-white font-semibold text-sm">
-          <Zap className="w-4 h-4 text-amber-400" />
-          <span>Recent Activity</span>
-        </div>
-
-        {/* Activity items matching Image 3 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {activities.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center justify-between p-3 rounded-xl bg-[#0f172a]/60 border border-[#1e293b] hover:border-[#2d3545] transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                  {item.action.includes('Seat') ? (
-                    <MapPin className="w-4 h-4" />
-                  ) : (
-                    <UserPlus className="w-4 h-4" />
-                  )}
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-white">
-                    {item.name}
-                  </div>
-                  <div className="text-[11px] text-slate-400">
-                    {item.action}
-                  </div>
-                </div>
-              </div>
-              <span className="text-[11px] text-slate-400 shrink-0">
-                {item.time}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Panel
+          title="Fee collection"
+          subtitle="Paid members against expected monthly fees"
+        >
+          <div className="mt-auto space-y-3">
+            <div className="flex flex-wrap items-end justify-between gap-2">
+              <span className="text-3xl font-bold tracking-tight text-white tabular-nums">
+                {collectionRate}%
+              </span>
+              <span className="text-xs text-slate-400">
+                {formatCurrency(collected)} / {formatCurrency(expected)}
               </span>
             </div>
-          ))}
-        </div>
+            <div className="h-2 overflow-hidden rounded-full bg-line">
+              <div
+                className="h-full rounded-full bg-brand transition-all"
+                style={{ width: `${collectionRate}%` }}
+              />
+            </div>
+            <p className="text-xs text-slate-400">
+              {members.length === 0
+                ? "No members yet — add a member to start tracking fees."
+                : `${paidMembers.length} of ${members.length} members have paid.`}
+            </p>
+          </div>
+        </Panel>
+
+        <Panel
+          title="Collected vs expenses"
+          subtitle="Fees collected compared with recorded spending"
+        >
+          <div className="mt-auto space-y-4">
+            <div>
+              <div className="mb-1.5 flex items-center justify-between text-xs">
+                <span className="flex items-center gap-1.5 text-slate-300">
+                  <span className="h-2 w-2 rounded-full bg-brand" />
+                  Collected
+                </span>
+                <span className="font-semibold text-white tabular-nums">
+                  {formatCurrency(collected)}
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-line">
+                <div
+                  className="h-full rounded-full bg-brand"
+                  style={{ width: `${collectedWidth}%` }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-1.5 flex items-center justify-between text-xs">
+                <span className="flex items-center gap-1.5 text-slate-300">
+                  <span className="h-2 w-2 rounded-full bg-slate-600" />
+                  Expenses
+                </span>
+                <span className="font-semibold text-white tabular-nums">
+                  {formatCurrency(totalExpenses)}
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-line">
+                <div
+                  className="h-full rounded-full bg-slate-600"
+                  style={{ width: `${expensesWidth}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between border-t border-line pt-3 text-sm">
+              <span className="flex items-center gap-1.5 text-slate-300">
+                <TrendingUp className="h-4 w-4 text-brand" />
+                Net
+              </span>
+              <span
+                className={`font-bold tabular-nums ${
+                  net >= 0 ? "text-emerald-400" : "text-red-400"
+                }`}
+              >
+                {formatCurrency(net)}
+              </span>
+            </div>
+          </div>
+        </Panel>
       </div>
 
-      {/* Brand Footer matching Image 3 */}
-      <footer className="pt-6 pb-2 text-center text-xs text-slate-400">
-        © 2026 LibraHQ • LibVertex • Made for modern study libraries
-      </footer>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Panel
+          title="Recent members"
+          subtitle="Most recently added records"
+          action={
+            <button
+              onClick={() => navigate("/members")}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-400 transition-colors hover:text-brand"
+            >
+              View all
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          }
+        >
+          {recentMembers.length === 0 ? (
+            <EmptyNote>No members yet.</EmptyNote>
+          ) : (
+            <div className="space-y-2">
+              {recentMembers.map((member) => (
+                <div
+                  key={member.id}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-line bg-inset/60 p-3"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-brand/30 bg-brand/20 text-xs font-bold text-brand">
+                      {initials(member.name)}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="truncate text-xs font-semibold text-white">
+                        {member.name}
+                      </div>
+                      <div className="truncate text-[11px] text-slate-400">
+                        {member.email}
+                      </div>
+                    </div>
+                  </div>
+                  <span
+                    className={`badge shrink-0 ${
+                      member.status === "paid"
+                        ? "border border-emerald-800/60 bg-emerald-950/70 text-emerald-400"
+                        : "border border-red-800/60 bg-red-950/70 text-red-400"
+                    }`}
+                  >
+                    {member.status === "paid" ? "Paid" : "Unpaid"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Panel>
+
+        <Panel
+          title="Recent expenses"
+          subtitle="Latest spending recorded"
+          action={
+            <button
+              onClick={() => navigate("/expenses")}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-400 transition-colors hover:text-brand"
+            >
+              View all
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          }
+        >
+          {recentExpenses.length === 0 ? (
+            <EmptyNote>No expenses recorded yet.</EmptyNote>
+          ) : (
+            <div className="space-y-2">
+              {recentExpenses.map((expense) => (
+                <div
+                  key={expense.id}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-line bg-inset/60 p-3"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-raised text-slate-400">
+                      <Receipt className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="truncate text-xs font-semibold text-white">
+                        {expense.title}
+                      </div>
+                      <div className="truncate text-[11px] text-slate-400">
+                        {expense.category} • {formatDate(expense.date)}
+                      </div>
+                    </div>
+                  </div>
+                  <span className="shrink-0 text-xs font-bold text-white tabular-nums">
+                    {formatCurrency(expense.amount)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Panel>
+      </div>
+
+      {members.length > 0 && outstanding === 0 && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-xs font-semibold text-emerald-400">
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          All member fees are fully collected.
+        </div>
+      )}
     </div>
   );
 };

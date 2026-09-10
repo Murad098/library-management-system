@@ -1,7 +1,7 @@
-import axios from 'axios';
+import api from "./api";
 
-const membersApi = axios.create({ baseURL: 'https://library-management-system-pink-eight.vercel.app/api/members' });
+export const getMembers = () => api.get("/members");
 
-export const getMembers = () => membersApi.get('/');
-export const addMember = (member) => membersApi.post('/add', member);
-export const deleteMember = (id) => membersApi.delete(`/${id}`);
+export const addMember = (member) => api.post("/members/add", member);
+
+export const deleteMember = (id) => api.delete(`/members/${id}`);

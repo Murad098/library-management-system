@@ -1,315 +1,299 @@
-import React, { useState } from 'react';
-import { 
-  Search, 
-  UserPlus, 
-  X,
-  MoreVertical
-} from 'lucide-react';
-const StudentsScreen = ({
-  selectedBranch = null,
-  students = [],
-  onAddStudent = () => {},
-}) => {
-  const [search, setSearch] = useState('');
-  const [filterShift, setFilterShift] = useState('All');
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Phone, Search, Trash2, UserPlus, Users } from "lucide-react";
 
-  // New Student Form State
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [seatNumber, setSeatNumber] = useState('D-03');
-  const [hall, setHall] = useState('Hall A (Quiet Zone)');
-  const [shift, setShift] = useState('Full Day');
-  const [monthlyFee, setMonthlyFee] = useState('1200');
+import { getErrorMessage } from "../services/api";
+import { formatCurrency, formatDate, initials } from "../utils/format";
 
-  const filtered = students.filter((s) => {
-    if (filterShift !== 'All' && !s.shift.includes(filterShift)) return false;
-    if (search) {
-      const q = search.toLowerCase();
+const STATUS_FILTERS = ["All", "Paid", "Unpaid"];
+
+const StatusBadge = ({ isPaid }) => (
+  <span
+    className={`badge ${
+      isPaid
+        ? "border border-emerald-800/60 bg-emerald-950/70 text-emerald-400"
+        : "border border-red-800/60 bg-red-950/70 text-red-400"
+    }`}
+  >
+    <span
+      className={`h-1.5 w-1.5 rounded-full ${isPaid ? "bg-emerald-400" : "bg-red-400"}`}
+    />
+    {isPaid ? "Paid" : "Unpaid"}
+  </span>
+);
+
+const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
+  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [deletingId, setDeletingId] = useState(null);
+  const [error, setError] = useState("");
+
+  const filtered = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return members.filter((member) => {
+      if (statusFilter !== "All" && member.status !== statusFilter.toLowerCase()) {
+        return false;
+      }
+
+      if (!query) return true;
+
       return (
-        s.name.toLowerCase().includes(q) ||
-        s.email.toLowerCase().includes(q) ||
-        s.seatNumber.toLowerCase().includes(q) ||
-        s.phone.includes(q)
+        member.name.toLowerCase().includes(query) ||
+        member.email.toLowerCase().includes(query) ||
+        member.phone.toLowerCase().includes(query)
       );
+    });
+  }, [members, search, statusFilter]);
+
+  const handleDelete = async (member) => {
+    const confirmed = window.confirm(
+      `Delete member "${member.name}"? This cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    setDeletingId(member.id);
+    setError("");
+
+    try {
+      await onDeleteMember(member.id);
+    } catch (err) {
+      setError(getErrorMessage(err, "Unable to delete member."));
+    } finally {
+      setDeletingId(null);
     }
-    return true;
-  });
-
-  const handleCreateStudent = (e) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-
-    const newStudent = {
-      id: `stu-${Date.now()}`,
-      name: name.trim(),
-      email: email.trim() || `${name.toLowerCase().replace(/\s+/g, '.')}@example.com`,
-      phone: phone.trim() || '+92 300 0000000',
-      seatNumber,
-      hall,
-      shift,
-      admissionDate: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-      feeStatus: 'Paid',
-      monthlyFee: Number(monthlyFee) || 1200,
-    };
-
-    onAddStudent(newStudent);
-    setIsAddModalOpen(false);
-    setName('');
-    setEmail('');
-    setPhone('');
   };
 
+  const paidCount = members.filter((member) => member.status === "paid").length;
+
   return (
-    <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-300">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span className="text-[11px] font-bold uppercase tracking-widest text-amber-400 block mb-1">
-            WORKSPACE • MEMBER DIRECTORY
-          </span>
-          <h1 className="text-3xl font-bold tracking-tight text-white">
-            Students Roster
+    <div className="mx-auto w-full max-w-7xl space-y-6">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="min-w-0">
+          <span className="eyebrow-tag">Member directory</span>
+          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            Members
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Registered study library members and assigned desks{selectedBranch?.name ? ` at ${selectedBranch.name}` : ''}.
+          <p className="mt-1 text-sm text-slate-400">
+            {members.length} registered • {paidCount} paid •{" "}
+            {members.length - paidCount} unpaid
           </p>
         </div>
 
         <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-bold text-sm flex items-center gap-2 shadow-lg shadow-amber-500/20 transition-all self-start sm:self-auto cursor-pointer"
+          onClick={() => navigate("/add")}
+          className="btn-primary w-full sm:w-auto"
         >
-          <UserPlus className="w-4 h-4 stroke-[2.5]" />
-          <span>Register New Student</span>
+          <UserPlus className="h-4 w-4" />
+          Add member
         </button>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-[#131c31] border border-[#1e293b] rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+      <div className="card flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+        <div className="relative w-full sm:max-w-xs">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
-            type="text"
-            placeholder="Search by student name, seat #, or phone..."
+            type="search"
+            placeholder="Search name, email or phone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-9 pr-3 rounded-lg bg-[#10141d] border border-[#2d3545] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+            aria-label="Search members"
+            className="input h-11 pl-9"
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <span className="text-xs text-slate-400">Shift:</span>
-          <select
-            value={filterShift}
-            onChange={(e) => setFilterShift(e.target.value)}
-            className="h-10 px-3 rounded-lg bg-[#10141d] border border-[#2d3545] text-xs text-white focus:outline-none focus:border-amber-400"
-          >
-            <option value="All">All Shifts</option>
-            <option value="Full Day">Full Day</option>
-            <option value="Morning">Morning</option>
-            <option value="Evening">Evening</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Students Table */}
-      <div className="bg-[#131c31] border border-[#1e293b] rounded-2xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-[#1e293b] text-[11px] font-bold uppercase tracking-wider text-slate-400 bg-[#0f172a]/50">
-                <th className="py-3.5 px-5">Student Name</th>
-                <th className="py-3.5 px-4">Seat #</th>
-                <th className="py-3.5 px-4">Hall & Shift</th>
-                <th className="py-3.5 px-4">Admission Date</th>
-                <th className="py-3.5 px-4">Fee Status</th>
-                <th className="py-3.5 px-5 text-right">Monthly Fee</th>
-                <th className="py-3.5 px-4 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#1e293b]/60 text-sm">
-              {filtered.map((s) => (
-                <tr key={s.id} className="hover:bg-[#18223c]/50 transition-colors">
-                  <td className="py-4 px-5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 font-bold text-xs flex items-center justify-center shrink-0">
-                        {s.name.split(' ').map((n) => n[0]).join('')}
-                      </div>
-                      <div>
-                        <div className="font-semibold text-white">{s.name}</div>
-                        <div className="text-xs text-slate-400 mt-0.5">{s.email}</div>
-                      </div>
-                    </div>
-                  </td>
-
-                  <td className="py-4 px-4 whitespace-nowrap">
-                    <span className="px-2.5 py-1 text-xs font-bold rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300">
-                      {s.seatNumber}
-                    </span>
-                  </td>
-
-                  <td className="py-4 px-4">
-                    <div className="text-xs font-medium text-slate-200">{s.hall}</div>
-                    <div className="text-[11px] text-slate-400">{s.shift}</div>
-                  </td>
-
-                  <td className="py-4 px-4 text-xs text-slate-300 whitespace-nowrap">
-                    {s.admissionDate}
-                  </td>
-
-                  <td className="py-4 px-4 whitespace-nowrap">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-md bg-emerald-950/70 border border-emerald-800/60 text-emerald-400">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                      {s.feeStatus}
-                    </span>
-                  </td>
-
-                  <td className="py-4 px-5 text-right font-bold text-white tabular-nums">
-                    PKR {s.monthlyFee.toLocaleString('en-PK')}
-                  </td>
-
-                  <td className="py-4 px-4 text-center whitespace-nowrap">
-                    <button className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#1e293b] transition-colors">
-                      <MoreVertical className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Registration Modal */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in">
-          <div className="bg-[#161b22] border border-[#2d3545] rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+        <div className="flex w-full rounded-lg border border-line-strong bg-raised p-1 sm:w-auto">
+          {STATUS_FILTERS.map((filter) => (
             <button
-              onClick={() => setIsAddModalOpen(false)}
-              className="absolute top-5 right-5 p-1 rounded-lg text-slate-400 hover:text-white hover:bg-[#1e293b]"
+              key={filter}
+              type="button"
+              onClick={() => setStatusFilter(filter)}
+              aria-pressed={statusFilter === filter}
+              className={`h-9 flex-1 rounded-md px-3 text-xs font-medium transition-colors sm:flex-none ${
+                statusFilter === filter
+                  ? "bg-brand font-bold text-slate-950"
+                  : "text-slate-400 hover:text-white"
+              }`}
             >
-              <X className="w-5 h-5" />
+              {filter}
             </button>
+          ))}
+        </div>
+      </div>
 
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center">
-                <UserPlus className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">Enroll New Student</h3>
-                <p className="text-xs text-slate-400">Issue study membership card and allocate seat.</p>
-              </div>
-            </div>
-
-            <form onSubmit={handleCreateStudent} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Student Full Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Ahmed Khan"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full h-10 px-3.5 rounded-lg bg-[#10141d] border border-[#2d3545] text-xs text-white focus:outline-none focus:border-amber-400"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
-                  <input
-                    type="email"
-                    placeholder="student@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-lg bg-[#10141d] border border-[#2d3545] text-xs text-white focus:outline-none focus:border-amber-400"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Phone Number</label>
-                  <input
-                    type="tel"
-                    placeholder="+92 300 1234567"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-lg bg-[#10141d] border border-[#2d3545] text-xs text-white focus:outline-none focus:border-amber-400"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Allocated Seat</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="D-03"
-                    value={seatNumber}
-                    onChange={(e) => setSeatNumber(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-lg bg-[#10141d] border border-[#2d3545] text-xs text-white focus:outline-none focus:border-amber-400"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Hall</label>
-                  <select
-                    value={hall}
-                    onChange={(e) => setHall(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-lg bg-[#10141d] border border-[#2d3545] text-xs text-white focus:outline-none focus:border-amber-400"
-                  >
-                    <option value="Hall A (Quiet Zone)">Hall A (Quiet Zone)</option>
-                    <option value="Hall B (Discussion Room)">Hall B (Discussion Room)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Shift</label>
-                  <select
-                    value={shift}
-                    onChange={(e) => setShift(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-lg bg-[#10141d] border border-[#2d3545] text-xs text-white focus:outline-none focus:border-amber-400"
-                  >
-                    <option value="Full Day">Full Day (6am - 10pm)</option>
-                    <option value="Morning (6am - 2pm)">Morning (6am - 2pm)</option>
-                    <option value="Evening (2pm - 10pm)">Evening (2pm - 10pm)</option>
-                    <option value="Night Owl">Night Owl (10pm - 6am)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Monthly Fee (PKR)</label>
-                  <input
-                    type="number"
-                    value={monthlyFee}
-                    onChange={(e) => setMonthlyFee(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-lg bg-[#10141d] border border-[#2d3545] text-xs text-white focus:outline-none focus:border-amber-400"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-3">
-                <button
-                  type="submit"
-                  className="flex-1 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition-colors"
-                >
-                  Complete Enrollment
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsAddModalOpen(false)}
-                  className="flex-1 py-2.5 rounded-lg bg-[#1e293b] text-slate-300 hover:text-white font-semibold text-xs"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
+      {error && (
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {error}
         </div>
       )}
+
+      <div className="card overflow-hidden">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center gap-3 py-20 text-slate-400">
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-brand/25 border-t-brand" />
+            <p className="text-sm">Loading members...</p>
+          </div>
+        ) : members.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-3 px-6 py-20 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-line-strong bg-raised text-slate-400">
+              <Users className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">No members yet</p>
+              <p className="mt-1 text-xs text-slate-400">
+                Add your first member to start tracking fees.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/add")}
+              className="btn-primary mt-1"
+            >
+              <UserPlus className="h-4 w-4" />
+              Add member
+            </button>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="px-6 py-16 text-center text-sm text-slate-400">
+            No members match the current search or filter.
+          </div>
+        ) : (
+          <>
+            {/* Mobile: card list */}
+            <ul className="divide-y divide-line/60 md:hidden">
+              {filtered.map((member) => {
+                const isPaid = member.status === "paid";
+
+                return (
+                  <li key={member.id} className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-brand/30 bg-brand/20 text-xs font-bold text-brand">
+                        {initials(member.name)}
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-white">
+                              {member.name}
+                            </p>
+                            <p className="truncate text-xs text-slate-400">
+                              {member.email}
+                            </p>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(member)}
+                            disabled={deletingId === member.id}
+                            aria-label={`Delete ${member.name}`}
+                            className="-mr-2 -mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+
+                        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+                          <StatusBadge isPaid={isPaid} />
+                          <span className="inline-flex min-w-0 items-center gap-1.5 text-xs text-slate-400">
+                            <Phone className="h-3.5 w-3.5 shrink-0" />
+                            <span className="truncate">{member.phone || "—"}</span>
+                          </span>
+                        </div>
+
+                        <div className="mt-3 flex items-center justify-between gap-3 border-t border-line pt-3">
+                          <span className="text-xs text-slate-400">
+                            Joined {formatDate(member.createdAt)}
+                          </span>
+                          <span className="shrink-0 text-sm font-bold text-white tabular-nums">
+                            {formatCurrency(member.fee)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+
+            {/* Tablet and up: table */}
+            <div className="hidden w-full overflow-x-auto md:block">
+              <table className="w-full min-w-[660px] border-collapse text-left">
+                <thead>
+                  <tr className="border-b border-line bg-inset/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <th className="px-5 py-3.5">Member</th>
+                    <th className="px-4 py-3.5">Phone</th>
+                    <th className="px-4 py-3.5">Status</th>
+                    <th className="px-4 py-3.5">Joined</th>
+                    <th className="px-5 py-3.5 text-right">Monthly fee</th>
+                    <th className="px-4 py-3.5 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line/60 text-sm">
+                  {filtered.map((member) => {
+                    const isPaid = member.status === "paid";
+
+                    return (
+                      <tr
+                        key={member.id}
+                        className="transition-colors hover:bg-raised/40"
+                      >
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-brand/30 bg-brand/20 text-xs font-bold text-brand">
+                              {initials(member.name)}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="truncate font-semibold text-white">
+                                {member.name}
+                              </div>
+                              <div className="truncate text-xs text-slate-400">
+                                {member.email}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-4 text-xs text-slate-300">
+                          {member.phone || "—"}
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-4">
+                          <StatusBadge isPaid={isPaid} />
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-4 text-xs text-slate-300">
+                          {formatDate(member.createdAt)}
+                        </td>
+
+                        <td className="whitespace-nowrap px-5 py-4 text-right font-bold text-white tabular-nums">
+                          {formatCurrency(member.fee)}
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-4 text-center">
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(member)}
+                            disabled={deletingId === member.id}
+                            aria-label={`Delete ${member.name}`}
+                            title="Delete member"
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
 
-export default StudentsScreen;
+export default MembersScreen;
