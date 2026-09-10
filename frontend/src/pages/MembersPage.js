@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import { 
-  Users, 
   Search, 
   UserPlus, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  CheckCircle2, 
-  Clock, 
-  Filter, 
   X,
   MoreVertical
 } from 'lucide-react';

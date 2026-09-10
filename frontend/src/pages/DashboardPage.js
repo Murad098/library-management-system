@@ -4,16 +4,13 @@ import {
   TrendingUp, 
   Users, 
   Clock, 
-  IndianRupee, 
   DollarSign, 
   UserCheck, 
   AlertTriangle, 
   AlertCircle, 
   Zap, 
   MapPin, 
-  UserPlus, 
-  ArrowUpRight, 
-  Radio
+  UserPlus
 } from 'lucide-react';
 const DashboardScreen = ({
   selectedBranch = null,
