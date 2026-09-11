@@ -8,6 +8,7 @@ const cors = require("cors");
 const memberRoutes = require("./routes/memberRoutes");
 const authRoutes = require("./routes/auth");
 const expenseRoutes = require("./routes/expenseRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 const requireAuth = require("./middleware/auth");
 
 const app = express();
@@ -51,6 +52,7 @@ app.use(async (req, res, next) => {
 app.use("/api/members", requireAuth, memberRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/expenses", requireAuth, expenseRoutes);
+app.use("/api/notifications", requireAuth, notificationRoutes);
 
 // Test route
 app.get("/", (req, res) => {

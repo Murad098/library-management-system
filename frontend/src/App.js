@@ -7,7 +7,7 @@ import {
   Link,
   useLocation,
 } from "react-router-dom";
-import { AlertCircle, LogOut, Menu, User } from "lucide-react";
+import { AlertCircle, Bell, LogOut, Menu, User } from "lucide-react";
 
 // Pages
 import LoginPage from "./pages/LoginPage";
@@ -16,6 +16,7 @@ import AddMemberPage from "./pages/AddMemberPage";
 import MembersPage from "./pages/MembersPage";
 import Expenses from "./pages/Expenses";
 import ProfilePage from "./pages/ProfilePage";
+import NotificationsPage from "./pages/NotificationsPage";
 
 // Components
 import Sidebar from "./components/Sidebar";
@@ -28,6 +29,13 @@ import Backdrop from "./components/Backdrop";
 import { clearTokens, getErrorMessage, readToken, UNAUTHORIZED_EVENT } from "./services/api";
 import { getMembers, addMember, deleteMember } from "./services/memberService";
 import { getExpenses, addExpense, deleteExpense } from "./services/expenseService";
+import {
+  addNotification,
+  deleteNotification,
+  getNotifications,
+  markAllNotificationsRead,
+  markNotificationRead,
+} from "./services/notificationService";
 
 const normalizeMember = (member) => ({
   id: member._id || member.id,
@@ -52,12 +60,16 @@ const TITLES = {
   "/members": "Members",
   "/add": "Add member",
   "/expenses": "Expenses",
+  "/notifications": "Notifications",
   "/profile": "Profile",
 };
 
 function AppShell({ onLogout }) {
   const [members, setMembers] = useState([]);
   const [expenses, setExpenses] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationsLoading, setNotificationsLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [navOpen, setNavOpen] = useState(false);
@@ -105,6 +117,23 @@ function AppShell({ onLogout }) {
     loadData();
   }, [loadData]);
 
+  const loadNotifications = useCallback(async () => {
+    setNotificationsLoading(true);
+
+    try {
+      const response = await getNotifications();
+
+      setNotifications(response.data.notifications || []);
+      setUnreadCount(response.data.unread || 0);
+    } finally {
+      setNotificationsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadNotifications().catch(() => {});
+  }, [loadNotifications]);
+
   const handleAddMember = async (member) => {
     const response = await addMember(member);
     const created = normalizeMember(response.data);
@@ -131,6 +160,26 @@ function AppShell({ onLogout }) {
   const handleDeleteExpense = async (id) => {
     await deleteExpense(id);
     setExpenses((current) => current.filter((expense) => expense.id !== id));
+  };
+
+  const handleAddNotification = async (notification) => {
+    await addNotification(notification);
+    await loadNotifications();
+  };
+
+  const handleToggleNotificationRead = async (id, read) => {
+    await markNotificationRead(id, read);
+    await loadNotifications();
+  };
+
+  const handleMarkAllNotificationsRead = async () => {
+    await markAllNotificationsRead();
+    await loadNotifications();
+  };
+
+  const handleDeleteNotification = async (id) => {
+    await deleteNotification(id);
+    await loadNotifications();
   };
 
   const title = TITLES[location.pathname] || "Dashboard";
@@ -172,6 +221,23 @@ function AppShell({ onLogout }) {
               <span className="online-dot" />
               System online
             </span>
+
+            <Link
+              to="/notifications"
+              className="icon-button relative"
+              aria-label={
+                unreadCount > 0
+                  ? `Notifications, ${unreadCount} unread`
+                  : "Notifications"
+              }
+            >
+              <Bell size={18} />
+              {unreadCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand px-1 text-[10px] font-bold text-slate-950">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </Link>
 
             <Link
               to="/profile"
@@ -245,8 +311,25 @@ function AppShell({ onLogout }) {
               }
             />
             <Route
+              path="/notifications"
+              element={
+                <NotificationsPage
+                  notifications={notifications}
+                  unreadCount={unreadCount}
+                  loading={notificationsLoading}
+                  onRefresh={loadNotifications}
+                  onAdd={handleAddNotification}
+                  onToggleRead={handleToggleNotificationRead}
+                  onMarkAllRead={handleMarkAllNotificationsRead}
+                  onDelete={handleDeleteNotification}
+                />
+              }
+            />
+            <Route
               path="/profile"
-              element={<ProfilePage onLogout={onLogout} />}
+              element={
+                <ProfilePage onLogout={onLogout} unreadCount={unreadCount} />
+              }
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import {
+  Bell,
   LayoutDashboard,
   LogOut,
   Plus,
@@ -17,6 +18,7 @@ const LINKS = [
   ["/members", "Members", Users],
   ["/add", "Add member", Plus],
   ["/expenses", "Expenses", Receipt],
+  ["/notifications", "Notifications", Bell],
   ["/profile", "Profile", User],
 ];
 

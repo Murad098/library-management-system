@@ -1,4 +1,12 @@
-import { LayoutDashboard, LogOut, Plus, Receipt, User, Users } from "lucide-react";
+import {
+  Bell,
+  LayoutDashboard,
+  LogOut,
+  Plus,
+  Receipt,
+  User,
+  Users,
+} from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 import BrandMark from "./BrandMark";
@@ -8,6 +16,7 @@ const LINKS = [
   ["/members", "Members", Users],
   ["/add", "Add member", Plus],
   ["/expenses", "Expenses", Receipt],
+  ["/notifications", "Notifications", Bell],
   ["/profile", "Profile", User],
 ];
 

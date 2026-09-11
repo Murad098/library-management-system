@@ -56,8 +56,8 @@ a {
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  filter: blur(9px);
-  opacity: 0.6;
+  filter: blur(1.5px);
+  opacity: 1;
   transform: scale(1.04);
 }
 
@@ -66,13 +66,13 @@ a {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 82% 12%, rgba(245, 158, 11, 0.2) 0%, transparent 44%),
-    radial-gradient(circle at 8% 92%, rgba(245, 158, 11, 0.08) 0%, transparent 46%),
+    radial-gradient(circle at 82% 12%, rgba(245, 158, 11, 0.16) 0%, transparent 44%),
+    radial-gradient(circle at 8% 92%, rgba(245, 158, 11, 0.07) 0%, transparent 46%),
     linear-gradient(
       180deg,
-      rgba(5, 8, 15, 0.72) 0%,
-      rgba(6, 9, 16, 0.9) 48%,
-      rgba(6, 9, 16, 0.96) 100%
+      rgba(5, 8, 15, 0.38) 0%,
+      rgba(6, 9, 16, 0.5) 48%,
+      rgba(6, 9, 16, 0.66) 100%
     );
 }
 
