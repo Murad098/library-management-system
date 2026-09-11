@@ -1,62 +1,26 @@
-import { useEffect } from "react";
-import {
-  BookOpen,
-  LayoutDashboard,
-  LogOut,
-  Plus,
-  Receipt,
-  Users,
-  X,
-} from "lucide-react";
+import { LayoutDashboard, LogOut, Plus, Receipt, User, Users } from "lucide-react";
 import { NavLink } from "react-router-dom";
+
+import BrandMark from "./BrandMark";
 
 const LINKS = [
   ["/", "Dashboard", LayoutDashboard],
   ["/members", "Members", Users],
   ["/add", "Add member", Plus],
   ["/expenses", "Expenses", Receipt],
+  ["/profile", "Profile", User],
 ];
 
-function Sidebar({ onLogout, menuOpen, closeMenu }) {
-  useEffect(() => {
-    if (!menuOpen) return undefined;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") closeMenu();
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [menuOpen, closeMenu]);
-
+function Sidebar({ onLogout }) {
   return (
-    <aside id="app-sidebar" className={`sidebar ${menuOpen ? "sidebar-open" : ""}`}>
+    <aside className="sidebar">
       <div className="brand-row">
         <div className="brand">
-          <span className="brand-mark">
-            <BookOpen size={19} />
-          </span>
-
-          <span>
-            Libra<strong>HQ</strong>
+          <BrandMark size={36} />
+          <span className="brand-word">
+            Libre<strong>Desk</strong>
           </span>
         </div>
-
-        <button
-          type="button"
-          className="icon-button close-sidebar"
-          onClick={closeMenu}
-          aria-label="Close navigation"
-        >
-          <X size={19} />
-        </button>
       </div>
 
       <p className="nav-label">Workspace</p>
@@ -67,7 +31,6 @@ function Sidebar({ onLogout, menuOpen, closeMenu }) {
             key={to}
             to={to}
             end={to === "/"}
-            onClick={closeMenu}
             className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
           >
             <Icon size={18} />

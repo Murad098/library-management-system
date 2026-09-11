@@ -15,28 +15,31 @@ import { formatCurrency, formatDate, formatMonthYear, initials } from "../utils/
 
 const StatCard = ({ label, value, hint, icon: Icon, tone = "default" }) => {
   const tones = {
-    default: "text-slate-400 bg-raised border-line-strong",
-    brand: "text-brand bg-brand/10 border-brand/20",
-    green: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-    red: "text-red-400 bg-red-500/10 border-red-500/20",
+    default: "text-slate-300 bg-raised border-line-strong",
+    brand: "text-brand bg-brand/10 border-brand/25",
+    green: "text-emerald-400 bg-emerald-500/10 border-emerald-500/25",
+    red: "text-red-400 bg-red-500/10 border-red-500/25",
   };
 
   return (
-    <div className="card p-4 sm:flex sm:items-center sm:justify-between sm:gap-4 sm:p-5">
-      <div
-        className={`mb-3 flex h-9 w-9 items-center justify-center rounded-xl border sm:order-2 sm:mb-0 sm:h-10 sm:w-10 sm:shrink-0 ${tones[tone]}`}
-      >
-        <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
-      </div>
-      <div className="min-w-0 sm:order-1">
-        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+    <div className="card relative flex flex-col gap-1.5 p-3.5 pr-12 sm:flex-row sm:items-start sm:justify-between sm:gap-3 sm:p-5 sm:pr-5">
+      <div className="min-w-0">
+        <div className="text-[10px] font-bold uppercase leading-tight tracking-[0.14em] text-slate-400">
           {label}
         </div>
-        <div className="mt-1 truncate text-lg font-bold text-white tabular-nums sm:text-2xl">
+        <div className="mt-1 break-words font-display text-base font-bold text-white tabular-nums sm:mt-1.5 sm:text-2xl">
           {value}
         </div>
-        <div className="mt-0.5 truncate text-xs text-slate-400">{hint}</div>
+        <div className="mt-0.5 break-words text-[11px] leading-tight text-slate-400 sm:mt-1 sm:text-xs">
+          {hint}
+        </div>
       </div>
+
+      <span
+        className={`absolute right-3.5 top-3.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border sm:static sm:h-10 sm:w-10 sm:rounded-xl ${tones[tone]}`}
+      >
+        <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+      </span>
     </div>
   );
 };
@@ -45,7 +48,7 @@ const Panel = ({ title, subtitle, action, children }) => (
   <div className="card flex flex-col p-4 sm:p-5">
     <div className="mb-4 flex items-start justify-between gap-4">
       <div className="min-w-0">
-        <h2 className="text-sm font-semibold text-white">{title}</h2>
+        <h2 className="font-display text-sm font-semibold text-white">{title}</h2>
         {subtitle && <p className="mt-0.5 text-xs text-slate-400">{subtitle}</p>}
       </div>
       {action}
@@ -55,7 +58,7 @@ const Panel = ({ title, subtitle, action, children }) => (
 );
 
 const EmptyNote = ({ children }) => (
-  <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-line py-8 text-center text-xs text-slate-400">
+  <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-line-strong px-4 py-8 text-center text-xs text-slate-400">
     {children}
   </div>
 );
@@ -90,15 +93,15 @@ const DashboardScreen = ({ members = [], expenses = [], loading = false }) => {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span className="eyebrow-tag">Library operations</span>
-          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+    <div className="mx-auto max-w-7xl space-y-5 sm:space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <span className="eyebrow-tag">Overview</span>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
             Dashboard
           </h1>
           <p className="mt-1 text-sm text-slate-400">
-            Overview for {formatMonthYear()}
+            Library performance for {formatMonthYear()}
           </p>
         </div>
         <button
@@ -110,7 +113,7 @@ const DashboardScreen = ({ members = [], expenses = [], loading = false }) => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 xs:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard
           label="Members"
           value={members.length}
@@ -148,7 +151,7 @@ const DashboardScreen = ({ members = [], expenses = [], loading = false }) => {
         >
           <div className="mt-auto space-y-3">
             <div className="flex flex-wrap items-end justify-between gap-2">
-              <span className="text-3xl font-bold tracking-tight text-white tabular-nums">
+              <span className="font-display text-3xl font-bold tracking-tight text-white tabular-nums">
                 {collectionRate}%
               </span>
               <span className="text-xs text-slate-400">
@@ -157,7 +160,7 @@ const DashboardScreen = ({ members = [], expenses = [], loading = false }) => {
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-line">
               <div
-                className="h-full rounded-full bg-brand transition-all"
+                className="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-300 transition-all"
                 style={{ width: `${collectionRate}%` }}
               />
             </div>
@@ -234,7 +237,7 @@ const DashboardScreen = ({ members = [], expenses = [], loading = false }) => {
           action={
             <button
               onClick={() => navigate("/members")}
-              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-400 transition-colors hover:text-brand"
+              className="inline-flex min-h-[44px] shrink-0 items-center gap-1 px-1 text-xs font-semibold text-slate-400 transition-colors hover:text-brand"
             >
               View all
               <ArrowRight className="h-3.5 w-3.5" />
@@ -251,7 +254,7 @@ const DashboardScreen = ({ members = [], expenses = [], loading = false }) => {
                   className="flex items-center justify-between gap-3 rounded-xl border border-line bg-inset/60 p-3"
                 >
                   <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-brand/30 bg-brand/20 text-xs font-bold text-brand">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-brand/30 bg-brand/15 text-xs font-bold text-brand">
                       {initials(member.name)}
                     </div>
                     <div className="min-w-0">
@@ -284,7 +287,7 @@ const DashboardScreen = ({ members = [], expenses = [], loading = false }) => {
           action={
             <button
               onClick={() => navigate("/expenses")}
-              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-400 transition-colors hover:text-brand"
+              className="inline-flex min-h-[44px] shrink-0 items-center gap-1 px-1 text-xs font-semibold text-slate-400 transition-colors hover:text-brand"
             >
               View all
               <ArrowRight className="h-3.5 w-3.5" />

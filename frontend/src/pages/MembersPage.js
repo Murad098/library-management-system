@@ -69,11 +69,11 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
   const paidCount = members.filter((member) => member.status === "paid").length;
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <div className="mx-auto w-full max-w-7xl space-y-5 sm:space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
           <span className="eyebrow-tag">Member directory</span>
-          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          <h1 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
             Members
           </h1>
           <p className="mt-1 text-sm text-slate-400">
@@ -93,27 +93,27 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
 
       <div className="card flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
         <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="search"
             placeholder="Search name, email or phone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-label="Search members"
-            className="input h-11 pl-9"
+            className="input h-11 pl-10"
           />
         </div>
 
-        <div className="flex w-full rounded-lg border border-line-strong bg-raised p-1 sm:w-auto">
+        <div className="flex w-full rounded-xl border border-line-strong bg-raised p-1 sm:w-auto">
           {STATUS_FILTERS.map((filter) => (
             <button
               key={filter}
               type="button"
               onClick={() => setStatusFilter(filter)}
               aria-pressed={statusFilter === filter}
-              className={`h-9 flex-1 rounded-md px-3 text-xs font-medium transition-colors sm:flex-none ${
+              className={`h-11 flex-1 rounded-lg px-3 text-xs font-semibold transition-colors lg:h-9 sm:flex-none ${
                 statusFilter === filter
-                  ? "bg-brand font-bold text-slate-950"
+                  ? "bg-brand text-slate-950"
                   : "text-slate-400 hover:text-white"
               }`}
             >
@@ -124,7 +124,7 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
       </div>
 
       {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
           {error}
         </div>
       )}
@@ -146,10 +146,7 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
                 Add your first member to start tracking fees.
               </p>
             </div>
-            <button
-              onClick={() => navigate("/add")}
-              className="btn-primary mt-1"
-            >
+            <button onClick={() => navigate("/add")} className="btn-primary mt-1">
               <UserPlus className="h-4 w-4" />
               Add member
             </button>
@@ -161,14 +158,14 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
         ) : (
           <>
             {/* Mobile: card list */}
-            <ul className="divide-y divide-line/60 md:hidden">
+            <ul className="divide-y divide-line/70 xl:hidden">
               {filtered.map((member) => {
                 const isPaid = member.status === "paid";
 
                 return (
                   <li key={member.id} className="p-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-brand/30 bg-brand/20 text-xs font-bold text-brand">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-brand/30 bg-brand/15 text-xs font-bold text-brand">
                         {initials(member.name)}
                       </div>
 
@@ -188,13 +185,13 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
                             onClick={() => handleDelete(member)}
                             disabled={deletingId === member.id}
                             aria-label={`Delete ${member.name}`}
-                            className="-mr-2 -mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                            className="-mr-2 -mt-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
 
-                        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+                        <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-2">
                           <StatusBadge isPaid={isPaid} />
                           <span className="inline-flex min-w-0 items-center gap-1.5 text-xs text-slate-400">
                             <Phone className="h-3.5 w-3.5 shrink-0" />
@@ -217,9 +214,9 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
               })}
             </ul>
 
-            {/* Tablet and up: table */}
-            <div className="hidden w-full overflow-x-auto md:block">
-              <table className="w-full min-w-[660px] border-collapse text-left">
+            {/* Wide screens: table */}
+            <div className="hidden w-full overflow-x-auto xl:block">
+              <table className="w-full min-w-[640px] border-collapse text-left">
                 <thead>
                   <tr className="border-b border-line bg-inset/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
                     <th className="px-5 py-3.5">Member</th>
@@ -230,7 +227,7 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
                     <th className="px-4 py-3.5 text-center">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-line/60 text-sm">
+                <tbody className="divide-y divide-line/70 text-sm">
                   {filtered.map((member) => {
                     const isPaid = member.status === "paid";
 
@@ -241,7 +238,7 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
                       >
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-brand/30 bg-brand/20 text-xs font-bold text-brand">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-brand/30 bg-brand/15 text-xs font-bold text-brand">
                               {initials(member.name)}
                             </div>
                             <div className="min-w-0">
@@ -278,7 +275,7 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
                             disabled={deletingId === member.id}
                             aria-label={`Delete ${member.name}`}
                             title="Delete member"
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>

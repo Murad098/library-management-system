@@ -12,6 +12,43 @@ export const clearTokens = () => {
   sessionStorage.removeItem(TOKEN_KEY);
 };
 
+const decodeJwtPayload = (token) => {
+  try {
+    const segment = token.split(".")[1];
+    if (!segment) return null;
+
+    const base64 = segment
+      .replace(/-/g, "+")
+      .replace(/_/g, "/")
+      .padEnd(Math.ceil(segment.length / 4) * 4, "=");
+
+    const binary = atob(base64);
+    const json = decodeURIComponent(
+      Array.from(binary, (char) =>
+        `%${char.charCodeAt(0).toString(16).padStart(2, "0")}`
+      ).join("")
+    );
+
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+};
+
+export const readSessionUser = () => {
+  const token = readToken();
+  const payload = token ? decodeJwtPayload(token) : null;
+  const email = typeof payload?.email === "string" ? payload.email : "";
+  const handle = email.split("@")[0] || "";
+
+  return {
+    email,
+    name: handle ? handle.charAt(0).toUpperCase() + handle.slice(1) : "Administrator",
+    role: "Administrator",
+    expiresAt: payload?.exp ? new Date(payload.exp * 1000) : null,
+  };
+};
+
 export const getErrorMessage = (error, fallback = "Something went wrong.") =>
   error?.response?.data?.message ||
   error?.response?.data?.error ||

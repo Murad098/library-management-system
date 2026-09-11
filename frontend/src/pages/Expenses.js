@@ -147,11 +147,11 @@ const ExpensesScreen = ({
   };
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-6">
+    <div className="mx-auto w-full max-w-7xl space-y-5 sm:space-y-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div className="min-w-0">
           <span className="eyebrow-tag">Library operations</span>
-          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          <h1 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
             Expenses
           </h1>
           <p className="mt-1 text-sm text-slate-400">
@@ -161,17 +161,17 @@ const ExpensesScreen = ({
 
         <div className="card flex w-full items-center justify-between gap-4 p-4 lg:w-auto lg:min-w-[260px]">
           <div className="min-w-0">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
               {formatMonthYear()}
             </div>
-            <div className="mt-1 truncate text-2xl font-bold text-white tabular-nums">
+            <div className="mt-1 truncate font-display text-2xl font-bold text-white tabular-nums">
               {formatCurrency(totalThisMonth)}
             </div>
             <div className="mt-0.5 truncate text-xs text-slate-400">
               {formatCurrency(totalAll)} recorded in total
             </div>
           </div>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-brand">
             <TrendingUp className="h-5 w-5" />
           </div>
         </div>
@@ -179,7 +179,7 @@ const ExpensesScreen = ({
 
       {(error || success) && (
         <div
-          className={`flex items-start gap-2 rounded-xl border px-4 py-3 text-sm ${
+          className={`flex items-start gap-2 rounded-2xl border px-4 py-3 text-sm ${
             error
               ? "border-red-500/30 bg-red-500/10 text-red-300"
               : "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
@@ -200,7 +200,9 @@ const ExpensesScreen = ({
             <FileText className="h-4 w-4" />
           </div>
           <div className="min-w-0">
-            <h2 className="text-sm font-bold text-white">Log an expense</h2>
+            <h2 className="font-display text-sm font-bold text-white">
+              Log an expense
+            </h2>
             <p className="text-xs text-slate-400">
               Record a new library expense into the ledger.
             </p>
@@ -208,7 +210,7 @@ const ExpensesScreen = ({
         </div>
 
         <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-12">
-          <div className="lg:col-span-4">
+          <div className="sm:col-span-2 lg:col-span-4">
             <label className="field-label" htmlFor="expense-title">
               Expense title
             </label>
@@ -277,10 +279,10 @@ const ExpensesScreen = ({
             </select>
           </div>
 
-          <div className="lg:col-span-2">
+          <div className="sm:col-span-2 lg:col-span-2">
             <button type="submit" disabled={submitting} className="btn-primary w-full">
               <Plus className="h-4 w-4" />
-              {submitting ? "Recording..." : "Record"}
+              {submitting ? "Recording..." : "Record expense"}
             </button>
           </div>
         </div>
@@ -291,7 +293,7 @@ const ExpensesScreen = ({
           <div className="min-w-0">
             <span className="eyebrow-tag">Ledger</span>
             <div className="flex flex-wrap items-center gap-3">
-              <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+              <h2 className="font-display text-xl font-bold tracking-tight text-white sm:text-2xl">
                 All expenses
               </h2>
               <span className="rounded-full border border-line-strong bg-raised px-2.5 py-1 text-xs font-medium text-slate-300">
@@ -300,16 +302,16 @@ const ExpensesScreen = ({
             </div>
           </div>
 
-          <div className="flex w-full max-w-full gap-1 overflow-x-auto rounded-xl border border-line-strong bg-raised p-1 sm:w-auto">
+          <div className="flex w-full gap-1 overflow-x-auto rounded-xl border border-line-strong bg-raised p-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:w-auto sm:flex-wrap sm:overflow-visible">
             {FILTERS.map((option) => (
               <button
                 key={option}
                 type="button"
                 onClick={() => setFilter(option)}
                 aria-pressed={filter === option}
-                className={`h-9 shrink-0 whitespace-nowrap rounded-lg px-3 text-xs font-medium transition-colors ${
+                className={`h-11 shrink-0 whitespace-nowrap rounded-lg px-3 text-xs font-semibold transition-colors lg:h-9 ${
                   filter === option
-                    ? "bg-brand font-bold text-slate-950"
+                    ? "bg-brand text-slate-950"
                     : "text-slate-400 hover:bg-line hover:text-white"
                 }`}
               >
@@ -348,7 +350,7 @@ const ExpensesScreen = ({
               ) : (
                 <>
                   {/* Mobile: card list */}
-                  <ul className="divide-y divide-line/60 md:hidden">
+                  <ul className="divide-y divide-line/70 md:hidden">
                     {filtered.map((expense) => {
                       const meta =
                         CATEGORY_META[expense.category] || CATEGORY_META.Other;
@@ -373,9 +375,7 @@ const ExpensesScreen = ({
 
                               <div className="mt-2.5 flex items-center justify-between gap-3">
                                 <div className="flex min-w-0 items-center gap-2">
-                                  <span
-                                    className={`badge shrink-0 ${meta.badge}`}
-                                  >
+                                  <span className={`badge shrink-0 ${meta.badge}`}>
                                     {expense.category}
                                   </span>
                                   <span className="truncate text-xs text-slate-400">
@@ -388,7 +388,7 @@ const ExpensesScreen = ({
                                   onClick={() => handleDelete(expense)}
                                   disabled={deletingId === expense.id}
                                   aria-label={`Delete ${expense.title}`}
-                                  className="-mb-2 -mr-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                                  className="-mb-2 -mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </button>
@@ -402,7 +402,7 @@ const ExpensesScreen = ({
 
                   {/* Tablet and up: table */}
                   <div className="hidden w-full overflow-x-auto md:block">
-                    <table className="w-full min-w-[660px] border-collapse text-left">
+                    <table className="w-full min-w-[640px] border-collapse text-left">
                       <thead>
                         <tr className="border-b border-line bg-inset/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
                           <th className="px-5 py-3.5">Expense</th>
@@ -412,7 +412,7 @@ const ExpensesScreen = ({
                           <th className="px-4 py-3.5 text-center">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-line/60 text-sm">
+                      <tbody className="divide-y divide-line/70 text-sm">
                         {filtered.map((expense) => {
                           const meta =
                             CATEGORY_META[expense.category] || CATEGORY_META.Other;
@@ -455,7 +455,7 @@ const ExpensesScreen = ({
                                   disabled={deletingId === expense.id}
                                   aria-label={`Delete ${expense.title}`}
                                   title="Delete expense"
-                                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                                  className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </button>

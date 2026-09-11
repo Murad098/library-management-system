@@ -4,9 +4,10 @@ import {
   Routes,
   Route,
   Navigate,
+  Link,
   useLocation,
 } from "react-router-dom";
-import { AlertCircle, Menu } from "lucide-react";
+import { AlertCircle, LogOut, Menu, User } from "lucide-react";
 
 // Pages
 import LoginPage from "./pages/LoginPage";
@@ -14,9 +15,14 @@ import DashboardPage from "./pages/DashboardPage";
 import AddMemberPage from "./pages/AddMemberPage";
 import MembersPage from "./pages/MembersPage";
 import Expenses from "./pages/Expenses";
+import ProfilePage from "./pages/ProfilePage";
 
 // Components
 import Sidebar from "./components/Sidebar";
+import BottomNav from "./components/BottomNav";
+import NavDrawer from "./components/NavDrawer";
+import BrandMark from "./components/BrandMark";
+import Backdrop from "./components/Backdrop";
 
 // Services
 import { clearTokens, getErrorMessage, readToken, UNAUTHORIZED_EVENT } from "./services/api";
@@ -41,13 +47,38 @@ const normalizeExpense = (expense) => ({
   date: expense.date || null,
 });
 
+const TITLES = {
+  "/": "Dashboard",
+  "/members": "Members",
+  "/add": "Add member",
+  "/expenses": "Expenses",
+  "/profile": "Profile",
+};
+
 function AppShell({ onLogout }) {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [members, setMembers] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [navOpen, setNavOpen] = useState(false);
   const location = useLocation();
+
+  const closeNav = useCallback(() => setNavOpen(false), []);
+
+  useEffect(() => {
+    setNavOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const handleDesktop = (event) => {
+      if (event.matches) setNavOpen(false);
+    };
+
+    desktop.addEventListener("change", handleDesktop);
+
+    return () => desktop.removeEventListener("change", handleDesktop);
+  }, []);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -102,53 +133,68 @@ function AppShell({ onLogout }) {
     setExpenses((current) => current.filter((expense) => expense.id !== id));
   };
 
-  const title =
-    location.pathname === "/members" || location.pathname === "/add"
-      ? "Members"
-      : location.pathname === "/expenses"
-      ? "Expenses"
-      : "Overview";
+  const title = TITLES[location.pathname] || "Dashboard";
 
   return (
     <div className="app-shell">
-      <Sidebar
-        onLogout={onLogout}
-        menuOpen={menuOpen}
-        closeMenu={() => setMenuOpen(false)}
-      />
+      <Backdrop />
 
-      {menuOpen && (
-        <div
-          className="mobile-overlay"
-          onClick={() => setMenuOpen(false)}
-          aria-hidden="true"
-        />
-      )}
+      <Sidebar onLogout={onLogout} />
+      <NavDrawer open={navOpen} onClose={closeNav} onLogout={onLogout} />
+      <BottomNav />
 
       <main className="app-main">
         <header className="topbar">
-          <div className="topbar-start">
+          <div className="topbar-brand">
             <button
               type="button"
-              onClick={() => setMenuOpen(true)}
-              className="icon-button menu-toggle"
-              aria-label="Open navigation"
-              aria-expanded={menuOpen}
-              aria-controls="app-sidebar"
+              className="icon-button topbar-menu"
+              onClick={() => setNavOpen(true)}
+              aria-label="Open menu"
+              aria-expanded={navOpen}
             >
-              <Menu size={20} />
+              <Menu size={18} />
             </button>
 
-            <div>
-              <p className="eyebrow">Library operations</p>
-              <h1 className="page-title">{title}</h1>
-            </div>
+            <BrandMark size={32} />
+            <span className="brand-word">
+              Libre<strong>Desk</strong>
+            </span>
+          </div>
+
+          <div className="topbar-heading">
+            <p className="eyebrow">Library operations</p>
+            <h1 className="page-title">{title}</h1>
+          </div>
+
+          <div className="topbar-actions">
+            <span className="topbar-status">
+              <span className="online-dot" />
+              System online
+            </span>
+
+            <Link
+              to="/profile"
+              className="icon-button lg:hidden"
+              aria-label="Profile"
+            >
+              <User size={18} />
+            </Link>
+
+            <button
+              type="button"
+              onClick={onLogout}
+              className="icon-button lg:hidden"
+              aria-label="Log out"
+            >
+              <LogOut size={18} />
+            </button>
           </div>
         </header>
 
         <div className="page-content">
           {error && (
-            <div className="mx-auto mb-6 flex max-w-7xl flex-col gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mx-auto mb-5 flex max-w-7xl flex-col gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 sm:flex-row sm:items-center sm:justify-between">
               <span className="flex items-center gap-2">
                 <AlertCircle size={16} className="shrink-0" />
                 {error}
@@ -197,6 +243,10 @@ function AppShell({ onLogout }) {
                   onDeleteExpense={handleDeleteExpense}
                 />
               }
+            />
+            <Route
+              path="/profile"
+              element={<ProfilePage onLogout={onLogout} />}
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
