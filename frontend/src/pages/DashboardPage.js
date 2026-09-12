@@ -161,7 +161,7 @@ const DashboardScreen = ({ members = [], expenses = [], loading = false }) => {
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-line">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-300 transition-all"
+                className="h-full rounded-full bg-brand transition-all"
                 style={{ width: `${collectionRate}%` }}
               />
             </div>

@@ -210,16 +210,11 @@ function AppShell({ onLogout }) {
           </div>
 
           <div className="topbar-heading">
-            <p className="eyebrow">Library operations</p>
             <h1 className="page-title">{title}</h1>
           </div>
 
           <div className="topbar-actions">
             <ThemeToggle />
-            <span className="topbar-status">
-              <span className="online-dot" />
-              System online
-            </span>
 
             <Link
               to="/notifications"

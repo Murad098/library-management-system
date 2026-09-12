@@ -32,8 +32,6 @@ function Sidebar({ onLogout }) {
         </div>
       </div>
 
-      <p className="nav-label">Workspace</p>
-
       <nav className="nav-list" aria-label="Main navigation">
         {LINKS.map(([to, label, Icon]) => (
           <NavLink
@@ -49,11 +47,6 @@ function Sidebar({ onLogout }) {
       </nav>
 
       <div className="sidebar-footer">
-        <div className="sidebar-note">
-          <span className="online-dot" />
-          System online
-        </div>
-
         <button type="button" onClick={onLogout} className="nav-link logout-link">
           <LogOut size={18} />
           <span>Logout</span>

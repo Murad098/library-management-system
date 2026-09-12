@@ -52,25 +52,22 @@ body {
 
 @layer components {
   .card {
-    @apply rounded-2xl border;
+    @apply rounded-xl border;
     background-color: var(--glass-bg);
     border-color: var(--glass-border);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
   }
 
   .btn-primary {
-    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold text-slate-950 transition duration-150 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60;
-    background-image: linear-gradient(180deg, #f8c14a 0%, #f59e0b 100%);
-    box-shadow: 0 12px 26px -14px rgba(245, 158, 11, 0.85);
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold text-slate-950 transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-60;
+    background-color: var(--brand);
   }
 
   .btn-primary:hover {
-    background-image: linear-gradient(180deg, #facb63 0%, #f6a81d 100%);
+    background-color: var(--brand-hover);
   }
 
   .btn-ghost {
-    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border px-4 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60;
     color: var(--text-soft);
     background-color: var(--glass-bg);
     border-color: var(--glass-border-strong);
@@ -88,7 +85,7 @@ body {
   }
 
   .input {
-    @apply block h-12 w-full min-w-0 rounded-xl border px-3.5 text-base outline-none transition focus:border-brand focus:ring-1 focus:ring-brand/60 sm:h-11 sm:text-sm;
+    @apply block h-12 w-full min-w-0 rounded-lg border px-3.5 text-base outline-none transition focus:border-brand focus:ring-1 focus:ring-brand/60 sm:h-11 sm:text-sm;
     color: var(--text);
     background-color: var(--glass-bg);
     border-color: var(--glass-border);
