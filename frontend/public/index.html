@@ -23,6 +23,23 @@
       rel="stylesheet"
     />
 
+    <script>
+      (function () {
+        try {
+          var stored = window.localStorage.getItem("theme");
+          var theme =
+            stored === "light" || stored === "dark"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (error) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+
     <title>LibreDesk — Library Management</title>
   </head>
   <body>

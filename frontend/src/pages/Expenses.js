@@ -254,7 +254,7 @@ const ExpensesScreen = ({
             <input
               id="expense-date"
               type="date"
-              className="input [color-scheme:dark]"
+              className="input"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required

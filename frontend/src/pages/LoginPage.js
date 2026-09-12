@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Lock, User } from "lucide-react";
 
-import Backdrop from "../components/Backdrop";
+import ThemeToggle from "../components/ThemeToggle";
 import { BRAND_LOGO } from "../config/brand";
 import api, { getErrorMessage, TOKEN_KEY } from "../services/api";
 
@@ -39,7 +39,9 @@ function LoginPage({ onSignInSuccess }) {
 
   return (
     <main className="login-screen">
-      <Backdrop />
+      <div className="login-theme">
+        <ThemeToggle />
+      </div>
 
       <div className="login-body">
         <header className="login-head">

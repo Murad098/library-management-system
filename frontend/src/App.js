@@ -23,7 +23,7 @@ import Sidebar from "./components/Sidebar";
 import BottomNav from "./components/BottomNav";
 import NavDrawer from "./components/NavDrawer";
 import BrandMark from "./components/BrandMark";
-import Backdrop from "./components/Backdrop";
+import ThemeToggle from "./components/ThemeToggle";
 
 // Services
 import { clearTokens, getErrorMessage, readToken, UNAUTHORIZED_EVENT } from "./services/api";
@@ -186,8 +186,6 @@ function AppShell({ onLogout }) {
 
   return (
     <div className="app-shell">
-      <Backdrop />
-
       <Sidebar onLogout={onLogout} />
       <NavDrawer open={navOpen} onClose={closeNav} onLogout={onLogout} />
       <BottomNav />
@@ -217,6 +215,7 @@ function AppShell({ onLogout }) {
           </div>
 
           <div className="topbar-actions">
+            <ThemeToggle />
             <span className="topbar-status">
               <span className="online-dot" />
               System online
