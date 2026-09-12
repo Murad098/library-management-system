@@ -29,12 +29,22 @@ const adminSchema = new mongoose.Schema({
     default: null,
   },
 
-  recoveryCodeHash: {
+  resetOtpHash: {
     type: String,
     default: null,
   },
 
-  recoveryCodeCreatedAt: {
+  resetOtpExpiresAt: {
+    type: Date,
+    default: null,
+  },
+
+  resetOtpAttempts: {
+    type: Number,
+    default: 0,
+  },
+
+  resetOtpSentAt: {
     type: Date,
     default: null,
   },

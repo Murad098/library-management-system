@@ -751,21 +751,6 @@ a {
   font-weight: 600;
 }
 
-.recovery-code {
-  display: block;
-  padding: 12px 14px;
-  color: var(--text);
-  background: var(--glass-inset);
-  border: 1px solid var(--line-strong);
-  border-radius: 10px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-align: center;
-  overflow-wrap: anywhere;
-}
-
 .profile-identity__text {
   min-width: 0;
   flex: 1;

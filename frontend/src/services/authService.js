@@ -18,7 +18,11 @@ export const uploadAvatar = (file) => {
   return api.post("/auth/avatar", form);
 };
 
-export const generateRecoveryCode = () => api.post("/auth/recovery-code");
+export const requestPasswordResetOtp = (email) =>
+  api.post("/auth/forgot-password", { email });
 
-export const resetPassword = (email, code, newPassword) =>
-  api.post("/auth/reset-password", { email, code, newPassword });
+export const verifyPasswordResetOtp = (email, otp) =>
+  api.post("/auth/verify-otp", { email, otp });
+
+export const resetPassword = (resetToken, newPassword) =>
+  api.post("/auth/reset-password", { resetToken, newPassword });

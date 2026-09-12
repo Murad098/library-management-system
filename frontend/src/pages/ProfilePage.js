@@ -10,7 +10,6 @@ import {
   Clock,
   Eye,
   EyeOff,
-  KeyRound,
   LifeBuoy,
   Loader2,
   Lock,
@@ -19,12 +18,7 @@ import {
 } from "lucide-react";
 
 import { getErrorMessage, readSessionUser } from "../services/api";
-import {
-  changePassword,
-  generateRecoveryCode,
-  getAvatar,
-  uploadAvatar,
-} from "../services/authService";
+import { changePassword, getAvatar, uploadAvatar } from "../services/authService";
 import { initials } from "../utils/format";
 
 const EMPTY_FORM = { current: "", next: "", confirm: "" };
@@ -52,13 +46,6 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [avatarLoading, setAvatarLoading] = useState(false);
   const [avatarError, setAvatarError] = useState("");
-
-  const [recoveryCode, setRecoveryCode] = useState("");
-  const [recoveryLoading, setRecoveryLoading] = useState(false);
-  const [recoveryStatus, setRecoveryStatus] = useState({
-    tone: "",
-    message: "",
-  });
 
   useEffect(() => {
     let objectUrl = "";
@@ -118,35 +105,6 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
       );
     } finally {
       setAvatarLoading(false);
-    }
-  };
-
-  const handleGenerateRecovery = async () => {
-    setRecoveryStatus({ tone: "", message: "" });
-    setRecoveryLoading(true);
-
-    try {
-      const response = await generateRecoveryCode();
-      setRecoveryCode(response.data.recoveryCode || "");
-    } catch (error) {
-      setRecoveryStatus({
-        tone: "error",
-        message: getErrorMessage(error, "Unable to create a recovery code."),
-      });
-    } finally {
-      setRecoveryLoading(false);
-    }
-  };
-
-  const copyRecoveryCode = async () => {
-    try {
-      await navigator.clipboard.writeText(recoveryCode);
-      setRecoveryStatus({ tone: "success", message: "Copied to clipboard." });
-    } catch {
-      setRecoveryStatus({
-        tone: "error",
-        message: "Copy failed. Select the code and copy it manually.",
-      });
     }
   };
 
@@ -381,92 +339,6 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
               </button>
             </div>
           </form>
-        )}
-
-        <button
-          type="button"
-          onClick={() => togglePanel("recovery")}
-          className="profile-row"
-          aria-expanded={openPanel === "recovery"}
-          aria-controls="recovery-code-panel"
-        >
-          <span className="profile-row__icon" aria-hidden="true">
-            <KeyRound className="h-4 w-4" />
-          </span>
-
-          <span className="profile-row__text">
-            <span className="profile-row__title">Recovery code</span>
-            <span className="profile-row__desc">
-              Reset your password if you forget it
-            </span>
-          </span>
-
-          <ChevronDown
-            className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${
-              openPanel === "recovery" ? "rotate-180" : ""
-            }`}
-            aria-hidden="true"
-          />
-        </button>
-
-        {openPanel === "recovery" && (
-          <div
-            id="recovery-code-panel"
-            className="space-y-3 px-4 py-4 sm:px-[18px] sm:py-5"
-          >
-            <p className="text-xs leading-relaxed text-slate-400">
-              Generate a one-time code, store it somewhere safe, then use it on
-              the login screen to set a new password. It is shown only once.
-            </p>
-
-            {recoveryCode ? (
-              <div className="space-y-2">
-                <code className="recovery-code">{recoveryCode}</code>
-
-                <div className="flex flex-col gap-2 sm:flex-row">
-                  <button
-                    type="button"
-                    className="btn-ghost"
-                    onClick={copyRecoveryCode}
-                  >
-                    Copy code
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-ghost"
-                    onClick={() => {
-                      setRecoveryCode("");
-                      setRecoveryStatus({ tone: "", message: "" });
-                    }}
-                  >
-                    Dismiss
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <button
-                type="button"
-                className="btn-primary"
-                onClick={handleGenerateRecovery}
-                disabled={recoveryLoading}
-              >
-                {recoveryLoading ? "Generating..." : "Generate recovery code"}
-              </button>
-            )}
-
-            {recoveryStatus.message && (
-              <p
-                role="status"
-                className={`text-xs font-semibold ${
-                  recoveryStatus.tone === "success"
-                    ? "text-emerald-400"
-                    : "text-red-300"
-                }`}
-              >
-                {recoveryStatus.message}
-              </p>
-            )}
-          </div>
         )}
 
         <Link to="/notifications" className="profile-row">

@@ -4,7 +4,11 @@ import { Eye, EyeOff, Lock, User } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle";
 import { BRAND_LOGO } from "../config/brand";
 import api, { getErrorMessage, TOKEN_KEY } from "../services/api";
-import { resetPassword } from "../services/authService";
+import {
+  requestPasswordResetOtp,
+  resetPassword,
+  verifyPasswordResetOtp,
+} from "../services/authService";
 
 function LoginPage({ onSignInSuccess }) {
   const [email, setEmail] = useState("");
@@ -12,7 +16,9 @@ function LoginPage({ onSignInSuccess }) {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [showReset, setShowReset] = useState(false);
-  const [resetCode, setResetCode] = useState("");
+  const [resetStep, setResetStep] = useState("request");
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetOtp, setResetOtp] = useState("");
   const [resetNewPassword, setResetNewPassword] = useState("");
   const [resetConfirm, setResetConfirm] = useState("");
   const [resetStatus, setResetStatus] = useState({ tone: "", message: "" });
@@ -43,14 +49,57 @@ function LoginPage({ onSignInSuccess }) {
     }
   };
 
+  const openReset = () => {
+    setResetEmail(email.trim());
+    setResetStep("request");
+    setResetOtp("");
+    setResetNewPassword("");
+    setResetConfirm("");
+    setResetStatus({ tone: "", message: "" });
+    setShowReset(true);
+  };
+
+  const handleSendResetCode = async (event) => {
+    event.preventDefault();
+    setResetStatus({ tone: "", message: "" });
+
+    if (!resetEmail.trim()) {
+      setResetStatus({
+        tone: "error",
+        message: "Enter the administrator email address.",
+      });
+      return;
+    }
+
+    setResetLoading(true);
+
+    try {
+      const response = await requestPasswordResetOtp(resetEmail.trim());
+
+      setResetStep("verify");
+      setResetStatus({
+        tone: "success",
+        message:
+          response.data.message || `A 6-digit code was sent to ${resetEmail.trim()}.`,
+      });
+    } catch (error) {
+      setResetStatus({
+        tone: "error",
+        message: getErrorMessage(error, "Unable to send the reset code."),
+      });
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   const handleResetSubmit = async (event) => {
     event.preventDefault();
     setResetStatus({ tone: "", message: "" });
 
-    if (!email.trim()) {
+    if (!resetOtp.trim()) {
       setResetStatus({
         tone: "error",
-        message: "Enter your email above first.",
+        message: "Enter the code from your email.",
       });
       return;
     }
@@ -74,14 +123,21 @@ function LoginPage({ onSignInSuccess }) {
     setResetLoading(true);
 
     try {
-      await resetPassword(email, resetCode, resetNewPassword);
+      const verified = await verifyPasswordResetOtp(
+        resetEmail.trim(),
+        resetOtp.trim()
+      );
+
+      await resetPassword(verified.data.resetToken, resetNewPassword);
+
+      setResetOtp("");
+      setResetNewPassword("");
+      setResetConfirm("");
+      setResetStep("done");
       setResetStatus({
         tone: "success",
         message: "Password reset. You can sign in now.",
       });
-      setResetCode("");
-      setResetNewPassword("");
-      setResetConfirm("");
     } catch (error) {
       setResetStatus({
         tone: "error",
@@ -94,7 +150,8 @@ function LoginPage({ onSignInSuccess }) {
 
   const closeReset = () => {
     setShowReset(false);
-    setResetCode("");
+    setResetStep("request");
+    setResetOtp("");
     setResetNewPassword("");
     setResetConfirm("");
     setResetStatus({ tone: "", message: "" });
@@ -181,7 +238,7 @@ function LoginPage({ onSignInSuccess }) {
             <button
               type="button"
               className="login-forgot"
-              onClick={() => (showReset ? closeReset() : setShowReset(true))}
+              onClick={() => (showReset ? closeReset() : openReset())}
             >
               Forgot Password?
             </button>
@@ -189,37 +246,75 @@ function LoginPage({ onSignInSuccess }) {
         </form>
 
         {showReset && (
-          <form className="login-reset" onSubmit={handleResetSubmit}>
+          <form
+            className="login-reset"
+            onSubmit={
+              resetStep === "request" ? handleSendResetCode : handleResetSubmit
+            }
+          >
             <p className="login-reset__title">Reset your password</p>
-            <p className="login-reset__hint">
-              Enter a recovery code created from your Profile, then choose a new
-              password.
-            </p>
 
-            <input
-              className="login-reset__input"
-              type="text"
-              value={resetCode}
-              onChange={(event) => setResetCode(event.target.value)}
-              placeholder="Recovery code"
-              autoComplete="one-time-code"
-            />
-            <input
-              className="login-reset__input"
-              type="password"
-              value={resetNewPassword}
-              onChange={(event) => setResetNewPassword(event.target.value)}
-              placeholder="New password"
-              autoComplete="new-password"
-            />
-            <input
-              className="login-reset__input"
-              type="password"
-              value={resetConfirm}
-              onChange={(event) => setResetConfirm(event.target.value)}
-              placeholder="Confirm new password"
-              autoComplete="new-password"
-            />
+            {resetStep === "request" && (
+              <>
+                <p className="login-reset__hint">
+                  Enter the administrator email address and we will send a
+                  6-digit verification code to it.
+                </p>
+                <input
+                  className="login-reset__input"
+                  type="email"
+                  value={resetEmail}
+                  onChange={(event) => setResetEmail(event.target.value)}
+                  placeholder="Admin email"
+                  autoComplete="email"
+                  required
+                />
+              </>
+            )}
+
+            {resetStep === "verify" && (
+              <>
+                <p className="login-reset__hint">
+                  Enter the 6-digit code sent to {resetEmail}, then choose a new
+                  password.
+                </p>
+                <input
+                  className="login-reset__input"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={resetOtp}
+                  onChange={(event) =>
+                    setResetOtp(event.target.value.replace(/\D/g, ""))
+                  }
+                  placeholder="6-digit code"
+                  autoComplete="one-time-code"
+                />
+                <input
+                  className="login-reset__input"
+                  type="password"
+                  value={resetNewPassword}
+                  onChange={(event) => setResetNewPassword(event.target.value)}
+                  placeholder="New password"
+                  autoComplete="new-password"
+                />
+                <input
+                  className="login-reset__input"
+                  type="password"
+                  value={resetConfirm}
+                  onChange={(event) => setResetConfirm(event.target.value)}
+                  placeholder="Confirm new password"
+                  autoComplete="new-password"
+                />
+              </>
+            )}
+
+            {resetStep === "done" && (
+              <p className="login-reset__hint">
+                Your password has been reset. Sign in above with your new
+                password.
+              </p>
+            )}
 
             {resetStatus.message && (
               <p
@@ -235,16 +330,53 @@ function LoginPage({ onSignInSuccess }) {
             )}
 
             <div className="login-reset__actions">
-              <button type="button" className="btn-ghost" onClick={closeReset}>
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="btn-primary"
-                disabled={resetLoading}
-              >
-                {resetLoading ? "Resetting..." : "Reset password"}
-              </button>
+              {resetStep === "request" && (
+                <>
+                  <button
+                    type="button"
+                    className="btn-ghost"
+                    onClick={closeReset}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    disabled={resetLoading}
+                  >
+                    {resetLoading ? "Sending..." : "Send code"}
+                  </button>
+                </>
+              )}
+
+              {resetStep === "verify" && (
+                <>
+                  <button
+                    type="button"
+                    className="btn-ghost"
+                    onClick={() => {
+                      setResetStep("request");
+                      setResetOtp("");
+                      setResetStatus({ tone: "", message: "" });
+                    }}
+                  >
+                    Change email
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    disabled={resetLoading}
+                  >
+                    {resetLoading ? "Resetting..." : "Reset password"}
+                  </button>
+                </>
+              )}
+
+              {resetStep === "done" && (
+                <button type="button" className="btn-primary" onClick={closeReset}>
+                  Back to login
+                </button>
+              )}
             </div>
           </form>
         )}

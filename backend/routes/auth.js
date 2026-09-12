@@ -7,6 +7,7 @@ const multer = require("multer");
 const Admin = require("../models/Admin");
 const requireAuth = require("../middleware/auth");
 const { hashPassword, verifyPassword } = require("../utils/password");
+const { isMailConfigured, sendOtpEmail } = require("../utils/mailer");
 
 const MIN_PASSWORD_LENGTH = 6;
 const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
@@ -26,46 +27,56 @@ const uploadAvatar = multer({
 
 const clean = (value) => (typeof value === "string" ? value.trim() : "");
 
-// Recovery codes let the single admin account set a new password without
-// any email service. The code is shown once, stored only as a hash, and
-// cleared as soon as it is used.
-const RECOVERY_CODE_BYTES = 8;
-const RESET_WINDOW_MS = 15 * 60 * 1000;
-const RESET_MAX_ATTEMPTS = 10;
-const resetAttempts = new Map();
+// Password reset uses a short-lived numeric one-time code (OTP) emailed only
+// to the administrator account. The code is stored as a hash, is single-use,
+// and can be tried a handful of times before it must be requested again.
+const OTP_LENGTH = 6;
+const OTP_TTL_MS = 10 * 60 * 1000;
+const OTP_MAX_ATTEMPTS = 5;
+const OTP_RESEND_COOLDOWN_MS = 60 * 1000;
+const RESET_TOKEN_TTL = "15m";
+const RESET_TOKEN_PURPOSE = "admin-password-reset";
+const RATE_WINDOW_MS = 15 * 60 * 1000;
+const RATE_MAX_REQUESTS = 10;
+const requestLog = new Map();
 
-const normalizeCode = (value) =>
-  (typeof value === "string" ? value : "")
-    .replace(/[\s-]/g, "")
-    .toUpperCase();
+const createOtp = () =>
+  String(crypto.randomInt(0, 10 ** OTP_LENGTH)).padStart(OTP_LENGTH, "0");
 
-const createRecoveryCode = () =>
-  crypto
-    .randomBytes(RECOVERY_CODE_BYTES)
-    .toString("hex")
-    .toUpperCase()
-    .replace(/(.{4})(?=.)/g, "$1-");
+const configuredAdminEmail = () =>
+  clean(process.env.ADMIN_EMAIL).toLowerCase();
 
-const constantTimeEqual = (a, b) => {
-  const left = crypto.createHash("sha256").update(String(a)).digest();
-  const right = crypto.createHash("sha256").update(String(b)).digest();
+// Only the configured administrator email is eligible. If the account has not
+// been seeded into the database yet, create it so the OTP has somewhere to
+// live; the reset itself sets the real password.
+const findOrSeedAdmin = async (email) => {
+  const existing = await Admin.findOne({ email });
 
-  return crypto.timingSafeEqual(left, right);
+  if (existing) return existing;
+
+  if (email !== configuredAdminEmail()) return null;
+
+  return Admin.create({
+    email,
+    passwordHash: await hashPassword(
+      process.env.ADMIN_PASSWORD || crypto.randomBytes(24).toString("hex")
+    ),
+  });
 };
 
 const isRateLimited = (key) => {
   const now = Date.now();
-  const entry = resetAttempts.get(key);
+  const entry = requestLog.get(key);
 
-  if (!entry || now - entry.start > RESET_WINDOW_MS) {
-    resetAttempts.set(key, { start: now, count: 1 });
+  if (!entry || now - entry.start > RATE_WINDOW_MS) {
+    requestLog.set(key, { start: now, count: 1 });
 
     return false;
   }
 
   entry.count += 1;
 
-  return entry.count > RESET_MAX_ATTEMPTS;
+  return entry.count > RATE_MAX_REQUESTS;
 };
 
 const signToken = (email) =>
@@ -259,52 +270,186 @@ router.get("/avatar", requireAuth, async (req, res) => {
   }
 });
 
-// Create a fresh single-use recovery code for the signed-in admin. The
-// plaintext is returned once and never stored in readable form.
-router.post("/recovery-code", requireAuth, async (req, res) => {
+const GENERIC_RESET_MESSAGE =
+  "If that email belongs to the administrator account, a reset code is on its way.";
+
+// Step 1 — request a reset code. Only the administrator email receives a code.
+// The response is deliberately generic so it never reveals whether an account
+// exists for the address.
+router.post("/forgot-password", async (req, res) => {
+  const email = clean(req.body.email).toLowerCase();
+
+  if (isRateLimited(`forgot:${req.ip || "unknown"}`)) {
+    return res
+      .status(429)
+      .json({ message: "Too many requests. Please try again later." });
+  }
+
+  if (!email) {
+    return res
+      .status(400)
+      .json({ message: "Enter the administrator email address." });
+  }
+
+  if (!isMailConfigured()) {
+    return res.status(503).json({
+      message:
+        "Email delivery is not configured. Set the SMTP settings and try again.",
+    });
+  }
+
   try {
-    const email = clean(req.user?.email).toLowerCase();
-    const admin = await Admin.findOne({ email });
+    const admin = await findOrSeedAdmin(email);
 
     if (!admin) {
-      return res.status(404).json({ message: "Admin account not found." });
+      return res.json({ message: GENERIC_RESET_MESSAGE });
     }
 
-    const code = createRecoveryCode();
+    if (
+      admin.resetOtpSentAt &&
+      Date.now() - admin.resetOtpSentAt.getTime() < OTP_RESEND_COOLDOWN_MS
+    ) {
+      return res.status(429).json({
+        message: "A code was just sent. Please wait a minute before retrying.",
+      });
+    }
 
-    admin.recoveryCodeHash = await hashPassword(normalizeCode(code));
-    admin.recoveryCodeCreatedAt = new Date();
+    const otp = createOtp();
+
+    admin.resetOtpHash = await hashPassword(otp);
+    admin.resetOtpExpiresAt = new Date(Date.now() + OTP_TTL_MS);
+    admin.resetOtpAttempts = 0;
+    admin.resetOtpSentAt = new Date();
 
     await admin.save();
 
-    return res.json({ recoveryCode: code });
+    try {
+      await sendOtpEmail(admin.email, otp);
+    } catch (error) {
+      admin.resetOtpHash = null;
+      admin.resetOtpExpiresAt = null;
+      admin.resetOtpSentAt = null;
+
+      await admin.save();
+
+      console.error("OTP email error:", error);
+
+      return res
+        .status(502)
+        .json({ message: "Unable to send the reset email right now." });
+    }
+
+    return res.json({ message: GENERIC_RESET_MESSAGE });
   } catch (error) {
-    console.error("Recovery code error:", error);
+    console.error("Forgot password error:", error);
 
     return res
       .status(500)
-      .json({ message: "Unable to create a recovery code." });
+      .json({ message: "Unable to start the reset right now." });
   }
 });
 
-// Reset the admin password with a recovery code. Public by design (the
-// admin is locked out) but requires the code, and is rate limited.
-router.post("/reset-password", async (req, res) => {
+// Step 2 — verify the emailed code. On success the code is consumed and a
+// short-lived token is returned that authorises the password change.
+router.post("/verify-otp", async (req, res) => {
   const email = clean(req.body.email).toLowerCase();
-  const code = normalizeCode(req.body.code);
-  const newPassword =
-    typeof req.body.newPassword === "string" ? req.body.newPassword : "";
+  const otp = clean(req.body.otp).replace(/\s/g, "");
 
-  if (isRateLimited(req.ip || "unknown")) {
+  if (isRateLimited(`verify:${req.ip || "unknown"}`)) {
     return res
       .status(429)
       .json({ message: "Too many attempts. Please try again later." });
   }
 
-  if (!email || !code || !newPassword) {
-    return res.status(400).json({
-      message: "Email, recovery code and new password are required.",
-    });
+  if (!email || !otp) {
+    return res
+      .status(400)
+      .json({ message: "Enter the code sent to your email." });
+  }
+
+  try {
+    const admin = await Admin.findOne({ email });
+
+    if (!admin || !admin.resetOtpHash || !admin.resetOtpExpiresAt) {
+      return res
+        .status(400)
+        .json({ message: "Request a new code to continue." });
+    }
+
+    if (admin.resetOtpExpiresAt.getTime() < Date.now()) {
+      admin.resetOtpHash = null;
+      admin.resetOtpExpiresAt = null;
+      admin.resetOtpAttempts = 0;
+
+      await admin.save();
+
+      return res
+        .status(400)
+        .json({ message: "That code has expired. Request a new one." });
+    }
+
+    if (admin.resetOtpAttempts >= OTP_MAX_ATTEMPTS) {
+      admin.resetOtpHash = null;
+      admin.resetOtpExpiresAt = null;
+      admin.resetOtpAttempts = 0;
+
+      await admin.save();
+
+      return res.status(429).json({
+        message: "Too many incorrect codes. Request a new one.",
+      });
+    }
+
+    const isValid = await verifyPassword(otp, admin.resetOtpHash);
+
+    if (!isValid) {
+      admin.resetOtpAttempts += 1;
+
+      await admin.save();
+
+      return res.status(401).json({ message: "That code is not correct." });
+    }
+
+    // The code is single-use: clear it the moment it is verified.
+    admin.resetOtpHash = null;
+    admin.resetOtpExpiresAt = null;
+    admin.resetOtpAttempts = 0;
+
+    await admin.save();
+
+    const resetToken = jwt.sign(
+      { email: admin.email, purpose: RESET_TOKEN_PURPOSE },
+      process.env.JWT_SECRET,
+      { expiresIn: RESET_TOKEN_TTL }
+    );
+
+    return res.json({ resetToken });
+  } catch (error) {
+    console.error("OTP verification error:", error);
+
+    return res
+      .status(500)
+      .json({ message: "Unable to verify the code right now." });
+  }
+});
+
+// Step 3 — set the new password using the token issued after OTP verification.
+router.post("/reset-password", async (req, res) => {
+  const resetToken =
+    typeof req.body.resetToken === "string" ? req.body.resetToken : "";
+  const newPassword =
+    typeof req.body.newPassword === "string" ? req.body.newPassword : "";
+
+  if (isRateLimited(`reset:${req.ip || "unknown"}`)) {
+    return res
+      .status(429)
+      .json({ message: "Too many attempts. Please try again later." });
+  }
+
+  if (!resetToken || !newPassword) {
+    return res
+      .status(400)
+      .json({ message: "The reset session and a new password are required." });
   }
 
   if (newPassword.length < MIN_PASSWORD_LENGTH) {
@@ -313,26 +458,30 @@ router.post("/reset-password", async (req, res) => {
     });
   }
 
+  let payload;
+
   try {
+    payload = jwt.verify(resetToken, process.env.JWT_SECRET);
+  } catch (error) {
+    return res
+      .status(401)
+      .json({ message: "This reset session has expired. Start again." });
+  }
+
+  if (payload?.purpose !== RESET_TOKEN_PURPOSE || !payload.email) {
+    return res
+      .status(401)
+      .json({ message: "This reset session is not valid. Start again." });
+  }
+
+  try {
+    const email = clean(payload.email).toLowerCase();
     const admin = await Admin.findOne({ email });
 
     if (!admin) {
-      return res.status(401).json({ message: "Invalid email or recovery code." });
-    }
-
-    const matchesStored = admin.recoveryCodeHash
-      ? await verifyPassword(code, admin.recoveryCodeHash)
-      : false;
-
-    const envCode =
-      typeof process.env.ADMIN_RESET_CODE === "string"
-        ? normalizeCode(process.env.ADMIN_RESET_CODE)
-        : "";
-
-    const matchesEnv = envCode ? constantTimeEqual(code, envCode) : false;
-
-    if (!matchesStored && !matchesEnv) {
-      return res.status(401).json({ message: "Invalid email or recovery code." });
+      return res
+        .status(404)
+        .json({ message: "Administrator account not found." });
     }
 
     if (await verifyPassword(newPassword, admin.passwordHash)) {
@@ -343,8 +492,10 @@ router.post("/reset-password", async (req, res) => {
 
     admin.passwordHash = await hashPassword(newPassword);
     admin.updatedAt = new Date();
-    admin.recoveryCodeHash = null;
-    admin.recoveryCodeCreatedAt = null;
+    admin.resetOtpHash = null;
+    admin.resetOtpExpiresAt = null;
+    admin.resetOtpAttempts = 0;
+    admin.resetOtpSentAt = null;
 
     await admin.save();
 
