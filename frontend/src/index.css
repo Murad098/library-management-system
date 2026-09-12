@@ -98,8 +98,4 @@ body {
   .badge {
     @apply inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-semibold;
   }
-
-  .eyebrow-tag {
-    @apply mb-1 block text-[10px] font-bold uppercase tracking-[0.2em] text-brand;
-  }
 }

@@ -4,7 +4,6 @@ import {
   BookOpen,
   Bus,
   CheckCircle2,
-  FileText,
   Plus,
   Receipt,
   ShoppingBag,
@@ -24,40 +23,18 @@ import {
   toDateInputValue,
 } from "../utils/format";
 
-const CATEGORY_META = {
-  Food: {
-    icon: Utensils,
-    iconTone: "text-emerald-400",
-    badge: "border border-emerald-800/60 bg-emerald-950/70 text-emerald-400",
-  },
-  Transport: {
-    icon: Bus,
-    iconTone: "text-sky-400",
-    badge: "border border-sky-800/60 bg-sky-950/70 text-sky-400",
-  },
-  Shopping: {
-    icon: ShoppingBag,
-    iconTone: "text-purple-400",
-    badge: "border border-purple-800/60 bg-purple-950/70 text-purple-400",
-  },
-  Bills: {
-    icon: Receipt,
-    iconTone: "text-brand",
-    badge: "border border-brand/30 bg-brand/10 text-brand",
-  },
-  Entertainment: {
-    icon: BookOpen,
-    iconTone: "text-rose-400",
-    badge: "border border-rose-800/60 bg-rose-950/70 text-rose-400",
-  },
-  Other: {
-    icon: Tag,
-    iconTone: "text-slate-400",
-    badge: "border border-slate-700 bg-slate-800 text-slate-300",
-  },
+const CATEGORY_ICONS = {
+  Food: Utensils,
+  Transport: Bus,
+  Shopping: ShoppingBag,
+  Bills: Receipt,
+  Entertainment: BookOpen,
+  Other: Tag,
 };
 
-const CATEGORIES = Object.keys(CATEGORY_META);
+const CATEGORY_BADGE = "border border-line-strong bg-raised text-slate-300";
+
+const CATEGORIES = Object.keys(CATEGORY_ICONS);
 const FILTERS = ["All", "This month", ...CATEGORIES];
 
 const ExpensesScreen = ({
@@ -150,13 +127,9 @@ const ExpensesScreen = ({
     <div className="mx-auto w-full max-w-7xl space-y-5 sm:space-y-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div className="min-w-0">
-          <span className="eyebrow-tag">Library operations</span>
           <h1 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
             Expenses
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
-            Track the operating costs and financial outflows of your library.
-          </p>
         </div>
 
         <div className="card flex w-full items-center justify-between gap-4 p-4 lg:w-auto lg:min-w-[260px]">
@@ -195,19 +168,9 @@ const ExpensesScreen = ({
       )}
 
       <form onSubmit={handleSubmit} className="card p-4 sm:p-5">
-        <div className="mb-5 flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-raised text-brand">
-            <FileText className="h-4 w-4" />
-          </div>
-          <div className="min-w-0">
-            <h2 className="font-display text-sm font-bold text-white">
-              Log an expense
-            </h2>
-            <p className="text-xs text-slate-400">
-              Record a new library expense into the ledger.
-            </p>
-          </div>
-        </div>
+        <h2 className="mb-5 font-display text-sm font-bold text-white">
+          Log an expense
+        </h2>
 
         <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-12">
           <div className="sm:col-span-2 lg:col-span-4">
@@ -291,7 +254,6 @@ const ExpensesScreen = ({
       <div className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <span className="eyebrow-tag">Ledger</span>
             <div className="flex flex-wrap items-center gap-3">
               <h2 className="font-display text-xl font-bold tracking-tight text-white sm:text-2xl">
                 All expenses
@@ -352,15 +314,14 @@ const ExpensesScreen = ({
                   {/* Mobile: card list */}
                   <ul className="divide-y divide-line/70 md:hidden">
                     {filtered.map((expense) => {
-                      const meta =
-                        CATEGORY_META[expense.category] || CATEGORY_META.Other;
-                      const Icon = meta.icon;
+                      const Icon =
+                        CATEGORY_ICONS[expense.category] || CATEGORY_ICONS.Other;
 
                       return (
                         <li key={expense.id} className="p-4">
                           <div className="flex items-start gap-3">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-raised">
-                              <Icon className={`h-4 w-4 ${meta.iconTone}`} />
+                              <Icon className="h-4 w-4 text-slate-400" />
                             </div>
 
                             <div className="min-w-0 flex-1">
@@ -375,7 +336,7 @@ const ExpensesScreen = ({
 
                               <div className="mt-2.5 flex items-center justify-between gap-3">
                                 <div className="flex min-w-0 items-center gap-2">
-                                  <span className={`badge shrink-0 ${meta.badge}`}>
+                                  <span className={`badge shrink-0 ${CATEGORY_BADGE}`}>
                                     {expense.category}
                                   </span>
                                   <span className="truncate text-xs text-slate-400">
@@ -414,9 +375,8 @@ const ExpensesScreen = ({
                       </thead>
                       <tbody className="divide-y divide-line/70 text-sm">
                         {filtered.map((expense) => {
-                          const meta =
-                            CATEGORY_META[expense.category] || CATEGORY_META.Other;
-                          const Icon = meta.icon;
+                          const Icon =
+                            CATEGORY_ICONS[expense.category] || CATEGORY_ICONS.Other;
 
                           return (
                             <tr
@@ -426,7 +386,7 @@ const ExpensesScreen = ({
                               <td className="px-5 py-4">
                                 <div className="flex items-center gap-3">
                                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-raised">
-                                    <Icon className={`h-4 w-4 ${meta.iconTone}`} />
+                                    <Icon className="h-4 w-4 text-slate-400" />
                                   </div>
                                   <div className="font-semibold text-white">
                                     {expense.title}
@@ -435,7 +395,7 @@ const ExpensesScreen = ({
                               </td>
 
                               <td className="whitespace-nowrap px-4 py-4">
-                                <span className={`badge ${meta.badge}`}>
+                                <span className={`badge ${CATEGORY_BADGE}`}>
                                   {expense.category}
                                 </span>
                               </td>

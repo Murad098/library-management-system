@@ -7,7 +7,7 @@ import {
   Link,
   useLocation,
 } from "react-router-dom";
-import { AlertCircle, Bell, LogOut, Menu, User } from "lucide-react";
+import { AlertCircle, Bell, Menu } from "lucide-react";
 
 // Pages
 import LoginPage from "./pages/LoginPage";
@@ -214,8 +214,6 @@ function AppShell({ onLogout }) {
           </div>
 
           <div className="topbar-actions">
-            <ThemeToggle />
-
             <Link
               to="/notifications"
               className="icon-button relative"
@@ -233,22 +231,7 @@ function AppShell({ onLogout }) {
               )}
             </Link>
 
-            <Link
-              to="/profile"
-              className="icon-button lg:hidden"
-              aria-label="Profile"
-            >
-              <User size={18} />
-            </Link>
-
-            <button
-              type="button"
-              onClick={onLogout}
-              className="icon-button lg:hidden"
-              aria-label="Log out"
-            >
-              <LogOut size={18} />
-            </button>
+            <ThemeToggle />
           </div>
         </header>
 

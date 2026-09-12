@@ -72,7 +72,6 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
     <div className="mx-auto w-full max-w-7xl space-y-5 sm:space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <span className="eyebrow-tag">Member directory</span>
           <h1 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
             Members
           </h1>

@@ -157,13 +157,9 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 sm:gap-5">
       <header className="min-w-0">
-        <span className="eyebrow-tag">Account</span>
         <h1 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
           Profile
         </h1>
-        <p className="mt-1 text-sm text-slate-400">
-          Manage your administrator account
-        </p>
       </header>
 
       <section className="profile-identity" aria-label="Account details">

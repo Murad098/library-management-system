@@ -52,29 +52,15 @@ const AddMemberScreen = ({ onAddMember }) => {
   return (
     <div className="mx-auto max-w-3xl space-y-5 sm:space-y-6">
       <div>
-        <span className="eyebrow-tag">Member directory</span>
         <h1 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
           Add member
         </h1>
-        <p className="mt-1 text-sm text-slate-400">
-          Create a new member record for your library.
-        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="card p-4 sm:p-6">
-        <div className="mb-6 flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-brand">
-            <UserPlus className="h-5 w-5" />
-          </span>
-          <div className="min-w-0">
-            <h2 className="font-display text-sm font-bold text-white">
-              Member details
-            </h2>
-            <p className="text-xs text-slate-400">
-              All fields except fee status are required.
-            </p>
-          </div>
-        </div>
+        <h2 className="mb-4 font-display text-sm font-bold text-white">
+          Member details
+        </h2>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="sm:col-span-2">

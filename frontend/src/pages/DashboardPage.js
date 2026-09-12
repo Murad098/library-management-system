@@ -97,12 +97,11 @@ const DashboardScreen = ({ members = [], expenses = [], loading = false }) => {
     <div className="mx-auto max-w-7xl space-y-5 sm:space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <span className="eyebrow-tag">Overview</span>
           <h1 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
             Dashboard
           </h1>
           <p className="mt-1 text-sm text-slate-400">
-            Library performance for {formatMonthYear()}
+            Summary for {formatMonthYear()}
           </p>
         </div>
         <button
@@ -167,7 +166,7 @@ const DashboardScreen = ({ members = [], expenses = [], loading = false }) => {
             </div>
             <p className="text-xs text-slate-400">
               {members.length === 0
-                ? "No members yet — add a member to start tracking fees."
+                ? "No members yet. Add a member to start tracking fees."
                 : `${paidMembers.length} of ${members.length} members have paid.`}
             </p>
           </div>
