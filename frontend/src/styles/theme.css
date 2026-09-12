@@ -531,16 +531,6 @@ a {
   color: var(--text-soft);
 }
 
-.login-error {
-  margin: 0;
-  padding: 11px 14px;
-  color: var(--danger);
-  font-size: 13px;
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.32);
-  border-radius: 12px;
-}
-
 .login-submit {
   display: flex;
   width: 100%;
@@ -1133,4 +1123,79 @@ button.profile-row:focus-visible {
 
 [data-theme="light"] .bg-emerald-400 { background-color: #10b981; }
 [data-theme="light"] .bg-red-400 { background-color: #ef4444; }
+
+/* =========================================================
+   TOASTS — transient feedback for sign-in and account events.
+   Kept flat and quiet: no bounce, no gradients.
+========================================================= */
+
+.toast-center {
+  position: fixed;
+  top: calc(74px + env(safe-area-inset-top, 0px));
+  left: 50%;
+  z-index: 100;
+  display: grid;
+  gap: 8px;
+  width: min(92vw, 420px);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(3, 6, 12, 0.4);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+  pointer-events: auto;
+  animation: toast-in 150ms ease-out;
+}
+
+.toast__icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin-top: 1px;
+}
+
+.toast__text {
+  min-width: 0;
+}
+
+.toast--success .toast__icon {
+  color: #10b981;
+}
+
+.toast--error {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.toast--error .toast__icon {
+  color: var(--danger);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}
 

@@ -19,6 +19,7 @@ import ProfilePage from "./pages/ProfilePage";
 import NotificationsPage from "./pages/NotificationsPage";
 
 // Components
+import ToastCenter from "./components/ToastCenter";
 import Sidebar from "./components/Sidebar";
 import BottomNav from "./components/BottomNav";
 import NavDrawer from "./components/NavDrawer";
@@ -334,13 +335,15 @@ function App() {
   };
 
   return (
-    <Router>
-      {!isLoggedIn ? (
-        <LoginPage onSignInSuccess={() => setIsLoggedIn(true)} />
-      ) : (
-        <AppShell onLogout={handleLogout} />
-      )}
-    </Router>
+    <ToastCenter>
+      <Router>
+        {!isLoggedIn ? (
+          <LoginPage onSignInSuccess={() => setIsLoggedIn(true)} />
+        ) : (
+          <AppShell onLogout={handleLogout} />
+        )}
+      </Router>
+    </ToastCenter>
   );
 }
 

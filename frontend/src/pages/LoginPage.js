@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Lock, User } from "lucide-react";
 
 import ThemeToggle from "../components/ThemeToggle";
+import { useToast } from "../components/ToastCenter";
 import { BRAND_LOGO } from "../config/brand";
 import api, { getErrorMessage, TOKEN_KEY } from "../services/api";
 import {
@@ -11,6 +13,8 @@ import {
 } from "../services/authService";
 
 function LoginPage({ onSignInSuccess }) {
+  const navigate = useNavigate();
+  const showToast = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,12 +28,10 @@ function LoginPage({ onSignInSuccess }) {
   const [resetStatus, setResetStatus] = useState({ tone: "", message: "" });
   const [resetLoading, setResetLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
-    setErrorMessage("");
 
     try {
       const response = await api.post("/auth/login", { email, password });
@@ -39,10 +41,13 @@ function LoginPage({ onSignInSuccess }) {
       sessionStorage.removeItem(TOKEN_KEY);
       storage.setItem(TOKEN_KEY, response.data.token);
 
+      showToast("Welcome back! Login successful.", "success");
+      navigate("/", { replace: true });
       onSignInSuccess();
     } catch (error) {
-      setErrorMessage(
-        getErrorMessage(error, "Unable to sign in. Please try again.")
+      showToast(
+        getErrorMessage(error, "Unable to sign in. Please try again."),
+        "error"
       );
     } finally {
       setIsLoading(false);
@@ -213,12 +218,6 @@ function LoginPage({ onSignInSuccess }) {
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-
-          {errorMessage && (
-            <p className="login-error" role="alert">
-              {errorMessage}
-            </p>
-          )}
 
           <button type="submit" className="login-submit" disabled={isLoading}>
             <User size={18} strokeWidth={2.5} />
