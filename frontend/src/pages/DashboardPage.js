@@ -5,6 +5,7 @@ import {
   ArrowRight,
   CheckCircle2,
   Receipt,
+  ReceiptText,
   TrendingUp,
   UserPlus,
   Users,
@@ -140,7 +141,7 @@ const DashboardScreen = ({ members = [], expenses = [], loading = false }) => {
           label="Expenses"
           value={formatCurrency(totalExpenses)}
           hint={`${expenses.length} record${expenses.length === 1 ? "" : "s"}`}
-          icon={Receipt}
+          icon={ReceiptText}
         />
       </div>
 
