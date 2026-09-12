@@ -14,6 +14,31 @@ const adminSchema = new mongoose.Schema({
     required: true,
   },
 
+  avatar: {
+    type: Buffer,
+    default: null,
+  },
+
+  avatarContentType: {
+    type: String,
+    default: null,
+  },
+
+  avatarUpdatedAt: {
+    type: Date,
+    default: null,
+  },
+
+  recoveryCodeHash: {
+    type: String,
+    default: null,
+  },
+
+  recoveryCodeCreatedAt: {
+    type: Date,
+    default: null,
+  },
+
   updatedAt: {
     type: Date,
     default: Date.now,

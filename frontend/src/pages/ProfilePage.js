@@ -1,25 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AlertCircle,
   Bell,
+  Camera,
   CheckCircle2,
   ChevronDown,
   ChevronRight,
   Clock,
   Eye,
   EyeOff,
+  KeyRound,
   LifeBuoy,
+  Loader2,
   Lock,
   LogOut,
   ShieldCheck,
 } from "lucide-react";
 
 import { getErrorMessage, readSessionUser } from "../services/api";
-import { changePassword } from "../services/authService";
+import {
+  changePassword,
+  generateRecoveryCode,
+  getAvatar,
+  uploadAvatar,
+} from "../services/authService";
 import { initials } from "../utils/format";
 
 const EMPTY_FORM = { current: "", next: "", confirm: "" };
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
+const AVATAR_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 const HELP_TIPS = [
   "Add members from Members → Add member and set their monthly fee.",
@@ -37,6 +47,108 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
   const [showPasswords, setShowPasswords] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState({ tone: "", message: "" });
+
+  const avatarInputRef = useRef(null);
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarLoading, setAvatarLoading] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
+
+  const [recoveryCode, setRecoveryCode] = useState("");
+  const [recoveryLoading, setRecoveryLoading] = useState(false);
+  const [recoveryStatus, setRecoveryStatus] = useState({
+    tone: "",
+    message: "",
+  });
+
+  useEffect(() => {
+    let objectUrl = "";
+    let cancelled = false;
+
+    const loadAvatar = async () => {
+      try {
+        const response = await getAvatar();
+        objectUrl = URL.createObjectURL(response.data);
+
+        if (!cancelled) setAvatarUrl(objectUrl);
+      } catch {
+        // No photo is set until the first upload; initials stand in.
+      }
+    };
+
+    loadAvatar();
+
+    return () => {
+      cancelled = true;
+
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, []);
+
+  const handleAvatarChange = async (event) => {
+    const file = event.target.files?.[0];
+
+    event.target.value = "";
+
+    if (!file) return;
+
+    if (!AVATAR_TYPES.includes(file.type)) {
+      setAvatarError("Choose a JPG, PNG or WebP image.");
+      return;
+    }
+
+    if (file.size > MAX_AVATAR_BYTES) {
+      setAvatarError("Image must be 2 MB or smaller.");
+      return;
+    }
+
+    setAvatarError("");
+    setAvatarLoading(true);
+
+    try {
+      await uploadAvatar(file);
+
+      setAvatarUrl((current) => {
+        if (current) URL.revokeObjectURL(current);
+
+        return URL.createObjectURL(file);
+      });
+    } catch (error) {
+      setAvatarError(
+        getErrorMessage(error, "Unable to update the profile photo.")
+      );
+    } finally {
+      setAvatarLoading(false);
+    }
+  };
+
+  const handleGenerateRecovery = async () => {
+    setRecoveryStatus({ tone: "", message: "" });
+    setRecoveryLoading(true);
+
+    try {
+      const response = await generateRecoveryCode();
+      setRecoveryCode(response.data.recoveryCode || "");
+    } catch (error) {
+      setRecoveryStatus({
+        tone: "error",
+        message: getErrorMessage(error, "Unable to create a recovery code."),
+      });
+    } finally {
+      setRecoveryLoading(false);
+    }
+  };
+
+  const copyRecoveryCode = async () => {
+    try {
+      await navigator.clipboard.writeText(recoveryCode);
+      setRecoveryStatus({ tone: "success", message: "Copied to clipboard." });
+    } catch {
+      setRecoveryStatus({
+        tone: "error",
+        message: "Copy failed. Select the code and copy it manually.",
+      });
+    }
+  };
 
   const togglePanel = (panel) => {
     setStatus({ tone: "", message: "" });
@@ -97,9 +209,35 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
       </header>
 
       <section className="profile-identity" aria-label="Account details">
-        <span className="profile-avatar" aria-hidden="true">
-          {initials(name)}
-        </span>
+        <input
+          ref={avatarInputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          hidden
+          onChange={handleAvatarChange}
+        />
+
+        <button
+          type="button"
+          className="profile-avatar"
+          onClick={() => avatarInputRef.current?.click()}
+          disabled={avatarLoading}
+          aria-label="Change profile photo"
+        >
+          {avatarUrl ? (
+            <img className="profile-avatar__image" src={avatarUrl} alt="" />
+          ) : (
+            <span aria-hidden="true">{initials(name)}</span>
+          )}
+
+          <span className="profile-avatar__overlay" aria-hidden="true">
+            {avatarLoading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Camera className="h-5 w-5" />
+            )}
+          </span>
+        </button>
 
         <div className="profile-identity__text">
           <p className="profile-name">{name}</p>
@@ -109,6 +247,12 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
             <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
             {role}
           </span>
+
+          {avatarError && (
+            <p className="profile-avatar__error" role="alert">
+              {avatarError}
+            </p>
+          )}
         </div>
       </section>
 
@@ -237,6 +381,92 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
               </button>
             </div>
           </form>
+        )}
+
+        <button
+          type="button"
+          onClick={() => togglePanel("recovery")}
+          className="profile-row"
+          aria-expanded={openPanel === "recovery"}
+          aria-controls="recovery-code-panel"
+        >
+          <span className="profile-row__icon" aria-hidden="true">
+            <KeyRound className="h-4 w-4" />
+          </span>
+
+          <span className="profile-row__text">
+            <span className="profile-row__title">Recovery code</span>
+            <span className="profile-row__desc">
+              Reset your password if you forget it
+            </span>
+          </span>
+
+          <ChevronDown
+            className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${
+              openPanel === "recovery" ? "rotate-180" : ""
+            }`}
+            aria-hidden="true"
+          />
+        </button>
+
+        {openPanel === "recovery" && (
+          <div
+            id="recovery-code-panel"
+            className="space-y-3 px-4 py-4 sm:px-[18px] sm:py-5"
+          >
+            <p className="text-xs leading-relaxed text-slate-400">
+              Generate a one-time code, store it somewhere safe, then use it on
+              the login screen to set a new password. It is shown only once.
+            </p>
+
+            {recoveryCode ? (
+              <div className="space-y-2">
+                <code className="recovery-code">{recoveryCode}</code>
+
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <button
+                    type="button"
+                    className="btn-ghost"
+                    onClick={copyRecoveryCode}
+                  >
+                    Copy code
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-ghost"
+                    onClick={() => {
+                      setRecoveryCode("");
+                      setRecoveryStatus({ tone: "", message: "" });
+                    }}
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={handleGenerateRecovery}
+                disabled={recoveryLoading}
+              >
+                {recoveryLoading ? "Generating..." : "Generate recovery code"}
+              </button>
+            )}
+
+            {recoveryStatus.message && (
+              <p
+                role="status"
+                className={`text-xs font-semibold ${
+                  recoveryStatus.tone === "success"
+                    ? "text-emerald-400"
+                    : "text-red-300"
+                }`}
+              >
+                {recoveryStatus.message}
+              </p>
+            )}
+          </div>
         )}
 
         <Link to="/notifications" className="profile-row">

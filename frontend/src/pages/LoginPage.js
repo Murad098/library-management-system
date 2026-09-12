@@ -4,13 +4,19 @@ import { Eye, EyeOff, Lock, User } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle";
 import { BRAND_LOGO } from "../config/brand";
 import api, { getErrorMessage, TOKEN_KEY } from "../services/api";
+import { resetPassword } from "../services/authService";
 
 function LoginPage({ onSignInSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
-  const [showResetHint, setShowResetHint] = useState(false);
+  const [showReset, setShowReset] = useState(false);
+  const [resetCode, setResetCode] = useState("");
+  const [resetNewPassword, setResetNewPassword] = useState("");
+  const [resetConfirm, setResetConfirm] = useState("");
+  const [resetStatus, setResetStatus] = useState({ tone: "", message: "" });
+  const [resetLoading, setResetLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -35,6 +41,63 @@ function LoginPage({ onSignInSuccess }) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleResetSubmit = async (event) => {
+    event.preventDefault();
+    setResetStatus({ tone: "", message: "" });
+
+    if (!email.trim()) {
+      setResetStatus({
+        tone: "error",
+        message: "Enter your email above first.",
+      });
+      return;
+    }
+
+    if (resetNewPassword.length < 6) {
+      setResetStatus({
+        tone: "error",
+        message: "New password must be at least 6 characters.",
+      });
+      return;
+    }
+
+    if (resetNewPassword !== resetConfirm) {
+      setResetStatus({
+        tone: "error",
+        message: "New password and confirmation do not match.",
+      });
+      return;
+    }
+
+    setResetLoading(true);
+
+    try {
+      await resetPassword(email, resetCode, resetNewPassword);
+      setResetStatus({
+        tone: "success",
+        message: "Password reset. You can sign in now.",
+      });
+      setResetCode("");
+      setResetNewPassword("");
+      setResetConfirm("");
+    } catch (error) {
+      setResetStatus({
+        tone: "error",
+        message: getErrorMessage(error, "Unable to reset the password."),
+      });
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
+  const closeReset = () => {
+    setShowReset(false);
+    setResetCode("");
+    setResetNewPassword("");
+    setResetConfirm("");
+    setResetStatus({ tone: "", message: "" });
   };
 
   return (
@@ -118,18 +181,73 @@ function LoginPage({ onSignInSuccess }) {
             <button
               type="button"
               className="login-forgot"
-              onClick={() => setShowResetHint((shown) => !shown)}
+              onClick={() => (showReset ? closeReset() : setShowReset(true))}
             >
               Forgot Password?
             </button>
           </div>
-
-          {showResetHint && (
-            <p className="login-hint">
-              Ask your administrator to reset your password.
-            </p>
-          )}
         </form>
+
+        {showReset && (
+          <form className="login-reset" onSubmit={handleResetSubmit}>
+            <p className="login-reset__title">Reset your password</p>
+            <p className="login-reset__hint">
+              Enter a recovery code created from your Profile, then choose a new
+              password.
+            </p>
+
+            <input
+              className="login-reset__input"
+              type="text"
+              value={resetCode}
+              onChange={(event) => setResetCode(event.target.value)}
+              placeholder="Recovery code"
+              autoComplete="one-time-code"
+            />
+            <input
+              className="login-reset__input"
+              type="password"
+              value={resetNewPassword}
+              onChange={(event) => setResetNewPassword(event.target.value)}
+              placeholder="New password"
+              autoComplete="new-password"
+            />
+            <input
+              className="login-reset__input"
+              type="password"
+              value={resetConfirm}
+              onChange={(event) => setResetConfirm(event.target.value)}
+              placeholder="Confirm new password"
+              autoComplete="new-password"
+            />
+
+            {resetStatus.message && (
+              <p
+                role="alert"
+                className={`text-xs font-semibold ${
+                  resetStatus.tone === "success"
+                    ? "text-emerald-400"
+                    : "text-red-300"
+                }`}
+              >
+                {resetStatus.message}
+              </p>
+            )}
+
+            <div className="login-reset__actions">
+              <button type="button" className="btn-ghost" onClick={closeReset}>
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn-primary"
+                disabled={resetLoading}
+              >
+                {resetLoading ? "Resetting..." : "Reset password"}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
 
       <footer className="login-foot">
