@@ -27,7 +27,7 @@ function Sidebar({ onLogout }) {
         <div className="brand">
           <BrandMark size={36} />
           <span className="brand-word">
-            Libre<strong>Desk</strong>
+            Member <strong>stack</strong>
           </span>
         </div>
       </div>

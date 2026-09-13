@@ -12,9 +12,9 @@
   --text-soft: #cbd5e1;
   --muted: #94a3b8;
   --muted-2: #74839b;
-  --brand: #f59e0b;
-  --brand-hover: #d97706;
-  --brand-text: #fbbf24;
+  --brand: #c9a84c;
+  --brand-hover: #b8933c;
+  --brand-text: #dcc06a;
   --active-bg: rgba(255, 255, 255, 0.08);
   --danger: #f87171;
   --danger-soft: #f0a2a2;
@@ -42,6 +42,7 @@
 
   --font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: "DM Serif Display", ui-serif, Georgia, "Times New Roman", serif;
 }
 
 [data-theme="light"] {
@@ -56,7 +57,7 @@
   --text-soft: #334155;
   --muted: #64748b;
   --muted-2: #7c8aa3;
-  --brand-text: #b45309;
+  --brand-text: #8a6d1f;
   --active-bg: rgba(15, 23, 42, 0.07);
   --danger: #dc2626;
   --danger-soft: #b91c1c;
@@ -171,7 +172,7 @@ a {
 .icon-button:hover,
 .icon-button:focus-visible {
   color: var(--text);
-  border-color: rgba(245, 158, 11, 0.45);
+  border-color: rgba(201, 168, 76, 0.45);
 }
 
 /* =========================================================
@@ -180,20 +181,15 @@ a {
 
 .brand-mark {
   display: grid;
-  height: 34px;
-  width: 51px;
   flex: none;
   place-items: center;
-  overflow: hidden;
-  background: var(--glass-tile);
-  border: 1px solid rgba(245, 158, 11, 0.22);
-  border-radius: 10px;
 }
 
 .brand-mark img {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .brand-fallback {
@@ -215,7 +211,8 @@ a {
 
 .brand-word strong {
   color: var(--brand);
-  font-weight: 700;
+  font-family: var(--font-serif);
+  font-weight: 400;
 }
 
 /* =========================================================
@@ -442,12 +439,9 @@ a {
 
 .login-logo {
   display: block;
-  width: 104px;
-  height: 70px;
-  margin: 0 auto 18px;
-  object-fit: cover;
-  border: 1px solid var(--glass-border-strong);
-  border-radius: 12px;
+  width: clamp(54px, 15vw, 68px);
+  height: clamp(54px, 15vw, 68px);
+  margin: 0 auto 16px;
 }
 
 .login-title {
@@ -458,6 +452,12 @@ a {
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.02em;
+}
+
+.login-title strong {
+  color: var(--brand);
+  font-family: var(--font-serif);
+  font-weight: 400;
 }
 
 .login-subtitle {
@@ -505,8 +505,8 @@ a {
 .login-field input:focus {
   outline: none;
   background: var(--input-focus-bg);
-  border-color: rgba(245, 158, 11, 0.7);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+  border-color: rgba(201, 168, 76, 0.7);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.18);
 }
 
 .login-field--action input {
@@ -642,8 +642,8 @@ a {
 
 .login-reset__input:focus {
   outline: none;
-  border-color: rgba(245, 158, 11, 0.7);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+  border-color: rgba(201, 168, 76, 0.7);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.18);
 }
 
 .login-reset__actions {
@@ -769,8 +769,8 @@ a {
   gap: 6px;
   padding: 5px 10px;
   color: var(--brand-text);
-  background: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.22);
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid rgba(201, 168, 76, 0.22);
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
@@ -823,8 +823,8 @@ button.profile-row:focus-visible {
   flex: none;
   place-items: center;
   color: var(--brand);
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.18);
+  background: rgba(201, 168, 76, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.18);
   border-radius: 12px;
 }
 

@@ -1,22 +1,19 @@
 import { useState } from "react";
 
-import { BRAND_LOGO, BRAND_NAME } from "../config/brand";
-
-const LOGO_ASPECT = 3 / 2;
+import { BRAND_MARK, BRAND_NAME } from "../config/brand";
 
 function BrandMark({ size = 34 }) {
   const [failed, setFailed] = useState(false);
-  const width = Math.round(size * LOGO_ASPECT);
 
   return (
-    <span className="brand-mark" style={{ width, height: size }}>
+    <span className="brand-mark" style={{ width: size, height: size }}>
       {failed ? (
         <span className="brand-fallback" aria-hidden="true">
-          LD
+          MS
         </span>
       ) : (
         <img
-          src={BRAND_LOGO}
+          src={BRAND_MARK}
           alt={`${BRAND_NAME} logo`}
           onError={() => setFailed(true)}
         />

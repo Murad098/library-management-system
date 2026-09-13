@@ -1,25 +1,16 @@
 {
-  "short_name": "LibreDesk",
-  "name": "LibreDesk — Library Management System",
+  "short_name": "MemberStack",
+  "name": "MemberStack — Library Management System",
   "icons": [
     {
-      "src": "favicon.png",
-      "sizes": "64x64 32x32 16x16",
-      "type": "image/png"
-    },
-    {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#070b14",
+  "theme_color": "#101B2D",
   "background_color": "#070b14"
 }

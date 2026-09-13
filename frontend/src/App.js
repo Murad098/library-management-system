@@ -206,7 +206,7 @@ function AppShell({ onLogout }) {
 
             <BrandMark size={32} />
             <span className="brand-word">
-              Libre<strong>Desk</strong>
+              Member <strong>stack</strong>
             </span>
           </div>
 

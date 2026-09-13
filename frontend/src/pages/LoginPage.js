@@ -4,7 +4,7 @@ import { Eye, EyeOff, Lock, User } from "lucide-react";
 
 import ThemeToggle from "../components/ThemeToggle";
 import { useToast } from "../components/ToastCenter";
-import { BRAND_LOGO } from "../config/brand";
+import { BRAND_MARK, BRAND_NAME } from "../config/brand";
 import api, { getErrorMessage, TOKEN_KEY } from "../services/api";
 import {
   requestPasswordResetOtp,
@@ -170,9 +170,11 @@ function LoginPage({ onSignInSuccess }) {
 
       <div className="login-body">
         <header className="login-head">
-          <img className="login-logo" src={BRAND_LOGO} alt="" />
-          <h1 className="login-title">Library Management System</h1>
-          <p className="login-subtitle">Manage your library account</p>
+          <img className="login-logo" src={BRAND_MARK} alt="" />
+          <h1 className="login-title">
+            Member <strong>stack</strong>
+          </h1>
+          <p className="login-subtitle">Library management</p>
         </header>
 
         <form className="login-form" onSubmit={handleSubmit}>
@@ -382,7 +384,7 @@ function LoginPage({ onSignInSuccess }) {
       </div>
 
       <footer className="login-foot">
-        © {new Date().getFullYear()} Library Management System
+        © {new Date().getFullYear()} {BRAND_NAME}
       </footer>
     </main>
   );

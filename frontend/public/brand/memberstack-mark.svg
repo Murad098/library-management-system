@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="MemberStack">
+  <rect width="48" height="48" rx="12" fill="#101B2D"/>
+  <g>
+    <path d="M24 23 36 29 24 35 12 29Z" fill="#C9A84C"/>
+    <path d="M12 29 24 35 24 38.5 12 32.5Z" fill="#A8862F"/>
+    <path d="M36 29 24 35 24 38.5 36 32.5Z" fill="#8A6E26"/>
+  </g>
+  <g>
+    <path d="M24 9 36 15 24 21 12 15Z" fill="#E2C77C"/>
+    <path d="M12 15 24 21 24 24.5 12 18.5Z" fill="#CBA94F"/>
+    <path d="M36 15 24 21 24 24.5 36 18.5Z" fill="#A8862F"/>
+  </g>
+  <g fill="#0B0F17">
+    <circle cx="24" cy="11.4" r="2.1"/>
+    <path d="M24 14.2a3.8 3.8 0 0 0-3.8 3.8v1a.9.9 0 0 0 .9.9h5.8a.9.9 0 0 0 .9-.9v-1A3.8 3.8 0 0 0 24 14.2Z"/>
+  </g>
+</svg>

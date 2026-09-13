@@ -1,12 +1,14 @@
 # Brand assets
 
-- `book-logo.jpg` — the real open-book photograph used as the LibreDesk logo
-  mark, rendered at `/brand/book-logo.jpg`. Square-cropped icons generated from
-  it live in `public/` (`favicon.png`, `favicon.ico`, `apple-touch-icon.png`,
-  `logo192.png`, `logo512.png`).
+- `memberstack-mark.svg` — the MemberStack logo mark: an isometric stack of two
+  gold platforms on a navy tile, with a black member silhouette standing on the
+  top platform. Flat shapes only — no gradients, shadows or glow; depth comes
+  from the isometric shading between the two platforms.
+- `../favicon.svg` — the same mark, referenced by `index.html` and by
+  `manifest.json` as the browser / PWA icon.
 
-- `library-bg.jpg` — **still needed.** The real library / bookshelf photograph
-  used as the application background, referenced as `/brand/library-bg.jpg`.
-  Until it exists, the backdrop shows the dark base colour only.
+The wordmark is rendered in the app rather than baked into an image, so it
+follows the light and dark themes: "Member" uses the text colour in Space
+Grotesk, and "stack" uses the brand gold in DM Serif Display.
 
 No AI-generated artwork is used.

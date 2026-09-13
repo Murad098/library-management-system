@@ -35,14 +35,14 @@ const sendOtpEmail = async (to, otp) => {
   });
 
   const text = [
-    `Your LibreDesk password reset code is ${otp}.`,
+    `Your MemberStack password reset code is ${otp}.`,
     "",
     "It expires in 10 minutes. If you did not request this, ignore this email.",
   ].join("\n");
 
   const html = [
     '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.5;color:#0f172a">',
-    "<p>Your LibreDesk password reset code is:</p>",
+    "<p>Your MemberStack password reset code is:</p>",
     `<p style="font-size:28px;font-weight:700;letter-spacing:6px;margin:12px 0">${otp}</p>`,
     '<p style="color:#64748b;font-size:13px">It expires in 10 minutes. If you did not request this, ignore this email.</p>',
     "</div>",
@@ -51,7 +51,7 @@ const sendOtpEmail = async (to, otp) => {
   await transport.sendMail({
     from,
     to,
-    subject: `${otp} is your LibreDesk verification code`,
+    subject: `${otp} is your MemberStack verification code`,
     text,
     html,
   });

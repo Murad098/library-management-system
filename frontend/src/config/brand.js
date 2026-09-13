@@ -1,3 +1,3 @@
-export const BRAND_NAME = "LibreDesk";
+export const BRAND_NAME = "MemberStack";
 
-export const BRAND_LOGO = "/brand/book-logo.jpg";
+export const BRAND_MARK = "/brand/memberstack-mark.svg";
