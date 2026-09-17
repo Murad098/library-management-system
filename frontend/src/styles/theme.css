@@ -482,7 +482,7 @@ a {
   left: 16px;
   width: 18px;
   height: 18px;
-  color: var(--muted-2);
+  color: var(--text);
   pointer-events: none;
 }
 
@@ -520,7 +520,7 @@ a {
   width: 44px;
   height: 44px;
   place-items: center;
-  color: var(--muted);
+  color: var(--text);
   background: none;
   border: 0;
   border-radius: 10px;
@@ -538,7 +538,7 @@ a {
   align-items: center;
   justify-content: center;
   gap: 9px;
-  color: #1c1206;
+  color: var(--text);
   font-size: 15px;
   font-weight: 700;
   background-color: var(--brand);
@@ -1069,6 +1069,10 @@ button.profile-row:focus-visible {
   top: calc(14px + env(safe-area-inset-top, 0px));
   right: 16px;
   z-index: 2;
+}
+
+.login-theme .icon-button {
+  color: var(--text);
 }
 
 /* =========================================================
