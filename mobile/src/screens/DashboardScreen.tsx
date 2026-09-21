@@ -44,6 +44,8 @@ interface DashboardState {
 const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const colors = useThemeColors();
+  const TEAL = colors.green;
+
   const [state, setState] = useState<DashboardState>({
     members: [],
     expenses: [],
@@ -126,8 +128,10 @@ const DashboardScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.base }]}>
-        <ActivityIndicator size="large" color={colors.brand} />
+      <View
+        style={[styles.loadingContainer, { backgroundColor: colors.base }]}
+      >
+        <ActivityIndicator size="large" color={TEAL} />
         <Text style={[styles.loadingText, { color: colors.textMuted }]}>
           Loading library data...
         </Text>
@@ -143,8 +147,8 @@ const DashboardScreen: React.FC = () => {
         <RefreshControl
           refreshing={state.refreshing}
           onRefresh={handleRefresh}
-          tintColor={colors.brand}
-          colors={[colors.brand]}
+          tintColor={TEAL}
+          colors={[TEAL]}
         />
       }
       showsVerticalScrollIndicator={false}
@@ -153,9 +157,10 @@ const DashboardScreen: React.FC = () => {
         icon="grid"
         title="Dashboard"
         subtitle={`Summary for ${formatMonthYear()}`}
+        accentColor={TEAL}
         rightContent={
           <TouchableOpacity
-            style={[styles.addButton, { backgroundColor: colors.brand }]}
+            style={[styles.addButton, { backgroundColor: TEAL }]}
             onPress={() => navigation.navigate("AddMember")}
             activeOpacity={0.8}
           >
@@ -166,11 +171,23 @@ const DashboardScreen: React.FC = () => {
       />
 
       {error ? (
-        <View style={[styles.errorBox, { backgroundColor: `${colors.red}1A`, borderColor: `${colors.red}4D` }]}>
+        <View
+          style={[
+            styles.errorBox,
+            {
+              backgroundColor: `${colors.red}1A`,
+              borderColor: `${colors.red}4D`,
+            },
+          ]}
+        >
           <Ionicons name="alert-circle" size={16} color={colors.red} />
-          <Text style={[styles.errorText, { color: colors.red }]}>{error}</Text>
+          <Text style={[styles.errorText, { color: colors.red }]}>
+            {error}
+          </Text>
           <TouchableOpacity onPress={loadData}>
-            <Text style={[styles.retryText, { color: colors.red }]}>Retry</Text>
+            <Text style={[styles.retryText, { color: colors.red }]}>
+              Retry
+            </Text>
           </TouchableOpacity>
         </View>
       ) : null}
@@ -188,7 +205,7 @@ const DashboardScreen: React.FC = () => {
           value={formatCurrency(collected)}
           hint={`of ${formatCurrency(expected)} expected`}
           icon={(props) => <Ionicons name="wallet" {...props} />}
-          tone="brand"
+          tone="green"
         />
         <StatCard
           label="Outstanding"
@@ -213,29 +230,51 @@ const DashboardScreen: React.FC = () => {
       </View>
 
       <View style={styles.chartRow}>
-        <View style={[styles.chartCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
+        <View
+          style={[
+            styles.chartCard,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.line,
+              shadowColor: TEAL,
+            },
+          ]}
+        >
           <View style={styles.chartHeader}>
-            <Text style={[styles.chartTitle, { color: colors.white }]}>Fee collection</Text>
+            <Text style={[styles.chartTitle, { color: colors.text }]}>
+              Fee collection
+            </Text>
             <Text style={[styles.chartSubtitle, { color: colors.textMuted }]}>
               Paid members against expected monthly fees
             </Text>
           </View>
           <View style={styles.chartContent}>
             <View style={styles.chartStatRow}>
-              <Text style={[styles.chartStatValue, { color: colors.white }]}>{collectionRate}%</Text>
-              <Text style={[styles.chartStatHint, { color: colors.textDim }]}>
+              <Text style={[styles.chartStatValue, { color: colors.text }]}>
+                {collectionRate}%
+              </Text>
+              <Text
+                style={[styles.chartStatHint, { color: colors.textDim }]}
+              >
                 {formatCurrency(collected)} / {formatCurrency(expected)}
               </Text>
             </View>
-            <View style={[styles.barContainer, { backgroundColor: colors.raised }]}>
+            <View
+              style={[styles.barContainer, { backgroundColor: colors.raised }]}
+            >
               <View
                 style={[
                   styles.barFill,
-                  { width: `${collectionRate}%`, backgroundColor: colors.brand },
+                  {
+                    width: `${collectionRate}%`,
+                    backgroundColor: TEAL,
+                  },
                 ]}
               />
             </View>
-            <Text style={[styles.chartHint, { color: colors.textMuted }]}>
+            <Text
+              style={[styles.chartHint, { color: colors.textMuted }]}
+            >
               {members.length === 0
                 ? "No members yet. Add a member to start tracking fees."
                 : `${paidMembers.length} of ${members.length} members have paid.`}
@@ -243,9 +282,20 @@ const DashboardScreen: React.FC = () => {
           </View>
         </View>
 
-        <View style={[styles.chartCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
+        <View
+          style={[
+            styles.chartCard,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.line,
+              shadowColor: TEAL,
+            },
+          ]}
+        >
           <View style={styles.chartHeader}>
-            <Text style={[styles.chartTitle, { color: colors.white }]}>Collected vs expenses</Text>
+            <Text style={[styles.chartTitle, { color: colors.text }]}>
+              Collected vs expenses
+            </Text>
             <Text style={[styles.chartSubtitle, { color: colors.textMuted }]}>
               Fees collected compared with recorded spending
             </Text>
@@ -254,18 +304,27 @@ const DashboardScreen: React.FC = () => {
             <View style={styles.chartStatRow}>
               <View style={styles.chartStatRowItem}>
                 <View style={styles.chartStatLabelRow}>
-                  <View style={[styles.dot, { backgroundColor: colors.brand }]} />
-                  <Text style={[styles.chartStatLabel, { color: colors.textMuted }]}>Collected</Text>
+                  <View style={[styles.dot, { backgroundColor: TEAL }]} />
+                  <Text
+                    style={[styles.chartStatLabel, { color: colors.textMuted }]}
+                  >
+                    Collected
+                  </Text>
                 </View>
-                <Text style={[styles.chartStatValue, { color: colors.white }]}>
+                <Text style={[styles.chartStatValue, { color: colors.text }]}>
                   {formatCurrency(collected)}
                 </Text>
               </View>
-              <View style={[styles.barContainer, { backgroundColor: colors.raised }]}>
+              <View
+                style={[styles.barContainer, { backgroundColor: colors.raised }]}
+              >
                 <View
                   style={[
                     styles.barFill,
-                    { width: `${collectedWidth}%`, backgroundColor: colors.brand },
+                    {
+                      width: `${collectedWidth}%`,
+                      backgroundColor: TEAL,
+                    },
                   ]}
                 />
               </View>
@@ -274,27 +333,40 @@ const DashboardScreen: React.FC = () => {
             <View style={styles.chartStatRow}>
               <View style={styles.chartStatRowItem}>
                 <View style={styles.chartStatLabelRow}>
-                  <View style={[styles.dot, { backgroundColor: colors.textDim }]} />
-                  <Text style={[styles.chartStatLabel, { color: colors.textMuted }]}>Expenses</Text>
+                  <View
+                    style={[styles.dot, { backgroundColor: colors.textDim }]}
+                  />
+                  <Text
+                    style={[styles.chartStatLabel, { color: colors.textMuted }]}
+                  >
+                    Expenses
+                  </Text>
                 </View>
-                <Text style={[styles.chartStatValue, { color: colors.white }]}>
+                <Text style={[styles.chartStatValue, { color: colors.text }]}>
                   {formatCurrency(totalExpenses)}
                 </Text>
               </View>
-              <View style={[styles.barContainer, { backgroundColor: colors.raised }]}>
+              <View
+                style={[styles.barContainer, { backgroundColor: colors.raised }]}
+              >
                 <View
                   style={[
                     styles.barFill,
-                    { width: `${expensesWidth}%`, backgroundColor: colors.textDim },
+                    {
+                      width: `${expensesWidth}%`,
+                      backgroundColor: colors.textDim,
+                    },
                   ]}
                 />
-                </View>
+              </View>
             </View>
 
             <View style={styles.netRow}>
               <View style={styles.netLabelRow}>
-                <Ionicons name="trending-up" size={16} color={colors.brand} />
-                <Text style={[styles.netLabel, { color: colors.textMuted }]}>Net</Text>
+                <Ionicons name="trending-up" size={16} color={TEAL} />
+                <Text style={[styles.netLabel, { color: colors.textMuted }]}>
+                  Net
+                </Text>
               </View>
               <Text
                 style={[
@@ -312,39 +384,87 @@ const DashboardScreen: React.FC = () => {
       <View style={styles.recentSection}>
         <View style={styles.recentHeader}>
           <View>
-            <Text style={[styles.recentTitle, { color: colors.white }]}>Recent members</Text>
-            <Text style={[styles.recentSubtitle, { color: colors.textMuted }]}>
+            <Text style={[styles.recentTitle, { color: colors.text }]}>
+              Recent members
+            </Text>
+            <Text
+              style={[styles.recentSubtitle, { color: colors.textMuted }]}
+            >
               Most recently added records
             </Text>
           </View>
           <TouchableOpacity
-            onPress={() => navigation.getParent()?.navigate("MembersTab" as never)}
+            onPress={() =>
+              navigation.getParent()?.navigate("MembersTab" as never)
+            }
             style={styles.viewAllLink}
           >
-            <Text style={[styles.viewAllText, { color: colors.brand }]}>View all</Text>
-            <Ionicons name="chevron-forward" size={16} color={colors.brand} />
+            <Text style={[styles.viewAllText, { color: TEAL }]}>
+              View all
+            </Text>
+            <Ionicons name="chevron-forward" size={16} color={TEAL} />
           </TouchableOpacity>
         </View>
 
         {recentMembers.length === 0 ? (
-          <View style={[styles.emptyNote, { backgroundColor: colors.surface, borderColor: colors.line }]}>
-            <Ionicons name="people-outline" size={24} color={colors.textDim} />
-            <Text style={[styles.emptyText, { color: colors.textMuted }]}>No members yet.</Text>
+          <View
+            style={[
+              styles.emptyNote,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.line,
+              },
+            ]}
+          >
+            <Ionicons
+              name="people-outline"
+              size={24}
+              color={colors.textDim}
+            />
+            <Text style={[styles.emptyText, { color: colors.textMuted }]}>
+              No members yet.
+            </Text>
           </View>
         ) : (
           <View style={styles.recentList}>
             {recentMembers.map((member) => (
-              <View key={member.id} style={[styles.recentMemberRow, { backgroundColor: colors.surface, borderColor: colors.line }]}>
-                <View style={[styles.recentMemberAvatar, { backgroundColor: `${colors.brand}26`, borderColor: `${colors.brand}4D` }]}>
-                  <Text style={[styles.recentMemberInitial, { color: colors.brand }]}>
+              <View
+                key={member.id}
+                style={[
+                  styles.recentMemberRow,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.line,
+                  },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.recentMemberAvatar,
+                    {
+                      backgroundColor: `${TEAL}26`,
+                      borderColor: `${TEAL}4D`,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.recentMemberInitial, { color: TEAL }]}>
                     {initials(member.name)}
                   </Text>
                 </View>
                 <View style={styles.recentMemberInfo}>
-                  <Text style={[styles.recentMemberName, { color: colors.white }]} numberOfLines={1}>
+                  <Text
+                    style={[styles.recentMemberName, { color: colors.text }]}
+                    numberOfLines={1}
+                  >
                     {member.name}
                   </Text>
-                  <Text style={[styles.recentMemberEmail, { color: colors.textMuted }]} numberOfLines={1}>
+                  <Text
+                    style={[
+                      styles.recentMemberEmail,
+                      { color: colors.textMuted },
+                    ]}
+                    numberOfLines={1}
+                  >
                     {member.email}
                   </Text>
                 </View>
@@ -352,14 +472,25 @@ const DashboardScreen: React.FC = () => {
                   style={[
                     styles.recentStatusBadge,
                     member.status === "paid"
-                      ? { backgroundColor: `${colors.green}1A`, borderColor: `${colors.green}4D` }
-                      : { backgroundColor: `${colors.red}1A`, borderColor: `${colors.red}4D` },
+                      ? {
+                          backgroundColor: `${colors.green}1A`,
+                          borderColor: `${colors.green}4D`,
+                        }
+                      : {
+                          backgroundColor: `${colors.red}1A`,
+                          borderColor: `${colors.red}4D`,
+                        },
                   ]}
                 >
                   <Text
                     style={[
                       styles.recentStatusText,
-                      { color: member.status === "paid" ? colors.green : colors.red },
+                      {
+                        color:
+                          member.status === "paid"
+                            ? colors.green
+                            : colors.red,
+                      },
                     ]}
                   >
                     {member.status === "paid" ? "Paid" : "Unpaid"}
@@ -374,39 +505,100 @@ const DashboardScreen: React.FC = () => {
       <View style={styles.recentSection}>
         <View style={styles.recentHeader}>
           <View>
-            <Text style={[styles.recentTitle, { color: colors.white }]}>Recent expenses</Text>
-            <Text style={[styles.recentSubtitle, { color: colors.textMuted }]}>Latest spending recorded</Text>
+            <Text style={[styles.recentTitle, { color: colors.text }]}>
+              Recent expenses
+            </Text>
+            <Text
+              style={[styles.recentSubtitle, { color: colors.textMuted }]}
+            >
+              Latest spending recorded
+            </Text>
           </View>
           <TouchableOpacity
-            onPress={() => navigation.getParent()?.navigate("ExpensesTab" as never)}
+            onPress={() =>
+              navigation.getParent()?.navigate("ExpensesTab" as never)
+            }
             style={styles.viewAllLink}
           >
-            <Text style={[styles.viewAllText, { color: colors.brand }]}>View all</Text>
-            <Ionicons name="chevron-forward" size={16} color={colors.brand} />
+            <Text style={[styles.viewAllText, { color: TEAL }]}>
+              View all
+            </Text>
+            <Ionicons name="chevron-forward" size={16} color={TEAL} />
           </TouchableOpacity>
         </View>
 
         {recentExpenses.length === 0 ? (
-          <View style={[styles.emptyNote, { backgroundColor: colors.surface, borderColor: colors.line }]}>
-            <Ionicons name="receipt-outline" size={24} color={colors.textDim} />
-            <Text style={[styles.emptyText, { color: colors.textMuted }]}>No expenses recorded yet.</Text>
+          <View
+            style={[
+              styles.emptyNote,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.line,
+              },
+            ]}
+          >
+            <Ionicons
+              name="receipt-outline"
+              size={24}
+              color={colors.textDim}
+            />
+            <Text style={[styles.emptyText, { color: colors.textMuted }]}>
+              No expenses recorded yet.
+            </Text>
           </View>
         ) : (
           <View style={styles.recentList}>
             {recentExpenses.map((expense) => (
-              <View key={expense.id} style={[styles.recentExpenseRow, { backgroundColor: colors.surface, borderColor: colors.line }]}>
-                <View style={[styles.recentExpenseIcon, { backgroundColor: colors.raised, borderColor: colors.line }]}>
-                  <Ionicons name="receipt-outline" size={18} color={colors.textMuted} />
+              <View
+                key={expense.id}
+                style={[
+                  styles.recentExpenseRow,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.line,
+                  },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.recentExpenseIcon,
+                    {
+                      backgroundColor: colors.raised,
+                      borderColor: colors.line,
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name="receipt-outline"
+                    size={18}
+                    color={TEAL}
+                  />
                 </View>
                 <View style={styles.recentExpenseInfo}>
-                  <Text style={[styles.recentExpenseTitle, { color: colors.white }]} numberOfLines={1}>
+                  <Text
+                    style={[
+                      styles.recentExpenseTitle,
+                      { color: colors.text },
+                    ]}
+                    numberOfLines={1}
+                  >
                     {expense.title}
                   </Text>
-                  <Text style={[styles.recentExpenseMeta, { color: colors.textMuted }]}>
+                  <Text
+                    style={[
+                      styles.recentExpenseMeta,
+                      { color: colors.textMuted },
+                    ]}
+                  >
                     {expense.category} • {formatDate(expense.date)}
                   </Text>
                 </View>
-                <Text style={[styles.recentExpenseAmount, { color: colors.white }]}>
+                <Text
+                  style={[
+                    styles.recentExpenseAmount,
+                    { color: colors.text },
+                  ]}
+                >
                   {formatCurrency(expense.amount)}
                 </Text>
               </View>
@@ -415,14 +607,22 @@ const DashboardScreen: React.FC = () => {
         )}
       </View>
 
-      {members.length > 0 && outstanding === 0 && (
-        <View style={[styles.allCollectedBadge, { backgroundColor: `${colors.green}1A`, borderColor: `${colors.green}4D` }]}>
+      {members.length > 0 && outstanding === 0 ? (
+        <View
+          style={[
+            styles.allCollectedBadge,
+            {
+              backgroundColor: `${colors.green}1A`,
+              borderColor: `${colors.green}4D`,
+            },
+          ]}
+        >
           <Ionicons name="checkmark-circle" size={16} color={colors.green} />
           <Text style={[styles.allCollectedText, { color: colors.green }]}>
             All member fees are fully collected.
           </Text>
         </View>
-      )}
+      ) : null}
     </ScrollView>
   );
 };
@@ -441,9 +641,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    borderRadius: 12,
+    borderRadius: 24,
     paddingHorizontal: 16,
-    paddingVertical: 11,
+    paddingVertical: 10,
   },
   addButtonText: {
     fontSize: 14,
@@ -479,6 +679,10 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 4,
   },
   chartHeader: { marginBottom: 12 },
   chartTitle: {
@@ -494,7 +698,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  chartStatLabelRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  chartStatLabelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
   chartStatLabel: { fontSize: 12 },
   chartStatValue: {
     fontSize: 22,
@@ -521,7 +729,11 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     marginTop: 8,
   },
-  netLabelRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  netLabelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
   netLabel: { fontSize: 13 },
   netValue: { fontSize: 16, fontWeight: "700" },
   recentSection: { marginBottom: 20 },

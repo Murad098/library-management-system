@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import * as SecureStore from "expo-secure-store";
 import * as ImagePicker from "expo-image-picker";
 
 import { useAuth } from "../hooks/useAuth";
@@ -28,11 +29,14 @@ const HELP_TIPS = [
   "Change the admin password here whenever it may have been shared.",
 ];
 
+const LANGUAGE_STORAGE_KEY = "language";
+
 const ProfileScreen: React.FC = () => {
   const { user, signOut } = useAuth();
   const { toggleTheme, colorScheme } = useTheme();
   const colors = useThemeColors();
   const { Toast, show } = useToast();
+  const TEAL = colors.green;
 
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [avatarLoading, setAvatarLoading] = useState(true);
@@ -45,8 +49,24 @@ const ProfileScreen: React.FC = () => {
   const [showPasswords, setShowPasswords] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  const [language, setLanguage] = useState<"en" | "ur">("en");
+
   const togglePanel = (panel: string) => {
     setOpenPanel((current) => (current === panel ? "" : panel));
+  };
+
+  useEffect(() => {
+    (async () => {
+      const saved = await SecureStore.getItemAsync(LANGUAGE_STORAGE_KEY);
+      if (saved === "en" || saved === "ur") {
+        setLanguage(saved);
+      }
+    })();
+  }, []);
+
+  const handleLanguage = async (lang: "en" | "ur") => {
+    setLanguage(lang);
+    await SecureStore.setItemAsync(LANGUAGE_STORAGE_KEY, lang);
   };
 
   const loadAvatar = async () => {
@@ -181,15 +201,16 @@ const ProfileScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
       >
         <SectionHeader
-          icon="person"
-          title="Profile"
-          subtitle="Manage your account"
+          icon="settings"
+          title="Settings"
+          subtitle="Manage your account and preferences"
+          accentColor={TEAL}
           rightContent={
             <TouchableOpacity
               style={[
                 styles.themeToggle,
                 {
-                  backgroundColor: colors.surface,
+                  backgroundColor: colors.base,
                   borderColor: colors.line,
                 },
               ]}
@@ -197,14 +218,15 @@ const ProfileScreen: React.FC = () => {
               activeOpacity={0.7}
             >
               <Ionicons
-                name={colorScheme === "dark" ? "sunny" : "moon"}
+                name={colorScheme === "dark" ? "moon" : "sunny"}
                 size={20}
-                color={colors.brand}
+                color={TEAL}
               />
             </TouchableOpacity>
           }
         />
 
+        {/* ── Account Details ── */}
         <View
           style={[
             styles.identitySection,
@@ -215,20 +237,20 @@ const ProfileScreen: React.FC = () => {
           ]}
         >
           <TouchableOpacity
-            style={styles.avatar}
+            style={[styles.avatar, { backgroundColor: TEAL }]}
             onPress={handleAvatarChange}
             disabled={avatarLoading}
             activeOpacity={0.7}
           >
             {avatarLoading ? (
-              <ActivityIndicator size="small" color={colors.brand} />
+              <ActivityIndicator size="small" color={colors.black} />
             ) : avatarUrl ? (
               <Image
                 source={{ uri: avatarUrl }}
                 style={{ width: "100%", height: "100%", borderRadius: 31 }}
               />
             ) : (
-              <Text style={[styles.avatarInitials, { color: colors.brand }]}>
+              <Text style={[styles.avatarInitials, { color: colors.black }]}>
                 {initials(name)}
               </Text>
             )}
@@ -252,7 +274,7 @@ const ProfileScreen: React.FC = () => {
           ) : null}
 
           <View style={styles.identityText}>
-            <Text style={[styles.profileName, { color: colors.white }]}>
+            <Text style={[styles.profileName, { color: colors.text }]}>
               {name || "Administrator"}
             </Text>
             <Text style={[styles.profileEmail, { color: colors.textMuted }]}>
@@ -263,13 +285,17 @@ const ProfileScreen: React.FC = () => {
               style={[
                 styles.roleBadge,
                 {
-                  backgroundColor: `${colors.brand}1A`,
-                  borderColor: `${colors.brand}4D`,
+                  backgroundColor: `${TEAL}1A`,
+                  borderColor: `${TEAL}4D`,
                 },
               ]}
             >
-              <Ionicons name="shield-checkmark" size={12} color={colors.brand} />
-              <Text style={[styles.roleText, { color: colors.brandText }]}>
+              <Ionicons
+                name="shield-checkmark"
+                size={12}
+                color={TEAL}
+              />
+              <Text style={[styles.roleText, { color: TEAL }]}>
                 {role || "Administrator"}
               </Text>
             </View>
@@ -277,7 +303,12 @@ const ProfileScreen: React.FC = () => {
         </View>
 
         {hasSession && (
-          <View style={[styles.sessionRow, { backgroundColor: colors.surface, borderColor: colors.line }]}>
+          <View
+            style={[
+              styles.sessionRow,
+              { backgroundColor: colors.surface, borderColor: colors.line },
+            ]}
+          >
             <Ionicons name="time" size={14} color={colors.textMuted} />
             <Text style={[styles.sessionText, { color: colors.textMuted }]}>
               Session active until{" "}
@@ -289,12 +320,156 @@ const ProfileScreen: React.FC = () => {
           </View>
         )}
 
+        {/* ── Settings Menu ── */}
         <View
           style={[
             styles.menuSection,
             { backgroundColor: colors.surface, borderColor: colors.line },
           ]}
         >
+          {/* Appearance */}
+          <TouchableOpacity
+            style={styles.menuRow}
+            activeOpacity={0.7}
+          >
+            <View style={styles.menuRowLeft}>
+              <View
+                style={[
+                  styles.menuIcon,
+                  {
+                    backgroundColor: `${TEAL}1A`,
+                    borderColor: `${TEAL}4D`,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name={colorScheme === "dark" ? "moon" : "sunny"}
+                  size={18}
+                  color={TEAL}
+                />
+              </View>
+              <View style={styles.menuText}>
+                <Text style={[styles.menuTitle, { color: colors.text }]}>
+                  Dark mode
+                </Text>
+                <Text style={[styles.menuDesc, { color: colors.textMuted }]}>
+                  {colorScheme === "dark"
+                    ? "Dark theme active"
+                    : "Light theme active"}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.toggleSwitch}>
+              <TouchableOpacity
+                style={[
+                  styles.toggleTrack,
+                  {
+                    backgroundColor:
+                      colorScheme === "dark" ? TEAL : colors.line,
+                  },
+                ]}
+                onPress={toggleTheme}
+                activeOpacity={0.7}
+              >
+                <View
+                  style={[
+                    styles.toggleThumb,
+                    {
+                      backgroundColor: colors.surface,
+                      transform: [
+                        {
+                          translateX: colorScheme === "dark" ? 22 : 2,
+                        },
+                      ],
+                    },
+                  ]}
+                />
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+
+          <View style={styles.divider} />
+
+          {/* Language */}
+          <View style={styles.menuRow}>
+            <View style={styles.menuRowLeft}>
+              <View
+                style={[
+                  styles.menuIcon,
+                  {
+                    backgroundColor: `${TEAL}1A`,
+                    borderColor: `${TEAL}4D`,
+                  },
+                ]}
+              >
+                <Ionicons name="language" size={18} color={TEAL} />
+              </View>
+              <View style={styles.menuText}>
+                <Text style={[styles.menuTitle, { color: colors.text }]}>
+                  Language
+                </Text>
+                <Text style={[styles.menuDesc, { color: colors.textMuted }]}>
+                  {language === "en" ? "English" : "اردو"}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.langPills}>
+              <TouchableOpacity
+                style={[
+                  styles.langPill,
+                  language === "en"
+                    ? { backgroundColor: TEAL }
+                    : {
+                        backgroundColor: colors.base,
+                        borderColor: colors.line,
+                      },
+                ]}
+                onPress={() => handleLanguage("en")}
+                activeOpacity={0.7}
+              >
+                <Text
+                  style={[
+                    styles.langPillText,
+                    {
+                      color:
+                        language === "en" ? colors.black : colors.textMuted,
+                    },
+                  ]}
+                >
+                  EN
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.langPill,
+                  language === "ur"
+                    ? { backgroundColor: TEAL }
+                    : {
+                        backgroundColor: colors.base,
+                        borderColor: colors.line,
+                      },
+                ]}
+                onPress={() => handleLanguage("ur")}
+                activeOpacity={0.7}
+              >
+                <Text
+                  style={[
+                    styles.langPillText,
+                    {
+                      color:
+                        language === "ur" ? colors.black : colors.textMuted,
+                    },
+                  ]}
+                >
+                  اردو
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          {/* Change Password */}
           <TouchableOpacity
             style={styles.menuRow}
             onPress={() => togglePanel("password")}
@@ -305,15 +480,15 @@ const ProfileScreen: React.FC = () => {
                 style={[
                   styles.menuIcon,
                   {
-                    backgroundColor: `${colors.brand}1A`,
-                    borderColor: `${colors.brand}4D`,
+                    backgroundColor: `${TEAL}1A`,
+                    borderColor: `${TEAL}4D`,
                   },
                 ]}
               >
-                <Ionicons name="lock-closed" size={18} color={colors.brand} />
+                <Ionicons name="lock-closed" size={18} color={TEAL} />
               </View>
               <View style={styles.menuText}>
-                <Text style={[styles.menuTitle, { color: colors.white }]}>
+                <Text style={[styles.menuTitle, { color: colors.text }]}>
                   Change Password
                 </Text>
                 <Text style={[styles.menuDesc, { color: colors.textMuted }]}>
@@ -331,13 +506,18 @@ const ProfileScreen: React.FC = () => {
           {openPanel === "password" && (
             <View style={styles.passwordForm}>
               <View style={styles.formField}>
-                <Text style={[styles.fieldLabel, { color: colors.textMuted }]}>
+                <Text
+                  style={[styles.fieldLabel, { color: colors.textMuted }]}
+                >
                   Current password
                 </Text>
                 <View
                   style={[
                     styles.passwordInputContainer,
-                    { backgroundColor: colors.base, borderColor: colors.line },
+                    {
+                      backgroundColor: colors.base,
+                      borderColor: colors.line,
+                    },
                   ]}
                 >
                   <TextInput
@@ -356,13 +536,18 @@ const ProfileScreen: React.FC = () => {
               </View>
 
               <View style={styles.formField}>
-                <Text style={[styles.fieldLabel, { color: colors.textMuted }]}>
+                <Text
+                  style={[styles.fieldLabel, { color: colors.textMuted }]}
+                >
                   New password
                 </Text>
                 <View
                   style={[
                     styles.passwordInputContainer,
-                    { backgroundColor: colors.base, borderColor: colors.line },
+                    {
+                      backgroundColor: colors.base,
+                      borderColor: colors.line,
+                    },
                   ]}
                 >
                   <TextInput
@@ -382,7 +567,7 @@ const ProfileScreen: React.FC = () => {
                     onPress={() => setShowPasswords(!showPasswords)}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.eyeText, { color: colors.brand }]}>
+                    <Text style={[styles.eyeText, { color: TEAL }]}>
                       {showPasswords ? "Hide" : "Show"}
                     </Text>
                   </TouchableOpacity>
@@ -390,13 +575,18 @@ const ProfileScreen: React.FC = () => {
               </View>
 
               <View style={styles.formField}>
-                <Text style={[styles.fieldLabel, { color: colors.textMuted }]}>
+                <Text
+                  style={[styles.fieldLabel, { color: colors.textMuted }]}
+                >
                   Confirm new password
                 </Text>
                 <View
                   style={[
                     styles.passwordInputContainer,
-                    { backgroundColor: colors.base, borderColor: colors.line },
+                    {
+                      backgroundColor: colors.base,
+                      borderColor: colors.line,
+                    },
                   ]}
                 >
                   <TextInput
@@ -416,7 +606,7 @@ const ProfileScreen: React.FC = () => {
                     onPress={() => setShowPasswords(!showPasswords)}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.eyeText, { color: colors.brand }]}>
+                    <Text style={[styles.eyeText, { color: TEAL }]}>
                       {showPasswords ? "Hide" : "Show"}
                     </Text>
                   </TouchableOpacity>
@@ -446,7 +636,7 @@ const ProfileScreen: React.FC = () => {
                   style={[
                     styles.submitButton,
                     {
-                      backgroundColor: saving ? colors.textDim : colors.brand,
+                      backgroundColor: saving ? colors.textDim : TEAL,
                     },
                   ]}
                   onPress={handlePasswordSubmit}
@@ -454,7 +644,10 @@ const ProfileScreen: React.FC = () => {
                   activeOpacity={0.8}
                 >
                   {saving ? (
-                    <ActivityIndicator size="small" color={colors.black} />
+                    <ActivityIndicator
+                      size="small"
+                      color={colors.black}
+                    />
                   ) : null}
                   <Text style={styles.submitButtonText}>
                     {saving ? "Saving..." : "Update password"}
@@ -464,6 +657,9 @@ const ProfileScreen: React.FC = () => {
             </View>
           )}
 
+          <View style={styles.divider} />
+
+          {/* Help & Support */}
           <TouchableOpacity
             style={styles.menuRow}
             onPress={() => togglePanel("support")}
@@ -474,15 +670,15 @@ const ProfileScreen: React.FC = () => {
                 style={[
                   styles.menuIcon,
                   {
-                    backgroundColor: `${colors.brand}1A`,
-                    borderColor: `${colors.brand}4D`,
+                    backgroundColor: `${TEAL}1A`,
+                    borderColor: `${TEAL}4D`,
                   },
                 ]}
               >
-                <Ionicons name="help-circle" size={18} color={colors.brand} />
+                <Ionicons name="help-circle" size={18} color={TEAL} />
               </View>
               <View style={styles.menuText}>
-                <Text style={[styles.menuTitle, { color: colors.white }]}>
+                <Text style={[styles.menuTitle, { color: colors.text }]}>
                   Help &amp; Support
                 </Text>
                 <Text style={[styles.menuDesc, { color: colors.textMuted }]}>
@@ -502,7 +698,7 @@ const ProfileScreen: React.FC = () => {
               {HELP_TIPS.map((tip) => (
                 <View key={tip} style={styles.tipRow}>
                   <View
-                    style={[styles.tipDot, { backgroundColor: colors.brand }]}
+                    style={[styles.tipDot, { backgroundColor: TEAL }]}
                   />
                   <Text style={[styles.tipText, { color: colors.textMuted }]}>
                     {tip}
@@ -511,8 +707,10 @@ const ProfileScreen: React.FC = () => {
               ))}
             </View>
           )}
+
         </View>
 
+        {/* ── Logout ── */}
         <TouchableOpacity
           style={[
             styles.logoutRow,
@@ -551,15 +749,22 @@ const ProfileScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scrollContent: { padding: 16, paddingBottom: 32 },
+  scrollContent: { padding: 16, paddingBottom: 32, gap: 16 },
+  themeToggle: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   identitySection: {
     flexDirection: "row",
     alignItems: "center",
     gap: 16,
     padding: 18,
-    borderRadius: 16,
+    borderRadius: 18,
     borderWidth: 1,
-    marginBottom: 16,
     minWidth: 0,
   },
   avatar: {
@@ -567,7 +772,6 @@ const styles = StyleSheet.create({
     width: 62,
     height: 62,
     borderRadius: 31,
-    backgroundColor: "#c9a84c26",
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
@@ -588,14 +792,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "600",
     marginLeft: 78,
-  },
-  themeToggle: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
   },
   identityText: {
     flex: 1,
@@ -629,18 +825,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
-    padding: 10,
-    marginBottom: 16,
+    padding: 12,
   },
   sessionText: {
     fontSize: 12,
   },
   menuSection: {
-    borderRadius: 16,
+    borderRadius: 18,
     borderWidth: 1,
-    marginBottom: 16,
     overflow: "hidden",
   },
   menuRow: {
@@ -667,8 +861,8 @@ const styles = StyleSheet.create({
     flex: 0,
   },
   logoutIcon: {
-    backgroundColor: "#f871711a",
-    borderColor: "#f871714d",
+    backgroundColor: "rgba(248, 111, 111, 0.1)",
+    borderColor: "rgba(248, 111, 111, 0.32)",
   },
   menuText: {
     flex: 1,
@@ -682,8 +876,65 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 1,
   },
+  divider: {
+    height: 1,
+    backgroundColor: "rgba(42, 58, 83, 0.5)",
+    marginLeft: 52,
+    marginRight: 14,
+  },
+  toggleSwitch: {
+    width: 48,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(42, 58, 83, 0.5)",
+    alignItems: "flex-start",
+    justifyContent: "center",
+    padding: 2,
+  },
+  toggleTrack: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 13,
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+  toggleThumb: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  langPills: {
+    flexDirection: "row",
+    gap: 4,
+    padding: 3,
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    borderWidth: 1,
+    borderColor: "rgba(42, 58, 83, 0.5)",
+    borderRadius: 999,
+  },
+  langPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  langPillText: {
+    fontSize: 12,
+    fontWeight: "700",
+    letterSpacing: 0.03,
+  },
   passwordForm: {
     borderTopWidth: 1,
+    borderColor: "rgba(42, 58, 83, 0.5)",
     padding: 16,
   },
   formField: { marginBottom: 16 },
@@ -747,6 +998,7 @@ const styles = StyleSheet.create({
   },
   supportSection: {
     borderTopWidth: 1,
+    borderColor: "rgba(42, 58, 83, 0.5)",
     padding: 16,
     gap: 10,
   },
@@ -770,10 +1022,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    borderRadius: 16,
+    borderRadius: 18,
     borderWidth: 1,
     padding: 14,
-    marginBottom: 16,
   },
 });
 

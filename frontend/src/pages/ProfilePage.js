@@ -14,7 +14,9 @@ import {
   Loader2,
   Lock,
   LogOut,
+  Moon,
   ShieldCheck,
+  Sun,
 } from "lucide-react";
 
 import { getErrorMessage, readSessionUser } from "../services/api";
@@ -32,6 +34,22 @@ const HELP_TIPS = [
   "Change the admin password here whenever it may have been shared.",
 ];
 
+const THEME_STORAGE_KEY = "theme";
+
+const readThemeSetting = () => {
+  const current = document.documentElement.getAttribute("data-theme");
+
+  if (current === "light" || current === "dark") return current;
+
+  const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+
+  if (stored === "light" || stored === "dark") return stored;
+
+  return window.matchMedia("(prefers-color-scheme: light)").matches
+    ? "light"
+    : "dark";
+};
+
 function ProfilePage({ onLogout, unreadCount = 0 }) {
   const { name, email, role, expiresAt } = readSessionUser();
   const hasSession = expiresAt && !Number.isNaN(expiresAt.getTime());
@@ -41,6 +59,13 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
   const [showPasswords, setShowPasswords] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState({ tone: "", message: "" });
+
+  const [isDark, setIsDark] = useState(() => readThemeSetting() !== "light");
+  const [language, setLanguage] = useState(() => {
+    return (
+      window.localStorage.getItem("language") || "en"
+    );
+  });
 
   const avatarInputRef = useRef(null);
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -152,84 +177,173 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
     }
   };
 
+  const handleThemeToggle = () => {
+    const next = isDark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    window.localStorage.setItem(THEME_STORAGE_KEY, next);
+    setIsDark(!isDark);
+  };
+
+  const handleLanguage = (lang) => {
+    setLanguage(lang);
+    window.localStorage.setItem("language", lang);
+  };
+
   const passwordType = showPasswords ? "text" : "password";
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-4 sm:gap-5">
+    <div className="settings-screen">
       <header className="min-w-0">
         <h1 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
-          Profile
+          Settings
         </h1>
       </header>
 
-      <section className="profile-identity" aria-label="Account details">
-        <input
-          ref={avatarInputRef}
-          type="file"
-          accept="image/png,image/jpeg,image/webp"
-          hidden
-          onChange={handleAvatarChange}
-        />
+      {/* ── Account details ── */}
+      <section className="settings-section" aria-label="Account details">
+        <div className="profile-identity">
+          <input
+            ref={avatarInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            hidden
+            onChange={handleAvatarChange}
+          />
 
-        <button
-          type="button"
-          className="profile-avatar"
-          onClick={() => avatarInputRef.current?.click()}
-          disabled={avatarLoading}
-          aria-label="Change profile photo"
-        >
-          {avatarUrl ? (
-            <img className="profile-avatar__image" src={avatarUrl} alt="" />
-          ) : (
-            <span aria-hidden="true">{initials(name)}</span>
-          )}
-
-          <span className="profile-avatar__overlay" aria-hidden="true">
+          <button
+            type="button"
+            className="profile-avatar"
+            onClick={() => avatarInputRef.current?.click()}
+            disabled={avatarLoading}
+            aria-label="Change profile photo"
+          >
             {avatarLoading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
+            ) : avatarUrl ? (
+              <img
+                className="profile-avatar__image"
+                src={avatarUrl}
+                alt=""
+              />
             ) : (
-              <Camera className="h-5 w-5" />
+              <span aria-hidden="true">{initials(name)}</span>
             )}
-          </span>
-        </button>
 
-        <div className="profile-identity__text">
-          <p className="profile-name">{name}</p>
-          <p className="profile-email">{email || "Signed in"}</p>
+            {!avatarLoading && (
+              <span className="profile-avatar__overlay" aria-hidden="true">
+                <Camera className="h-5 w-5" />
+              </span>
+            )}
+          </button>
 
-          <span className="profile-role">
-            <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-            {role}
-          </span>
+          <div className="profile-identity__text">
+            <p className="profile-name">{name}</p>
+            <p className="profile-email">{email || "Signed in"}</p>
 
-          {avatarError && (
-            <p className="profile-avatar__error" role="alert">
-              {avatarError}
-            </p>
-          )}
+            <span className="profile-role">
+              <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+              {role}
+            </span>
+
+            {avatarError && (
+              <p className="profile-avatar__error" role="alert">
+                {avatarError}
+              </p>
+            )}
+          </div>
         </div>
       </section>
 
-      <section className="profile-menu" aria-label="Account settings">
+      {/* ── Appearance ── */}
+      <section className="settings-section">
+        <h2 className="settings-section__title">Appearance</h2>
+        <p className="settings-section__desc">Customize your theme</p>
+
+        <div className="settings-row settings-appearance-row">
+          <div className="settings-row__icon">
+            {isDark ? (
+              <Moon className="h-4 w-4" />
+            ) : (
+              <Sun className="h-4 w-4" />
+            )}
+          </div>
+          <div className="settings-row__text">
+            <span className="settings-row__title">Dark mode</span>
+            <span className="settings-row__desc">
+              {isDark ? "Dark theme active" : "Light theme active"}
+            </span>
+          </div>
+          <label className="toggle-switch">
+            <input
+              type="checkbox"
+              checked={isDark}
+              onChange={handleThemeToggle}
+              aria-label="Toggle dark mode"
+            />
+            <span className="toggle-track" />
+            <span className="toggle-thumb" />
+          </label>
+        </div>
+      </section>
+
+      {/* ── Language ── */}
+      <section className="settings-section">
+        <h2 className="settings-section__title">Language</h2>
+        <p className="settings-section__desc">
+          Choose your preferred language
+        </p>
+
+        <div className="lang-pills">
+          <button
+            type="button"
+            className={`lang-pill ${
+              language === "en" ? "lang-pill--active" : ""
+            }`}
+            onClick={() => handleLanguage("en")}
+          >
+            English
+          </button>
+
+          <button
+            type="button"
+            className={`lang-pill ${
+              language === "ur" ? "lang-pill--active" : ""
+            }`}
+            onClick={() => handleLanguage("ur")}
+          >
+            اردو
+          </button>
+        </div>
+      </section>
+
+      {/* ── Account settings ── */}
+      <section className="settings-section" aria-label="Account settings">
+        <h2 className="settings-section__title">Account Settings</h2>
+        <p className="settings-section__desc">
+          Manage your account preferences
+        </p>
+
         <button
           type="button"
+          className="settings-row"
           onClick={() => togglePanel("password")}
-          className="profile-row"
           aria-expanded={openPanel === "password"}
           aria-controls="change-password-form"
         >
-          <span className="profile-row__icon" aria-hidden="true">
+          <div className="settings-row__icon" aria-hidden="true">
             <Lock className="h-4 w-4" />
-          </span>
+          </div>
 
-          <span className="profile-row__text">
-            <span className="profile-row__title">Change Password</span>
-            <span className="profile-row__desc">Update your account password</span>
-          </span>
+          <div className="settings-row__text">
+            <span className="settings-row__title">Change Password</span>
+            <span className="settings-row__desc">
+              Update your account password
+            </span>
+          </div>
 
           <ChevronDown
-            className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${
-              openPanel === "password" ? "rotate-180" : ""
+            className={`settings-row__chevron h-4 w-4 transition-transform ${
+              openPanel === "password" ? "settings-row__chevron--rotated" : ""
             }`}
             aria-hidden="true"
           />
@@ -239,10 +353,10 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
           <form
             id="change-password-form"
             onSubmit={handlePasswordSubmit}
-            className="space-y-3 px-4 py-4 sm:px-[18px] sm:py-5"
+            className="settings-form"
           >
-            <div>
-              <label className="field-label" htmlFor="current-password">
+            <div className="settings-form__field">
+              <label className="settings-form__label" htmlFor="current-password">
                 Current password
               </label>
               <div className="relative">
@@ -262,13 +376,17 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
                   aria-label={showPasswords ? "Hide passwords" : "Show passwords"}
                   className="absolute right-1 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-lg text-slate-400 transition-colors hover:text-white"
                 >
-                  {showPasswords ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPasswords ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               </div>
             </div>
 
-            <div>
-              <label className="field-label" htmlFor="new-password">
+            <div className="settings-form__field">
+              <label className="settings-form__label" htmlFor="new-password">
                 New password
               </label>
               <input
@@ -284,8 +402,11 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
               />
             </div>
 
-            <div>
-              <label className="field-label" htmlFor="confirm-password">
+            <div className="settings-form__field">
+              <label
+                className="settings-form__label"
+                htmlFor="confirm-password"
+              >
                 Confirm new password
               </label>
               <input
@@ -301,12 +422,10 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
             </div>
 
             {status.message && (
-              <p
+              <div
                 role="status"
-                className={`flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-xs font-semibold ${
-                  status.tone === "success"
-                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                    : "border-red-500/30 bg-red-500/10 text-red-300"
+                className={`settings-status settings-status--${
+                  status.tone === "success" ? "success" : "error"
                 }`}
               >
                 {status.tone === "success" ? (
@@ -315,13 +434,13 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
                   <AlertCircle className="h-4 w-4 shrink-0" />
                 )}
                 {status.message}
-              </p>
+              </div>
             )}
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+            <div className="settings-form__actions">
               <button
                 type="button"
-                className="btn-ghost"
+                className="settings-form__text-btn"
                 onClick={() => {
                   setForm(EMPTY_FORM);
                   setStatus({ tone: "", message: "" });
@@ -330,58 +449,73 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
               >
                 Cancel
               </button>
-              <button type="submit" className="btn-primary" disabled={saving}>
+              <button
+                type="submit"
+                className="settings-form__submit-btn"
+                disabled={saving}
+              >
+                {saving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : null}
                 {saving ? "Saving..." : "Update password"}
               </button>
             </div>
           </form>
         )}
 
-        <Link to="/notifications" className="profile-row">
-          <span className="profile-row__icon" aria-hidden="true">
+        <Link to="/notifications" className="settings-row">
+          <div className="settings-row__icon" aria-hidden="true">
             <Bell className="h-4 w-4" />
-          </span>
+          </div>
 
-          <span className="profile-row__text">
-            <span className="profile-row__title">Notifications</span>
-            <span className="profile-row__desc">Alerts and reminders</span>
-          </span>
+          <div className="settings-row__text">
+            <span className="settings-row__title">Notifications</span>
+            <span className="settings-row__desc">Alerts and reminders</span>
+          </div>
 
           {unreadCount > 0 ? (
-            <span className="badge shrink-0 border border-brand/30 bg-brand/15 text-brand">
+            <span className="settings-row__badge">
               {unreadCount} new
             </span>
           ) : (
-            <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
+            <ChevronRight
+              className="settings-row__chevron h-4 w-4"
+              aria-hidden="true"
+            />
           )}
         </Link>
 
         <button
           type="button"
+          className="settings-row"
           onClick={() => togglePanel("support")}
-          className="profile-row"
           aria-expanded={openPanel === "support"}
           aria-controls="help-support-panel"
         >
-          <span className="profile-row__icon" aria-hidden="true">
+          <div className="settings-row__icon" aria-hidden="true">
             <LifeBuoy className="h-4 w-4" />
-          </span>
+          </div>
 
-          <span className="profile-row__text">
-            <span className="profile-row__title">Help &amp; Support</span>
-            <span className="profile-row__desc">Get help with the system</span>
-          </span>
+          <div className="settings-row__text">
+            <span className="settings-row__title">Help &amp; Support</span>
+            <span className="settings-row__desc">
+              Get help with the system
+            </span>
+          </div>
 
           <ChevronDown
-            className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${
-              openPanel === "support" ? "rotate-180" : ""
+            className={`settings-row__chevron h-4 w-4 transition-transform ${
+              openPanel === "support" ? "settings-row__chevron--rotated" : ""
             }`}
             aria-hidden="true"
           />
         </button>
 
         {openPanel === "support" && (
-          <div id="help-support-panel" className="px-4 py-4 sm:px-[18px] sm:py-5">
+          <div
+            id="help-support-panel"
+            className="mt-2 px-2 py-2"
+          >
             <ul className="space-y-2">
               {HELP_TIPS.map((tip) => (
                 <li
@@ -389,7 +523,7 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
                   className="flex items-start gap-2 text-xs leading-relaxed text-slate-300"
                 >
                   <span
-                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand"
+                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full tip-dot"
                     aria-hidden="true"
                   />
                   {tip}
@@ -400,21 +534,23 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
         )}
       </section>
 
-      <section className="profile-menu" aria-label="Session">
-        <button type="button" onClick={onLogout} className="profile-row profile-row--danger">
-          <span className="profile-row__icon" aria-hidden="true">
-            <LogOut className="h-4 w-4" />
-          </span>
-
-          <span className="profile-row__text">
-            <span className="profile-row__title">Logout</span>
-            <span className="profile-row__desc">End this session</span>
-          </span>
+      {/* ── Logout ── */}
+      <section
+        className="settings-section settings-section--danger"
+        aria-label="Session"
+      >
+        <button
+          type="button"
+          onClick={onLogout}
+          className="logout-btn"
+        >
+          <LogOut className="h-4 w-4" />
+          Logout
         </button>
       </section>
 
       {hasSession && (
-        <p className="profile-session">
+        <p className="settings-session">
           <Clock className="h-3.5 w-3.5" aria-hidden="true" />
           Session active until{" "}
           {expiresAt.toLocaleTimeString("en-US", {

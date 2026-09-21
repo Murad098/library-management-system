@@ -20,6 +20,7 @@ interface SectionHeaderProps {
   style?: ViewStyle | ViewStyle[];
   titleStyle?: TextStyle;
   subtitleStyle?: TextStyle;
+  accentColor?: string;
 }
 
 export const SectionHeader: React.FC<SectionHeaderProps> = ({
@@ -30,8 +31,10 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
   style,
   titleStyle,
   subtitleStyle,
+  accentColor,
 }) => {
   const colors = useThemeColors();
+  const accent = accentColor ?? colors.brand;
 
   return (
     <View style={[styles.container, style]}>
@@ -40,12 +43,12 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
           style={[
             styles.iconWrap,
             {
-              backgroundColor: `${colors.brand}26`,
-              borderColor: `${colors.brand}4D`,
+              backgroundColor: `${accent}26`,
+              borderColor: `${accent}4D`,
             },
           ]}
         >
-          <Ionicons name={icon} size={20} color={colors.brand} />
+          <Ionicons name={icon} size={20} color={accent} />
         </View>
         <View style={styles.textGroup}>
           <Text

@@ -12,9 +12,14 @@
   --text-soft: #cbd5e1;
   --muted: #94a3b8;
   --muted-2: #74839b;
-  --brand: #c9a84c;
-  --brand-hover: #b8933c;
-  --brand-text: #dcc06a;
+  --brand: #22c58e;
+  --brand-hover: #16a34a;
+  --brand-text: #4ade80;
+  --teal: #22c58e;
+  --teal-hover: #16a34a;
+  --teal-soft: rgba(34, 197, 140, 0.1);
+  --teal-border: rgba(34, 197, 140, 0.48);
+  --teal-rgb: 34, 197, 140;
   --active-bg: rgba(255, 255, 255, 0.08);
   --danger: #f87171;
   --danger-soft: #f0a2a2;
@@ -57,7 +62,14 @@
   --text-soft: #334155;
   --muted: #64748b;
   --muted-2: #7c8aa3;
-  --brand-text: #8a6d1f;
+  --brand-text: #064e31;
+  --brand: #16a34a;
+  --brand-hover: #15803d;
+  --teal: #16a34a;
+  --teal-hover: #15803d;
+  --teal-soft: rgba(22, 163, 76, 0.1);
+  --teal-border: rgba(22, 163, 76, 0.48);
+  --teal-rgb: 22, 163, 76;
   --active-bg: rgba(15, 23, 42, 0.07);
   --danger: #dc2626;
   --danger-soft: #b91c1c;
@@ -1101,6 +1113,17 @@ button.profile-row:focus-visible {
 [data-theme="light"] .divide-line\/70 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(15, 23, 42, 0.12); }
 
 [data-theme="light"] .text-brand { color: var(--brand-text); }
+[data-theme="light"] .bg-brand { background-color: var(--brand); }
+[data-theme="light"] .border-brand { border-color: var(--teal-border); }
+[data-theme="light"] .border-t-brand { border-top-color: var(--teal-border); }
+[data-theme="light"] .hover\:text-brand:hover { color: var(--brand-text); }
+[data-theme="light"] .bg-brand\/10 { background-color: rgba(var(--teal-rgb), 0.1); }
+[data-theme="light"] .bg-brand\/15 { background-color: rgba(var(--teal-rgb), 0.15); }
+[data-theme="light"] .border-brand\/25 { border-color: rgba(var(--teal-rgb), 0.25); }
+[data-theme="light"] .border-brand\/30 { border-color: rgba(var(--teal-rgb), 0.3); }
+[data-theme="light"] .text-teal { color: var(--teal); }
+[data-theme="light"] .bg-teal { background-color: var(--teal); }
+[data-theme="light"] .border-teal { border-color: var(--teal-border); }
 
 [data-theme="light"] .text-emerald-400,
 [data-theme="light"] .text-emerald-300 { color: #047857; }
@@ -1200,6 +1223,459 @@ button.profile-row:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .toast {
     animation: none;
+  }
+}
+
+/* =========================================================
+   SETTINGS — redesigned settings screen with dark navy
+   background, teal accents, large rounded cards and
+   subtle glow/border effects.
+   ========================================================= */
+
+.settings-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 16px 40px;
+}
+
+@media (min-width: 640px) {
+  .settings-screen {
+    padding: 32px 24px 48px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .settings-screen {
+    padding: 40px 32px 64px;
+  }
+}
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  box-shadow: 0 0 0 1px rgba(34, 197, 140, 0.06),
+              0 8px 24px rgba(3, 6, 12, 0.35);
+  padding: 18px;
+}
+
+@media (min-width: 640px) {
+  .settings-section {
+    gap: 14px;
+    padding: 22px;
+    border-radius: 20px;
+  }
+}
+
+.settings-section--danger {
+  border-color: rgba(248, 111, 111, 0.22);
+}
+
+.settings-section__title {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.settings-section__desc {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 12px;
+  color: var(--text);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.18s ease, color 0.18s ease;
+  cursor: pointer;
+}
+
+.settings-row:hover {
+  background: var(--hover);
+}
+
+.settings-row:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 1px;
+}
+
+.settings-row--danger {
+  color: var(--danger);
+}
+
+.settings-row__icon {
+  display: grid;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: var(--teal);
+  background: var(--teal-soft);
+  border: 1px solid var(--teal-border);
+  border-radius: 10px;
+}
+
+.settings-row--danger .settings-row__icon {
+  color: var(--danger);
+  background: rgba(248, 111, 111, 0.1);
+  border-color: rgba(248, 111, 111, 0.32);
+}
+
+.settings-row__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.settings-row__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.settings-row__desc {
+  margin-top: 1px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.settings-row__chevron {
+  margin-left: auto;
+  color: var(--muted-2);
+}
+
+.settings-row__badge {
+  margin-left: 8px;
+  border: 1px solid var(--teal-border);
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+
+/* Toggle switch — pill-shaped */
+.toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 48px;
+  height: 26px;
+  flex: none;
+}
+
+.toggle-switch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.toggle-switch .toggle-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--line);
+  transition: background 0.2s ease;
+}
+
+.toggle-switch input:checked + .toggle-track {
+  background: var(--teal);
+}
+
+.toggle-switch .toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--glass-bg-strong);
+  box-shadow: 0 2px 6px rgba(3, 6, 12, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.toggle-switch input:checked + .toggle-track + .toggle-thumb {
+  transform: translateX(22px);
+}
+
+.toggle-switch .toggle-label {
+  margin-left: 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.toggle-switch input:checked ~ .toggle-label {
+  color: var(--teal);
+}
+
+/* Language pills */
+.lang-pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.lang-pill {
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.lang-pill--active {
+  color: var(--text);
+  background: var(--teal);
+  border: 1px solid var(--teal);
+}
+
+.lang-pill:not(.lang-pill--active) {
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.lang-pill:not(.lang-pill--active):hover {
+  color: var(--text);
+  background: var(--hover);
+}
+
+/* Logout button */
+.logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 50px;
+  padding: 0 20px;
+  color: var(--text);
+  background: rgba(248, 111, 111, 0.08);
+  border: 1px solid rgba(248, 111, 111, 0.28);
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(248, 111, 111, 0.14);
+  border-color: rgba(248, 111, 111, 0.4);
+}
+
+.logout-btn svg {
+  color: var(--danger);
+}
+
+/* Session row */
+.settings-session {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* Appearance row with toggle */
+.settings-appearance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.settings-appearance-row .settings-row__text {
+  flex: 1;
+}
+
+/* Appearance row with toggle */
+.settings-appearance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.settings-appearance-row .settings-row__text {
+  flex: 1;
+}
+
+/* Help tip dots use teal */
+.settings-section .tip-dot {
+  background-color: var(--teal);
+}
+
+/* Chevron rotation for expanded accordions */
+.settings-row__chevron--rotated {
+  transform: rotate(180deg);
+}
+
+/* Password form inside settings section */
+.settings-form {
+  margin-top: 4px;
+  border-top: 1px solid var(--line);
+}
+
+.settings-form__field {
+  margin-bottom: 16px;
+}
+
+.settings-form__field:last-child {
+  margin-bottom: 0;
+}
+
+.settings-form__label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+/* Teal focus ring for inputs inside settings sections */
+.settings-section .input:focus {
+  border-color: var(--teal-border);
+  box-shadow: 0 0 0 3px var(--teal-soft);
+}
+
+/* Status message inside settings form */
+.settings-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.settings-status--success {
+  color: var(--teal);
+  background: var(--teal-soft);
+  border-color: var(--teal-border);
+}
+
+.settings-status--error {
+  color: var(--danger-soft);
+  background: rgba(248, 111, 111, 0.1);
+  border-color: rgba(248, 111, 111, 0.32);
+}
+
+/* Form action buttons inside settings */
+.settings-form__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.settings-form__text-btn {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.settings-form__text-btn:hover {
+  background: var(--hover);
+}
+
+.settings-form__submit-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  background-color: var(--teal);
+  border: 0;
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+}
+
+.settings-form__submit-btn:hover {
+  background-color: var(--teal-hover);
+}
+
+.settings-form__submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Teal overrides for profile elements inside settings section */
+.settings-section .profile-avatar {
+  background-color: var(--teal);
+}
+
+.settings-section .profile-avatar:disabled {
+  opacity: 0.5;
+}
+
+.settings-section .profile-role {
+  color: var(--teal);
+  background: var(--teal-soft);
+  border-color: var(--teal-border);
+}
+
+.settings-section .profile-role svg {
+  color: var(--teal);
+}
+
+/* Teal focus ring within settings screens */
+.settings-screen :focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+/* Responsive: on very narrow screens stack the pill toggles */
+@media (max-width: 359px) {
+  .settings-section {
+    padding: 16px;
   }
 }
 
