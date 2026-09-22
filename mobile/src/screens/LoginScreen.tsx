@@ -10,14 +10,15 @@ import {
   TextInput,
   ActivityIndicator,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
 
 import { useAuth } from "../hooks/useAuth";
 import { useToast } from "../hooks/useToast";
 import { useThemeColors } from "../context/ThemeContext";
-import api, { getErrorMessage } from "../services/api";
+import { login } from "../services/authService";
+import { getErrorMessage } from "../services/api";
 import { AuthStackParamList } from "../navigation/AuthStack";
 
 type NavigationProp = NativeStackNavigationProp<
@@ -25,14 +26,10 @@ type NavigationProp = NativeStackNavigationProp<
   "Login"
 >;
 
-const createDemoToken = (email: string): string => {
-  const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const now = Math.floor(Date.now() / 1000);
-  const payload = btoa(
-    JSON.stringify({ email, iat: now, exp: now + 86400 })
-  );
-  return `${header}.${payload}.demo`;
-};
+const DEMO_OWNER_EMAIL = process.env.EXPO_PUBLIC_DEMO_OWNER_EMAIL || "";
+const DEMO_OWNER_PASSWORD = process.env.EXPO_PUBLIC_DEMO_OWNER_PASSWORD || "";
+const DEMO_MANAGER_EMAIL = process.env.EXPO_PUBLIC_DEMO_MANAGER_EMAIL || "";
+const DEMO_MANAGER_PASSWORD = process.env.EXPO_PUBLIC_DEMO_MANAGER_PASSWORD || "";
 
 const LoginScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
@@ -40,18 +37,18 @@ const LoginScreen: React.FC = () => {
   const { Toast, show } = useToast();
   const colors = useThemeColors();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(DEMO_OWNER_EMAIL);
+  const [password, setPassword] = useState(DEMO_OWNER_PASSWORD);
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const TEAL = colors.green;
 
-  const handleSubmit = async () => {
+  const performLogin = async (emailToLogin: string, passwordToLogin: string) => {
     if (isLoading) return;
 
-    if (!email.trim() || !password) {
+    if (!emailToLogin.trim() || !passwordToLogin) {
       show("Please enter your email and password.", "error");
       return;
     }
@@ -59,7 +56,7 @@ const LoginScreen: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await api.post("/auth/login", { email, password });
+      const response = await login(emailToLogin, passwordToLogin);
       const token = response.data.token as string;
 
       await signIn(token, rememberMe);
@@ -74,18 +71,25 @@ const LoginScreen: React.FC = () => {
     }
   };
 
+  const handleSubmit = () => performLogin(email, password);
+
   const handleForgotPassword = () => {
     navigation.navigate({ name: "ForgotPasswordRequest", params: {} });
   };
 
   const handleDemoLogin = async (role: "owner" | "manager") => {
-    const demoEmail =
-      role === "owner" ? "owner@demo.local" : "manager@demo.local";
-    const token = createDemoToken(demoEmail);
-    const label = role === "owner" ? "Owner" : "Manager";
+    const demoEmail = role === "owner" ? DEMO_OWNER_EMAIL : DEMO_MANAGER_EMAIL;
+    const demoPassword =
+      role === "owner" ? DEMO_OWNER_PASSWORD : DEMO_MANAGER_PASSWORD;
 
-    await signIn(token, true);
-    show(`Signed in as Demo ${label}.`, "success");
+    if (!demoEmail || !demoPassword) {
+      show("Demo credentials are not configured.", "error");
+      return;
+    }
+
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+    await performLogin(demoEmail, demoPassword);
   };
 
   return (
@@ -99,263 +103,248 @@ const LoginScreen: React.FC = () => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.container}>
-          <View
-            style={[
-              styles.card,
-              {
-                backgroundColor: colors.surface,
-                borderColor: TEAL,
-                shadowColor: TEAL,
-              },
-            ]}
-          >
-            {/* Language Toggle */}
-            <View style={styles.langToggle}>
-              <TouchableOpacity
-                style={[styles.langPill, { backgroundColor: TEAL }]}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.langText, { color: colors.black }]}>
-                  EN
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.langPill,
-                  {
-                    backgroundColor: "transparent",
-                    borderColor: colors.lineStrong,
-                    borderWidth: 1,
-                  },
-                ]}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.langText, { color: colors.textMuted }]}>
-                  اردو
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Title */}
-            <Text style={[styles.title, { color: TEAL }]}>Welcome Back</Text>
-            <Text style={[styles.subtitle, { color: colors.text }]}>
-              Sign in to your Library Management System
-            </Text>
-
-            {/* USERNAME Input */}
-            <View style={styles.inputGroup}>
-              <Text style={[styles.inputLabel, { color: colors.textMuted }]}>
-                USERNAME
+          {/* Language Toggle */}
+          <View style={styles.langToggle}>
+            <TouchableOpacity
+              style={[styles.langPill, { backgroundColor: TEAL }]}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.langText, { color: colors.black }]}>
+                EN
               </Text>
-              <View
-                style={[
-                  styles.inputRow,
-                  {
-                    backgroundColor: colors.surface,
-                    borderColor: TEAL,
-                  },
-                ]}
-              >
-                <Ionicons
-                  name="person-outline"
-                  size={18}
-                  color={TEAL}
-                  style={styles.leftIcon}
-                />
-                <TextInput
-                  style={[styles.input, { color: colors.text }]}
-                  placeholder="Enter your username"
-                  placeholderTextColor={colors.textMuted}
-                  value={email}
-                  onChangeText={setEmail}
-                  autoCapitalize="none"
-                  autoComplete="username"
-                  keyboardType="email-address"
-                  inputMode="email"
-                />
-              </View>
-            </View>
-
-            {/* PASSWORD Input */}
-            <View style={styles.inputGroup}>
-              <Text style={[styles.inputLabel, { color: colors.textMuted }]}>
-                PASSWORD
-              </Text>
-              <View
-                style={[
-                  styles.inputRow,
-                  {
-                    backgroundColor: colors.surface,
-                    borderColor: colors.line,
-                  },
-                ]}
-              >
-                <Ionicons
-                  name="lock-closed-outline"
-                  size={18}
-                  color={colors.textMuted}
-                  style={styles.leftIcon}
-                />
-                <TextInput
-                  style={[styles.input, { color: colors.text }]}
-                  placeholder="Enter your password"
-                  placeholderTextColor={colors.textMuted}
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                  autoComplete="current-password"
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                  activeOpacity={0.7}
-                  style={styles.rightIcon}
-                >
-                  <Ionicons
-                    name={showPassword ? "eye-outline" : "eye-off-outline"}
-                    size={18}
-                    color={colors.textMuted}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Remember + Forgot */}
-            <View style={styles.rememberRow}>
-              <TouchableOpacity
-                style={styles.rememberCheckbox}
-                onPress={() => setRememberMe(!rememberMe)}
-                activeOpacity={0.7}
-                hitSlop={8}
-              >
-                <View
-                  style={[
-                    styles.checkbox,
-                    {
-                      backgroundColor: rememberMe ? TEAL : "transparent",
-                      borderColor: rememberMe ? TEAL : colors.line,
-                    },
-                  ]}
-                >
-                  {rememberMe && (
-                    <Ionicons
-                      name="checkmark"
-                      size={14}
-                      color={colors.black}
-                    />
-                  )}
-                </View>
-                <Text style={[styles.rememberText, { color: colors.text }]}>
-                  Remember me
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={handleForgotPassword}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.forgotText, { color: TEAL }]}>
-                  Forgot Password?
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Sign In Button */}
+            </TouchableOpacity>
             <TouchableOpacity
               style={[
-                styles.signInButton,
+                styles.langPill,
                 {
-                  backgroundColor: TEAL,
-                  opacity: isLoading ? 0.7 : 1,
+                  backgroundColor: "transparent",
+                  borderColor: colors.lineStrong,
+                  borderWidth: 1,
                 },
               ]}
-              onPress={handleSubmit}
-              disabled={isLoading}
-              activeOpacity={0.8}
+              activeOpacity={0.7}
             >
-              {isLoading ? (
-                <ActivityIndicator
-                  size="small"
-                  color={colors.black}
-                  style={styles.loadingIndicator}
+              <Text style={[styles.langText, { color: colors.textMuted }]}>
+                اردو
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Title */}
+          <Text style={[styles.title, { color: TEAL }]}>Welcome Back</Text>
+          <Text style={[styles.subtitle, { color: colors.text }]}>
+            Sign in to your Library Management System
+          </Text>
+
+          {/* USERNAME Input */}
+          <View style={styles.inputGroup}>
+            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>
+              USERNAME
+            </Text>
+            <View
+              style={[
+                styles.inputRow,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: TEAL,
+                },
+              ]}
+            >
+              <TextInput
+                style={[styles.input, { color: colors.text }]}
+                placeholder="Enter your username"
+                placeholderTextColor={colors.textMuted}
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                autoComplete="username"
+                keyboardType="email-address"
+                inputMode="email"
+              />
+            </View>
+          </View>
+
+          {/* PASSWORD Input */}
+          <View style={styles.inputGroup}>
+            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>
+              PASSWORD
+            </Text>
+            <View
+              style={[
+                styles.inputRow,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.line,
+                },
+              ]}
+            >
+              <TextInput
+                style={[styles.input, { color: colors.text }]}
+                placeholder="Enter your password"
+                placeholderTextColor={colors.textMuted}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                autoComplete="current-password"
+              />
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                activeOpacity={0.7}
+                style={styles.rightIcon}
+              >
+                <Ionicons
+                  name={showPassword ? "eye-outline" : "eye-off-outline"}
+                  size={18}
+                  color={colors.textMuted}
                 />
-              ) : (
-                <Ionicons name="arrow-forward" size={18} color={colors.black} />
-              )}
-              <Text style={[styles.signInText, { color: colors.black }]}>
-                {isLoading ? "Signing in..." : "Sign In"}
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Remember + Forgot */}
+          <View style={styles.rememberRow}>
+            <TouchableOpacity
+              style={styles.rememberCheckbox}
+              onPress={() => setRememberMe(!rememberMe)}
+              activeOpacity={0.7}
+              hitSlop={8}
+            >
+              <View
+                style={[
+                  styles.checkbox,
+                  {
+                    backgroundColor: rememberMe ? TEAL : "transparent",
+                    borderColor: rememberMe ? TEAL : colors.line,
+                  },
+                ]}
+              >
+                {rememberMe && (
+                  <Ionicons
+                    name="checkmark"
+                    size={14}
+                    color={colors.black}
+                  />
+                )}
+              </View>
+              <Text style={[styles.rememberText, { color: colors.text }]}>
+                Remember me
               </Text>
             </TouchableOpacity>
 
-            {/* TRY THE DEMO Section */}
-            <View style={[styles.demoSection, { borderColor: colors.line }]}>
-              <View style={styles.demoDivider}>
-                <View
-                  style={[styles.demoDividerLine, { backgroundColor: colors.line }]}
-                />
-                <Text style={[styles.demoLabel, { color: colors.textMuted }]}>
-                  TRY THE DEMO
-                </Text>
-                <View
-                  style={[styles.demoDividerLine, { backgroundColor: colors.line }]}
-                />
-              </View>
+            <TouchableOpacity
+              onPress={handleForgotPassword}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.forgotText, { color: TEAL }]}>
+                Forgot Password?
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-              <TouchableOpacity
-                style={[
-                  styles.demoButton,
-                  {
-                    backgroundColor: colors.base,
-                    borderColor: colors.line,
-                  },
-                ]}
-                onPress={() => handleDemoLogin("owner")}
-                activeOpacity={0.8}
-              >
-                <Ionicons
-                  name="person-outline"
-                  size={18}
-                  color={TEAL}
-                  style={styles.demoIcon}
-                />
-                <View style={styles.demoTextContainer}>
-                  <Text style={[styles.demoTitle, { color: TEAL }]}>
-                    Continue as Owner
-                  </Text>
-                  <Text style={[styles.demoSubtitle, { color: colors.textDim }]}>
-                    Full access · manage everything
-                  </Text>
-                </View>
-                <Ionicons name="arrow-forward" size={16} color={colors.textDim} />
-              </TouchableOpacity>
+          {/* Sign In Button */}
+          <TouchableOpacity
+            style={[
+              styles.signInButton,
+              {
+                backgroundColor: TEAL,
+                opacity: isLoading ? 0.7 : 1,
+              },
+            ]}
+            onPress={handleSubmit}
+            disabled={isLoading}
+            activeOpacity={0.8}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="small" color={colors.black} />
+            ) : (
+              <Text style={[styles.signInText, { color: colors.black }]}>
+                Sign in
+              </Text>
+            )}
+          </TouchableOpacity>
 
-              <TouchableOpacity
+          {/* TRY THE DEMO */}
+          <View style={[styles.demoSection, { borderColor: colors.line }]}>
+            <View style={styles.demoDivider}>
+              <View
                 style={[
-                  styles.demoButton,
-                  {
-                    backgroundColor: colors.base,
-                    borderColor: colors.line,
-                  },
+                  styles.demoDividerLine,
+                  { backgroundColor: colors.line },
                 ]}
-                onPress={() => handleDemoLogin("manager")}
-                activeOpacity={0.8}
-              >
-                <Ionicons
-                  name="shield-outline"
-                  size={18}
-                  color={TEAL}
-                  style={styles.demoIcon}
-                />
-                <View style={styles.demoTextContainer}>
-                  <Text style={[styles.demoTitle, { color: TEAL }]}>
-                    Continue as Manager
-                  </Text>
-                  <Text style={[styles.demoSubtitle, { color: colors.textDim }]}>
-                    Limited access · manage library
-                  </Text>
-                </View>
-                <Ionicons name="arrow-forward" size={16} color={colors.textDim} />
-              </TouchableOpacity>
+              />
+              <Text style={[styles.demoLabel, { color: colors.textMuted }]}>
+                TRY THE DEMO
+              </Text>
+              <View
+                style={[
+                  styles.demoDividerLine,
+                  { backgroundColor: colors.line },
+                ]}
+              />
             </View>
+
+            <TouchableOpacity
+              style={[
+                styles.demoButton,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.line,
+                },
+              ]}
+              onPress={() => handleDemoLogin("owner")}
+              activeOpacity={0.8}
+            >
+              <View style={styles.demoTextContainer}>
+                <Text style={[styles.demoTitle, { color: TEAL }]}>
+                  Continue as Owner
+                </Text>
+                <Text
+                  style={[styles.demoSubtitle, { color: colors.textDim }]}
+                >
+                  Full access · revenue, users, all data
+                </Text>
+              </View>
+              <Ionicons
+                name="arrow-forward"
+                size={16}
+                color={colors.textDim}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.demoButton,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.line,
+                },
+              ]}
+              onPress={() => handleDemoLogin("manager")}
+              activeOpacity={0.8}
+            >
+              <View style={styles.demoTextContainer}>
+                <Text style={[styles.demoTitle, { color: TEAL }]}>
+                  Continue as Manager
+                </Text>
+                <Text
+                  style={[styles.demoSubtitle, { color: colors.textDim }]}
+                >
+                  Management only · no financials
+                </Text>
+              </View>
+              <Ionicons
+                name="arrow-forward"
+                size={16}
+                color={colors.textDim}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={[styles.footerText, { color: colors.textDim }]}>
+              Powered by Vercel
+            </Text>
           </View>
         </View>
       </ScrollView>
@@ -375,17 +364,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-  },
-  card: {
-    width: "100%",
-    maxWidth: 400,
-    borderRadius: 24,
-    borderWidth: 1,
-    padding: 28,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 15,
-    elevation: 8,
   },
   langToggle: {
     flexDirection: "row",
@@ -427,10 +405,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     height: 52,
-  },
-  leftIcon: {
-    marginLeft: 12,
-    marginRight: 8,
   },
   input: {
     flex: 1,
@@ -476,6 +450,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 12,
     height: 52,
+    width: "100%",
     gap: 8,
     marginBottom: 24,
   },
@@ -483,14 +458,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
-  loadingIndicator: {
-    marginRight: 0,
-  },
   demoSection: {
-    borderWidth: 1,
+    width: "100%",
     borderStyle: "dashed",
+    borderWidth: 1,
     borderRadius: 16,
     padding: 16,
+    marginBottom: 24,
   },
   demoDivider: {
     flexDirection: "row",
@@ -518,9 +492,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     gap: 12,
   },
-  demoIcon: {
-    width: 20,
-  },
   demoTextContainer: {
     flex: 1,
     flexDirection: "column",
@@ -533,6 +504,13 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "500",
     marginTop: 2,
+  },
+  footer: {
+    paddingTop: 16,
+  },
+  footerText: {
+    fontSize: 11,
+    fontWeight: "500",
   },
 });
 

@@ -186,12 +186,6 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 12,
   },
-  paidBadge: {
-    borderWidth: 1,
-  },
-  unpaidBadge: {
-    borderWidth: 1,
-  },
   statusDot: {
     width: 6,
     height: 6,
@@ -227,11 +221,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     minWidth: 50,
     alignItems: "center",
-  },
-  deleteText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#000000",
   },
 });
 

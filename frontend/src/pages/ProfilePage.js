@@ -22,6 +22,7 @@ import {
 import { getErrorMessage, readSessionUser } from "../services/api";
 import { changePassword, getAvatar, uploadAvatar } from "../services/authService";
 import { initials } from "../utils/format";
+import { readTheme, applyTheme } from "../utils/theme";
 
 const EMPTY_FORM = { current: "", next: "", confirm: "" };
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
@@ -33,22 +34,6 @@ const HELP_TIPS = [
   "Record every library expense so the dashboard net figure stays correct.",
   "Change the admin password here whenever it may have been shared.",
 ];
-
-const THEME_STORAGE_KEY = "theme";
-
-const readThemeSetting = () => {
-  const current = document.documentElement.getAttribute("data-theme");
-
-  if (current === "light" || current === "dark") return current;
-
-  const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-
-  if (stored === "light" || stored === "dark") return stored;
-
-  return window.matchMedia("(prefers-color-scheme: light)").matches
-    ? "light"
-    : "dark";
-};
 
 function ProfilePage({ onLogout, unreadCount = 0 }) {
   const { name, email, role, expiresAt } = readSessionUser();

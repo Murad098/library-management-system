@@ -1,29 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
-const STORAGE_KEY = "theme";
-
-const readTheme = () => {
-  const current = document.documentElement.getAttribute("data-theme");
-
-  if (current === "light" || current === "dark") return current;
-
-  const stored = window.localStorage.getItem(STORAGE_KEY);
-
-  if (stored === "light" || stored === "dark") return stored;
-
-  return window.matchMedia("(prefers-color-scheme: light)").matches
-    ? "light"
-    : "dark";
-};
+import { readTheme, applyTheme } from "../utils/theme";
 
 function ThemeToggle() {
   const [theme, setTheme] = useState(readTheme);
   const isLight = theme === "light";
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    window.localStorage.setItem(STORAGE_KEY, theme);
+    applyTheme(theme);
   }, [theme]);
 
   return (
