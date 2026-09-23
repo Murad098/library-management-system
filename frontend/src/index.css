@@ -20,6 +20,10 @@ body {
   font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(124, 57, 103, 0.2), transparent 28%),
+    radial-gradient(circle at 84% 75%, rgba(31, 132, 119, 0.14), transparent 32%),
+    var(--bg);
 }
 
 ::selection {

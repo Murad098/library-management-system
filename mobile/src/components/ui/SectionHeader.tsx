@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 16,
+    marginBottom: 20,
     flexWrap: "wrap",
     gap: 12,
   },
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   iconWrap: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 14,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   title: {
-    fontSize: 24,
+    fontSize: 25,
     fontWeight: "700",
   },
   subtitle: {

@@ -29,6 +29,11 @@ export const Card: React.FC<CardProps> = ({
           borderColor: bordered ? colors.line : "transparent",
           borderRadius,
           padding,
+          shadowColor: colors.black,
+          shadowOpacity: 0.24,
+          shadowRadius: 16,
+          shadowOffset: { width: 0, height: 8 },
+          elevation: 4,
         },
         style,
       ]}

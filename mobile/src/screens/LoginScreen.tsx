@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 
@@ -97,14 +98,28 @@ const LoginScreen: React.FC = () => {
       style={[styles.flex, { backgroundColor: colors.base }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+      <LinearGradient
+        colors={[colors.base, "#321c32", "#11182c", "#162d38"]}
+        locations={[0, 0.26, 0.62, 1]}
+        style={styles.flex}
       >
-        <View style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View
+            style={[
+              styles.card,
+              {
+                backgroundColor: colors.base,
+                borderColor: colors.lineStrong,
+              },
+            ]}
+          >
+            <View style={styles.container}>
           {/* Language Toggle */}
-          <View style={styles.langToggle}>
+              <View style={styles.langToggle}>
             <TouchableOpacity
               style={[styles.langPill, { backgroundColor: TEAL }]}
               activeOpacity={0.7}
@@ -128,16 +143,16 @@ const LoginScreen: React.FC = () => {
                 اردو
               </Text>
             </TouchableOpacity>
-          </View>
+              </View>
 
           {/* Title */}
-          <Text style={[styles.title, { color: TEAL }]}>Welcome Back</Text>
-          <Text style={[styles.subtitle, { color: colors.text }]}>
+              <Text style={[styles.title, { color: TEAL }]}>Welcome back</Text>
+              <Text style={[styles.subtitle, { color: colors.textMuted }] }>
             Sign in to your Library Management System
-          </Text>
+              </Text>
 
           {/* USERNAME Input */}
-          <View style={styles.inputGroup}>
+              <View style={styles.inputGroup}>
             <Text style={[styles.inputLabel, { color: colors.textMuted }]}>
               USERNAME
             </Text>
@@ -150,9 +165,15 @@ const LoginScreen: React.FC = () => {
                 },
               ]}
             >
+                <Ionicons
+                  name="person-outline"
+                  size={28}
+                  color={TEAL}
+                  style={styles.inputIcon}
+                />
               <TextInput
                 style={[styles.input, { color: colors.text }]}
-                placeholder="Enter your username"
+                placeholder="Email or username"
                 placeholderTextColor={colors.textMuted}
                 value={email}
                 onChangeText={setEmail}
@@ -162,10 +183,10 @@ const LoginScreen: React.FC = () => {
                 inputMode="email"
               />
             </View>
-          </View>
+              </View>
 
           {/* PASSWORD Input */}
-          <View style={styles.inputGroup}>
+              <View style={styles.inputGroup}>
             <Text style={[styles.inputLabel, { color: colors.textMuted }]}>
               PASSWORD
             </Text>
@@ -178,9 +199,15 @@ const LoginScreen: React.FC = () => {
                 },
               ]}
             >
+                <Ionicons
+                  name="lock-closed-outline"
+                  size={27}
+                  color={TEAL}
+                  style={styles.inputIcon}
+                />
               <TextInput
                 style={[styles.input, { color: colors.text }]}
-                placeholder="Enter your password"
+                placeholder="Password"
                 placeholderTextColor={colors.textMuted}
                 value={password}
                 onChangeText={setPassword}
@@ -193,16 +220,16 @@ const LoginScreen: React.FC = () => {
                 style={styles.rightIcon}
               >
                 <Ionicons
-                  name={showPassword ? "eye-outline" : "eye-off-outline"}
-                  size={18}
+                  name={showPassword ? "eye-outline" : "eye-outline"}
+                  size={27}
                   color={colors.textMuted}
                 />
               </TouchableOpacity>
             </View>
-          </View>
+              </View>
 
           {/* Remember + Forgot */}
-          <View style={styles.rememberRow}>
+              <View style={styles.rememberRow}>
             <TouchableOpacity
               style={styles.rememberCheckbox}
               onPress={() => setRememberMe(!rememberMe)}
@@ -239,10 +266,10 @@ const LoginScreen: React.FC = () => {
                 Forgot Password?
               </Text>
             </TouchableOpacity>
-          </View>
+              </View>
 
           {/* Sign In Button */}
-          <TouchableOpacity
+              <TouchableOpacity
             style={[
               styles.signInButton,
               {
@@ -257,31 +284,22 @@ const LoginScreen: React.FC = () => {
             {isLoading ? (
               <ActivityIndicator size="small" color={colors.black} />
             ) : (
-              <Text style={[styles.signInText, { color: colors.black }]}>
-                Sign in
-              </Text>
+              <>
+                <Text style={[styles.signInText, { color: colors.white }] }>
+                  Sign in
+                </Text>
+                <Ionicons name="arrow-forward" size={27} color={colors.white} />
+              </>
             )}
-          </TouchableOpacity>
+              </TouchableOpacity>
 
           {/* TRY THE DEMO */}
-          <View style={[styles.demoSection, { borderColor: colors.line }]}>
-            <View style={styles.demoDivider}>
-              <View
-                style={[
-                  styles.demoDividerLine,
-                  { backgroundColor: colors.line },
-                ]}
-              />
+              <View style={[styles.demoSection, { borderColor: colors.lineStrong }] }>
+                <View style={styles.demoDivider}>
               <Text style={[styles.demoLabel, { color: colors.textMuted }]}>
                 TRY THE DEMO
               </Text>
-              <View
-                style={[
-                  styles.demoDividerLine,
-                  { backgroundColor: colors.line },
-                ]}
-              />
-            </View>
+                </View>
 
             <TouchableOpacity
               style={[
@@ -294,6 +312,7 @@ const LoginScreen: React.FC = () => {
               onPress={() => handleDemoLogin("owner")}
               activeOpacity={0.8}
             >
+              <Ionicons name="person-outline" size={29} color={TEAL} />
               <View style={styles.demoTextContainer}>
                 <Text style={[styles.demoTitle, { color: TEAL }]}>
                   Continue as Owner
@@ -301,12 +320,12 @@ const LoginScreen: React.FC = () => {
                 <Text
                   style={[styles.demoSubtitle, { color: colors.textDim }]}
                 >
-                  Full access · revenue, users, all data
+                  Full access · books, members, reports, all features
                 </Text>
               </View>
               <Ionicons
                 name="arrow-forward"
-                size={16}
+                size={22}
                 color={colors.textDim}
               />
             </TouchableOpacity>
@@ -322,6 +341,7 @@ const LoginScreen: React.FC = () => {
               onPress={() => handleDemoLogin("manager")}
               activeOpacity={0.8}
             >
+              <Ionicons name="people-outline" size={29} color={TEAL} />
               <View style={styles.demoTextContainer}>
                 <Text style={[styles.demoTitle, { color: TEAL }]}>
                   Continue as Manager
@@ -329,25 +349,27 @@ const LoginScreen: React.FC = () => {
                 <Text
                   style={[styles.demoSubtitle, { color: colors.textDim }]}
                 >
-                  Management only · no financials
+                  Limited access · manage books and members
                 </Text>
               </View>
               <Ionicons
                 name="arrow-forward"
-                size={16}
+                size={22}
                 color={colors.textDim}
               />
             </TouchableOpacity>
-          </View>
+              </View>
 
           {/* Footer */}
-          <View style={styles.footer}>
+              <View style={styles.footer}>
             <Text style={[styles.footerText, { color: colors.textDim }]}>
-              Powered by Vercel
+              Powered by Library
             </Text>
+              </View>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </LinearGradient>
 
       <Toast />
     </KeyboardAvoidingView>
@@ -361,8 +383,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 24,
   },
+  card: {
+    width: "100%",
+    maxWidth: 672,
+    borderWidth: 1,
+    borderRadius: 24,
+    padding: 48,
+  },
   container: {
-    flex: 1,
     alignItems: "center",
   },
   langToggle: {
@@ -382,29 +410,35 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   title: {
-    fontSize: 32,
+    fontSize: 40,
     fontWeight: "700",
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 15,
-    marginBottom: 24,
+    fontSize: 20,
+    marginBottom: 34,
+    textAlign: "center",
   },
   inputGroup: {
-    marginBottom: 18,
+    width: "100%",
+    marginBottom: 28,
   },
   inputLabel: {
-    fontSize: 11,
+    fontSize: 16,
     fontWeight: "700",
     letterSpacing: 1,
-    marginBottom: 6,
+    marginBottom: 9,
   },
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 12,
     borderWidth: 1,
-    height: 52,
+    height: 62,
+  },
+  inputIcon: {
+    width: 66,
+    textAlign: "center",
   },
   input: {
     flex: 1,
@@ -421,8 +455,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 12,
-    marginBottom: 20,
+    marginTop: 0,
+    marginBottom: 26,
   },
   rememberCheckbox: {
     flexDirection: "row",
@@ -438,10 +472,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   rememberText: {
-    fontSize: 14,
+    fontSize: 16,
   },
   forgotText: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "600",
   },
   signInButton: {
@@ -449,13 +483,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 12,
-    height: 52,
+    height: 74,
     width: "100%",
     gap: 8,
-    marginBottom: 24,
+    marginBottom: 26,
   },
   signInText: {
-    fontSize: 16,
+    fontSize: 23,
     fontWeight: "700",
   },
   demoSection: {
@@ -463,22 +497,17 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
     borderWidth: 1,
     borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
+    padding: 26,
+    marginBottom: 20,
   },
   demoDivider: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-    gap: 8,
-  },
-  demoDividerLine: {
-    flex: 1,
-    height: 1,
+    justifyContent: "flex-start",
+    marginBottom: 18,
   },
   demoLabel: {
-    fontSize: 11,
+    fontSize: 16,
     fontWeight: "700",
     letterSpacing: 1,
   },
@@ -487,8 +516,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 12,
     borderWidth: 1,
-    paddingVertical: 14,
-    paddingHorizontal: 14,
+    minHeight: 80,
+    paddingVertical: 13,
+    paddingHorizontal: 18,
     marginBottom: 10,
     gap: 12,
   },
@@ -497,19 +527,19 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   demoTitle: {
-    fontSize: 14,
+    fontSize: 17,
     fontWeight: "600",
   },
   demoSubtitle: {
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: "500",
     marginTop: 2,
   },
   footer: {
-    paddingTop: 16,
+    paddingTop: 12,
   },
   footerText: {
-    fontSize: 11,
+    fontSize: 14,
     fontWeight: "500",
   },
 });

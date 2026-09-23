@@ -132,20 +132,20 @@ export const InputField: React.FC<InputFieldProps> = ({
 const styles = StyleSheet.create({
   field: { marginBottom: 18 },
   label: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "600",
-    marginBottom: 6,
+    marginBottom: 8,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
   },
   input: {
     flex: 1,
     fontSize: 16,
-    paddingVertical: 14,
+    paddingVertical: 15,
   },
   leftIcon: {
     marginLeft: 14,

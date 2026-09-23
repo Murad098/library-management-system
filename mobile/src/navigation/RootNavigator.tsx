@@ -32,7 +32,7 @@ const RootNavigator = () => {
         screenOptions={{
           headerStyle: { backgroundColor: c.surface },
           headerTintColor: c.text,
-          headerTitleStyle: { color: c.text, fontWeight: "600" },
+          headerTitleStyle: { color: c.text, fontWeight: "700", fontSize: 19 },
           contentStyle: { backgroundColor: c.base },
         }}
       >

@@ -143,10 +143,15 @@ const MemberListItem: React.FC<MemberListItemProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
     borderWidth: 1,
+    shadowColor: "#000000",
+    shadowOpacity: 0.18,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 3,
   },
   row: {
     flexDirection: "row",
@@ -155,9 +160,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 42,
+    height: 42,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
@@ -172,8 +177,8 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   name: {
-    fontSize: 15,
-    fontWeight: "600",
+    fontSize: 16,
+    fontWeight: "700",
   },
   email: {
     fontSize: 12,

@@ -71,9 +71,10 @@ export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
     borderWidth: 1,
+    minHeight: 48,
   },
   text: {
     fontWeight: "600",

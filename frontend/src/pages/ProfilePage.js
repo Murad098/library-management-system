@@ -45,7 +45,7 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState({ tone: "", message: "" });
 
-  const [isDark, setIsDark] = useState(() => readThemeSetting() !== "light");
+  const [isDark, setIsDark] = useState(() => readTheme() !== "light");
   const [language, setLanguage] = useState(() => {
     return (
       window.localStorage.getItem("language") || "en"
@@ -165,7 +165,7 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
   const handleThemeToggle = () => {
     const next = isDark ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
-    window.localStorage.setItem(THEME_STORAGE_KEY, next);
+    applyTheme(next);
     setIsDark(!isDark);
   };
 

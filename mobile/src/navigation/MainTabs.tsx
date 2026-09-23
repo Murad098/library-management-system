@@ -50,7 +50,7 @@ const DashboardStackGroup = () => {
       screenOptions={{
         headerStyle: { backgroundColor: c.surface },
         headerTintColor: c.text,
-        headerTitleStyle: { color: c.text, fontWeight: "600" },
+        headerTitleStyle: { color: c.text, fontWeight: "700", fontSize: 19 },
         contentStyle: { backgroundColor: c.base },
       }}
     >
@@ -144,9 +144,12 @@ const MainTabs = () => {
         tabBarStyle: {
           backgroundColor: c.surface,
           borderTopColor: c.line,
+          height: 72,
+          paddingBottom: 8,
+          paddingTop: 7,
         },
         headerShown: false,
-        tabBarLabelStyle: { fontSize: 11, fontWeight: "600" },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: "700" },
       }}
     >
       <Tab.Screen

@@ -80,11 +80,12 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
     gap: 8,
+    minHeight: 52,
   },
   text: {
     fontWeight: "700",
