@@ -67,7 +67,7 @@ const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
         styles.container,
         {
           backgroundColor: colors.surface,
-          borderColor: colors.line,
+          borderColor: `${colors.accent}45`,
         },
       ]}
     >
@@ -76,8 +76,8 @@ const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
           style={[
             styles.iconWrap,
             {
-              backgroundColor: colors.raised,
-              borderColor: colors.line,
+              backgroundColor: colors.accentSoft,
+              borderColor: `${colors.accent}66`,
             },
           ]}
         >
@@ -93,12 +93,12 @@ const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
               style={[
                 styles.categoryBadge,
                 {
-                  backgroundColor: colors.raised,
-                  borderColor: colors.lineStrong,
+                  backgroundColor: colors.accentSoft,
+                  borderColor: `${colors.accent}55`,
                 },
               ]}
             >
-              <Text style={[styles.categoryText, { color: colors.textMuted }]}>
+              <Text style={[styles.categoryText, { color: colors.accent }]}> 
                 {expense.category}
               </Text>
             </View>

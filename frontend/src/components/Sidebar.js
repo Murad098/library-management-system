@@ -26,9 +26,7 @@ function Sidebar({ onLogout }) {
       <div className="brand-row">
         <div className="brand">
           <BrandMark size={36} />
-          <span className="brand-word">
-            Member <strong>stack</strong>
-          </span>
+          <span className="brand-word">Library Management</span>
         </div>
       </div>
 

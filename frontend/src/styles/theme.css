@@ -1511,6 +1511,77 @@ button.profile-row:focus-visible {
   background: var(--hover);
 }
 
+.accent-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.accent-option {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  color: var(--text);
+  background: var(--glass-inset);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: 14px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.accent-option:hover,
+.accent-option--active {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(var(--teal-rgb), 0.18);
+  transform: translateY(-1px);
+}
+
+.accent-swatch {
+  display: block;
+  height: 42px;
+  border-radius: 10px;
+}
+
+/* Expenses and notifications use the same framed workspace language as the
+   dashboard: a quiet canvas, luminous accent edges, and dense controls. */
+.feature-page .card {
+  border-radius: 18px;
+  border-color: var(--glass-border-strong);
+  background:
+    linear-gradient(145deg, rgba(var(--teal-rgb), 0.06), transparent 34%),
+    var(--glass-bg);
+  box-shadow: 0 16px 34px rgba(3, 6, 12, 0.2);
+}
+
+.feature-page .input {
+  border-radius: 12px;
+  background: var(--glass-inset);
+}
+
+.feature-page h1,
+.feature-page h2 {
+  letter-spacing: -0.025em;
+}
+
+.feature-page .badge {
+  border-color: rgba(var(--teal-rgb), 0.28);
+  background: rgba(var(--teal-rgb), 0.1);
+  color: var(--brand-text);
+}
+
+.notifications-page li,
+.expenses-page li {
+  transition: background-color 0.2s ease;
+}
+
+.notifications-page li:hover,
+.expenses-page li:hover {
+  background-color: rgba(var(--teal-rgb), 0.06);
+}
+
 /* Logout button */
 .logout-btn {
   display: inline-flex;

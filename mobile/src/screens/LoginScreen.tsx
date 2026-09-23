@@ -44,7 +44,7 @@ const LoginScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const TEAL = "#00d5aa";
+  const TEAL = colors.accent;
 
   const performLogin = async (emailToLogin: string, passwordToLogin: string) => {
     if (isLoading) return;
@@ -146,7 +146,7 @@ const LoginScreen: React.FC = () => {
               </View>
 
           {/* Title */}
-              <Text style={styles.title}>Welcome back</Text>
+              <Text style={[styles.title, { color: TEAL }]}>Welcome back</Text>
               <Text style={[styles.subtitle, { color: "#b7c5ee" }] }>
             Sign in to your Library Management System
               </Text>
@@ -270,7 +270,7 @@ const LoginScreen: React.FC = () => {
 
           {/* Sign In Button */}
               <LinearGradient
-                colors={["#00c99f", "#00a990"]}
+                colors={[TEAL, colors.brand]}
                 start={{ x: 0, y: 0.5 }}
                 end={{ x: 1, y: 0.5 }}
                 style={[styles.signInButton, { opacity: isLoading ? 0.7 : 1 }]}
@@ -424,7 +424,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   title: {
-    color: "#00d6ae",
     fontSize: 52,
     fontWeight: "800",
     lineHeight: 58,
@@ -497,7 +496,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   forgotText: {
-    color: "#00d5aa",
     fontSize: 17,
     fontWeight: "600",
   },
@@ -557,7 +555,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   demoTitle: {
-    color: "#00d5aa",
     fontSize: 17,
     fontWeight: "700",
   },

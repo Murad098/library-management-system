@@ -28,6 +28,7 @@ import ThemeToggle from "./components/ThemeToggle";
 
 // Services
 import { clearTokens, getErrorMessage, readToken, UNAUTHORIZED_EVENT } from "./services/api";
+import { applyAccent, applyTheme, readAccent, readTheme } from "./utils/theme";
 import { getMembers, addMember, deleteMember } from "./services/memberService";
 import { getExpenses, addExpense, deleteExpense } from "./services/expenseService";
 import {
@@ -205,9 +206,7 @@ function AppShell({ onLogout }) {
             </button>
 
             <BrandMark size={32} />
-            <span className="brand-word">
-              Member <strong>stack</strong>
-            </span>
+            <span className="brand-word">Library Management</span>
           </div>
 
           <div className="topbar-heading">
@@ -319,6 +318,11 @@ function AppShell({ onLogout }) {
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(readToken()));
+
+  useEffect(() => {
+    applyTheme(readTheme());
+    applyAccent(readAccent());
+  }, []);
 
   useEffect(() => {
     const handleUnauthorized = () => setIsLoggedIn(false);

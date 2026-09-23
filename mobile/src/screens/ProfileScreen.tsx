@@ -33,7 +33,7 @@ const LANGUAGE_STORAGE_KEY = "language";
 
 const ProfileScreen: React.FC = () => {
   const { user, signOut } = useAuth();
-  const { toggleTheme, colorScheme } = useTheme();
+  const { toggleTheme, colorScheme, accent, setAccent } = useTheme();
   const colors = useThemeColors();
   const { Toast, show } = useToast();
   const TEAL = colors.green;
@@ -387,6 +387,40 @@ const ProfileScreen: React.FC = () => {
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
+
+          <View style={styles.divider} />
+
+          <View style={styles.paletteBlock}>
+            <View style={styles.menuRowLeft}>
+              <View style={[styles.menuIcon, { backgroundColor: colors.accentSoft, borderColor: `${TEAL}4D` }]}>
+                <Ionicons name="color-palette" size={18} color={TEAL} />
+              </View>
+              <View style={styles.menuText}>
+                <Text style={[styles.menuTitle, { color: colors.text }]}>Color scheme</Text>
+                <Text style={[styles.menuDesc, { color: colors.textMuted }]}>Choose your accent color</Text>
+              </View>
+            </View>
+            <View style={styles.paletteGrid}>
+              {([
+                ["emerald", "Emerald", "#20d6a0"],
+                ["crimson", "Crimson", "#ff5364"],
+                ["indigo", "Indigo", "#6252f4"],
+                ["amber", "Amber", "#f5a623"],
+                ["slate", "Slate", "#8fa1b8"],
+                ["rose", "Rose", "#f04473"],
+              ] as const).map(([value, label, color]) => (
+                <TouchableOpacity
+                  key={value}
+                  style={[styles.paletteOption, accent === value && { borderColor: color, borderWidth: 2 }]}
+                  onPress={() => setAccent(value)}
+                  activeOpacity={0.8}
+                >
+                  <View style={[styles.paletteSwatch, { backgroundColor: color }]} />
+                  <Text style={[styles.paletteLabel, { color: colors.text }]}>{label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
 
           <View style={styles.divider} />
 
@@ -836,6 +870,33 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 1,
     overflow: "hidden",
+  },
+  paletteBlock: {
+    paddingVertical: 16,
+  },
+  paletteGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: 14,
+    paddingLeft: 52,
+  },
+  paletteOption: {
+    width: "30%",
+    minWidth: 88,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "transparent",
+    padding: 7,
+  },
+  paletteSwatch: {
+    height: 34,
+    borderRadius: 8,
+    marginBottom: 6,
+  },
+  paletteLabel: {
+    fontSize: 12,
+    fontWeight: "700",
   },
   menuRow: {
     flexDirection: "row",

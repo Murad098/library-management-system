@@ -96,7 +96,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({
         styles.container,
         {
           backgroundColor: colors.surface,
-          borderColor: colors.line,
+          borderColor: `${colors.accent}45`,
         },
         !item.read && { backgroundColor: `${colors.brand}0A` },
       ]}
@@ -104,7 +104,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({
       <View
         style={[
           styles.iconWrap,
-          { backgroundColor: bgColor, borderColor: colors.line },
+          { backgroundColor: bgColor, borderColor: `${color}66` },
         ]}
       >
         <Ionicons name={meta.icon} size={20} color={color} />

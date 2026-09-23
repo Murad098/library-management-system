@@ -124,7 +124,7 @@ const ExpensesScreen = ({
   };
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-5 sm:space-y-6">
+    <div className="feature-page expenses-page mx-auto w-full max-w-7xl space-y-5 sm:space-y-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div className="min-w-0">
           <h1 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">

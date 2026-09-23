@@ -7,9 +7,10 @@ import React, {
 } from "react";
 import * as SecureStore from "expo-secure-store";
 
-import { getTheme, AppTheme, ThemeColors } from "../theme";
+import { getTheme, AppTheme, ThemeColors, AccentName } from "../theme";
 
 const THEME_KEY = "theme";
+const ACCENT_KEY = "accent";
 
 type ColorScheme = "dark" | "light";
 
@@ -18,6 +19,8 @@ interface ThemeContextValue {
   colorScheme: ColorScheme;
   toggleTheme: () => Promise<void>;
   setTheme: (scheme: ColorScheme) => Promise<void>;
+  accent: AccentName;
+  setAccent: (accent: AccentName) => Promise<void>;
 }
 
 export const ThemeContext = createContext<ThemeContextValue | undefined>(
@@ -28,6 +31,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [colorScheme, setColorScheme] = useState<ColorScheme>("dark");
+  const [accent, setAccentState] = useState<AccentName>("indigo");
 
   useEffect(() => {
     (async () => {
@@ -36,6 +40,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 
         if (saved === "light" || saved === "dark") {
           setColorScheme(saved);
+        }
+
+        const savedAccent = await SecureStore.getItemAsync(ACCENT_KEY);
+        if (["emerald", "crimson", "indigo", "amber", "slate", "rose"].includes(savedAccent || "")) {
+          setAccentState(savedAccent as AccentName);
         }
       } catch {
         // Keep default
@@ -64,11 +73,20 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     await setTheme(next);
   }, [colorScheme, setTheme]);
 
-  const theme = useMemo(() => getTheme(colorScheme === "dark"), [colorScheme]);
+  const setAccent = useCallback(async (nextAccent: AccentName) => {
+    setAccentState(nextAccent);
+    try {
+      await SecureStore.setItemAsync(ACCENT_KEY, nextAccent);
+    } catch {
+      // Keep the in-memory theme if secure storage is unavailable.
+    }
+  }, []);
+
+  const theme = useMemo(() => getTheme(colorScheme === "dark", accent), [colorScheme, accent]);
 
   const value = useMemo<ThemeContextValue>(
-    () => ({ theme, colorScheme, toggleTheme, setTheme }),
-    [theme, colorScheme, toggleTheme, setTheme]
+    () => ({ theme, colorScheme, toggleTheme, setTheme, accent, setAccent }),
+    [theme, colorScheme, toggleTheme, setTheme, accent, setAccent]
   );
 
   return (

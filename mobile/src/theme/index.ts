@@ -1,6 +1,7 @@
-import { darkColors, lightColors, ThemeColors } from "./colors";
+import { darkColors, lightColors, ThemeColors, AccentName, getAccent } from "./colors";
 
-export { colors, brandDark, brandLight, darkColors, lightColors, ColorName } from "./colors";
+export { colors, brandDark, brandLight, darkColors, lightColors, ColorName, getAccent } from "./colors";
+export type { AccentName } from "./colors";
 export type { ThemeColors } from "./colors";
 
 export interface AppTheme {
@@ -18,5 +19,19 @@ export const lightTheme: AppTheme = {
   colors: lightColors,
 };
 
-export const getTheme = (dark: boolean): AppTheme =>
-  dark ? darkTheme : lightTheme;
+export const getTheme = (dark: boolean, accent: AccentName = "indigo"): AppTheme => {
+  const base = dark ? darkTheme : lightTheme;
+  const selected = getAccent(accent);
+
+  return {
+    ...base,
+    colors: {
+      ...base.colors,
+      accent: selected.accent,
+      accentSoft: selected.soft,
+      brand: selected.accent,
+      brandText: selected.accent,
+      green: selected.accent,
+    },
+  };
+};

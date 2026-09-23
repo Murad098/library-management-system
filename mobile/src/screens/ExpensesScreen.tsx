@@ -146,6 +146,7 @@ const ExpensesScreen: React.FC = () => {
         icon="receipt"
         title="Expenses"
         subtitle={`${expenses.length} record${expenses.length === 1 ? "" : "s"}`}
+        accentColor={colors.accent}
       />
 
       {error ? (
@@ -163,7 +164,11 @@ const ExpensesScreen: React.FC = () => {
       <View
         style={[
           styles.summaryCard,
-          { backgroundColor: colors.surface, borderColor: colors.line },
+          {
+            backgroundColor: colors.surface,
+            borderColor: `${colors.accent}66`,
+            shadowColor: colors.accent,
+          },
         ]}
       >
         <View>
@@ -290,6 +295,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: 12,
     marginBottom: 16,
+    shadowOpacity: 0.14,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 3,
   },
   summaryLabel: { fontSize: 11, textTransform: "uppercase", fontWeight: "700" },
   summaryValue: { fontSize: 20, fontWeight: "700", marginTop: 2 },

@@ -19,7 +19,22 @@ export interface ThemeColors {
   black: string;
   overlay: string;
   backdrop: string;
+  accent: string;
+  accentSoft: string;
 }
+
+const accentColors = {
+  emerald: { accent: "#20d6a0", soft: "rgba(32, 214, 160, 0.16)" },
+  crimson: { accent: "#ff5364", soft: "rgba(255, 83, 100, 0.16)" },
+  indigo: { accent: "#6252f4", soft: "rgba(98, 82, 244, 0.18)" },
+  amber: { accent: "#f5a623", soft: "rgba(245, 166, 35, 0.16)" },
+  slate: { accent: "#8fa1b8", soft: "rgba(143, 161, 184, 0.16)" },
+  rose: { accent: "#f04473", soft: "rgba(240, 68, 115, 0.16)" },
+} as const;
+
+export type AccentName = keyof typeof accentColors;
+
+export const getAccent = (accent: AccentName) => accentColors[accent];
 
 export const darkColors: ThemeColors = {
   base: "#0d1120",
@@ -42,6 +57,8 @@ export const darkColors: ThemeColors = {
   black: "#090d14",
   overlay: "rgba(0, 0, 0, 0.45)",
   backdrop: "rgba(0, 0, 0, 0.65)",
+  accent: accentColors.indigo.accent,
+  accentSoft: accentColors.indigo.soft,
 };
 
 export const lightColors: ThemeColors = {
@@ -65,6 +82,8 @@ export const lightColors: ThemeColors = {
   black: "#0f172a",
   overlay: "rgba(0, 0, 0, 0.4)",
   backdrop: "rgba(0, 0, 0, 0.6)",
+  accent: accentColors.indigo.accent,
+  accentSoft: accentColors.indigo.soft,
 };
 
 export const colors = darkColors;

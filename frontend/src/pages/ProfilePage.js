@@ -22,7 +22,7 @@ import {
 import { getErrorMessage, readSessionUser } from "../services/api";
 import { changePassword, getAvatar, uploadAvatar } from "../services/authService";
 import { initials } from "../utils/format";
-import { readTheme, applyTheme } from "../utils/theme";
+import { readTheme, applyTheme, readAccent, applyAccent, ACCENTS } from "../utils/theme";
 
 const EMPTY_FORM = { current: "", next: "", confirm: "" };
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
@@ -46,6 +46,7 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
   const [status, setStatus] = useState({ tone: "", message: "" });
 
   const [isDark, setIsDark] = useState(() => readTheme() !== "light");
+  const [accent, setAccent] = useState(() => readAccent());
   const [language, setLanguage] = useState(() => {
     return (
       window.localStorage.getItem("language") || "en"
@@ -174,6 +175,11 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
     window.localStorage.setItem("language", lang);
   };
 
+  const handleAccent = (nextAccent) => {
+    applyAccent(nextAccent);
+    setAccent(nextAccent);
+  };
+
   const passwordType = showPasswords ? "text" : "password";
 
   return (
@@ -268,6 +274,24 @@ function ProfilePage({ onLogout, unreadCount = 0 }) {
             <span className="toggle-track" />
             <span className="toggle-thumb" />
           </label>
+        </div>
+      </section>
+
+      <section className="settings-section">
+        <h2 className="settings-section__title">Color scheme</h2>
+        <p className="settings-section__desc">Choose your preferred accent color</p>
+        <div className="accent-grid">
+          {Object.entries(ACCENTS).map(([key, scheme]) => (
+            <button
+              key={key}
+              type="button"
+              className={`accent-option ${accent === key ? "accent-option--active" : ""}`}
+              onClick={() => handleAccent(key)}
+            >
+              <span className="accent-swatch" style={{ background: scheme.value }} />
+              <span>{scheme.label}</span>
+            </button>
+          ))}
         </div>
       </section>
 

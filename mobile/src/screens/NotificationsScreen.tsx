@@ -216,6 +216,7 @@ const NotificationsScreen: React.FC = () => {
         icon="notifications"
         title="Notifications"
         subtitle={`${unreadCount} unread of ${notifications.length} total`}
+        accentColor={colors.accent}
         rightContent={
           <View style={styles.headerButtons}>
             <TouchableOpacity
@@ -223,7 +224,7 @@ const NotificationsScreen: React.FC = () => {
                 styles.headerButton,
                 {
                   backgroundColor: colors.surface,
-                  borderColor: colors.line,
+                  borderColor: `${colors.accent}66`,
                   opacity: unreadCount === 0 ? 0.4 : 1,
                 },
               ]}
@@ -240,7 +241,7 @@ const NotificationsScreen: React.FC = () => {
             <TouchableOpacity
               style={[
                 styles.headerButton,
-                { backgroundColor: colors.surface, borderColor: colors.line },
+                { backgroundColor: colors.surface, borderColor: `${colors.accent}66` },
               ]}
               onPress={handleRefresh}
               activeOpacity={0.7}
@@ -268,7 +269,11 @@ const NotificationsScreen: React.FC = () => {
       <View
         style={[
           styles.formCard,
-          { backgroundColor: colors.surface, borderColor: colors.line },
+          {
+            backgroundColor: colors.surface,
+            borderColor: `${colors.accent}66`,
+            shadowColor: colors.accent,
+          },
         ]}
       >
         <Text style={[styles.formLabel, { color: colors.textMuted }]}>
