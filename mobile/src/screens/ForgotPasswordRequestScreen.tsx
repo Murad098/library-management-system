@@ -88,7 +88,8 @@ const ForgotPasswordRequestScreen: React.FC = () => {
             style={{ marginBottom: 16 }}
           />
 
-          <InputField
+          <View style={[styles.formCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
+            <InputField
             label="Email address"
             placeholder="Admin email"
             value={email}
@@ -117,6 +118,7 @@ const ForgotPasswordRequestScreen: React.FC = () => {
               Back to login
             </Text>
           </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
 
@@ -133,6 +135,15 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   container: { marginBottom: 32 },
+  formCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+  },
   backButton: {
     alignItems: "center",
     marginTop: 16,

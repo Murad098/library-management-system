@@ -44,7 +44,7 @@ const LoginScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const TEAL = colors.green;
+  const TEAL = "#00d5aa";
 
   const performLogin = async (emailToLogin: string, passwordToLogin: string) => {
     if (isLoading) return;
@@ -99,8 +99,8 @@ const LoginScreen: React.FC = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <LinearGradient
-        colors={[colors.base, "#321c32", "#11182c", "#162d38"]}
-        locations={[0, 0.26, 0.62, 1]}
+        colors={["#0d2d39", "#051d2d", "#0d1c35", "#2a1d39"]}
+        locations={[0, 0.32, 0.72, 1]}
         style={styles.flex}
       >
         <ScrollView
@@ -112,22 +112,14 @@ const LoginScreen: React.FC = () => {
             style={[
               styles.card,
               {
-                backgroundColor: colors.base,
-                borderColor: colors.lineStrong,
+                backgroundColor: "#061b27",
+                borderColor: "#285063",
               },
             ]}
           >
             <View style={styles.container}>
           {/* Language Toggle */}
               <View style={styles.langToggle}>
-            <TouchableOpacity
-              style={[styles.langPill, { backgroundColor: TEAL }]}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.langText, { color: colors.black }]}>
-                EN
-              </Text>
-            </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.langPill,
@@ -139,28 +131,36 @@ const LoginScreen: React.FC = () => {
               ]}
               activeOpacity={0.7}
             >
-              <Text style={[styles.langText, { color: colors.textMuted }]}>
+                  <Text style={[styles.langText, { color: "#d8def3" }]}>
                 اردو
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.langPill, { backgroundColor: TEAL }]}
+              activeOpacity={0.7}
+            >
+                   <Text style={[styles.langText, { color: colors.white }]}>
+                EN
               </Text>
             </TouchableOpacity>
               </View>
 
           {/* Title */}
-              <Text style={[styles.title, { color: TEAL }]}>Welcome back</Text>
-              <Text style={[styles.subtitle, { color: colors.textMuted }] }>
+              <Text style={styles.title}>Welcome back</Text>
+              <Text style={[styles.subtitle, { color: "#b7c5ee" }] }>
             Sign in to your Library Management System
               </Text>
 
           {/* USERNAME Input */}
               <View style={styles.inputGroup}>
-            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>
+            <Text style={styles.inputLabel}>
               USERNAME
             </Text>
             <View
               style={[
                 styles.inputRow,
                 {
-                  backgroundColor: colors.surface,
+                  backgroundColor: "rgba(2, 15, 21, 0.72)",
                   borderColor: TEAL,
                 },
               ]}
@@ -172,9 +172,9 @@ const LoginScreen: React.FC = () => {
                   style={styles.inputIcon}
                 />
               <TextInput
-                style={[styles.input, { color: colors.text }]}
+                style={[styles.input, { color: "#d8def3" }]}
                 placeholder="Email or username"
-                placeholderTextColor={colors.textMuted}
+                placeholderTextColor="#9da9d3"
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
@@ -187,15 +187,15 @@ const LoginScreen: React.FC = () => {
 
           {/* PASSWORD Input */}
               <View style={styles.inputGroup}>
-            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>
+            <Text style={styles.inputLabel}>
               PASSWORD
             </Text>
             <View
               style={[
                 styles.inputRow,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.line,
+                  backgroundColor: "rgba(2, 15, 21, 0.72)",
+                  borderColor: "#2876aa",
                 },
               ]}
             >
@@ -206,9 +206,9 @@ const LoginScreen: React.FC = () => {
                   style={styles.inputIcon}
                 />
               <TextInput
-                style={[styles.input, { color: colors.text }]}
+                style={[styles.input, { color: "#d8def3" }]}
                 placeholder="Password"
-                placeholderTextColor={colors.textMuted}
+                placeholderTextColor="#9da9d3"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -222,7 +222,7 @@ const LoginScreen: React.FC = () => {
                 <Ionicons
                   name={showPassword ? "eye-outline" : "eye-outline"}
                   size={27}
-                  color={colors.textMuted}
+                  color="#aebbe7"
                 />
               </TouchableOpacity>
             </View>
@@ -269,18 +269,18 @@ const LoginScreen: React.FC = () => {
               </View>
 
           {/* Sign In Button */}
+              <LinearGradient
+                colors={["#00c99f", "#00a990"]}
+                start={{ x: 0, y: 0.5 }}
+                end={{ x: 1, y: 0.5 }}
+                style={[styles.signInButton, { opacity: isLoading ? 0.7 : 1 }]}
+              >
               <TouchableOpacity
-            style={[
-              styles.signInButton,
-              {
-                backgroundColor: TEAL,
-                opacity: isLoading ? 0.7 : 1,
-              },
-            ]}
-            onPress={handleSubmit}
-            disabled={isLoading}
-            activeOpacity={0.8}
-          >
+                style={styles.signInButtonInner}
+                onPress={handleSubmit}
+                disabled={isLoading}
+                activeOpacity={0.8}
+              >
             {isLoading ? (
               <ActivityIndicator size="small" color={colors.black} />
             ) : (
@@ -292,6 +292,7 @@ const LoginScreen: React.FC = () => {
               </>
             )}
               </TouchableOpacity>
+              </LinearGradient>
 
           {/* TRY THE DEMO */}
               <View style={[styles.demoSection, { borderColor: colors.lineStrong }] }>
@@ -301,12 +302,12 @@ const LoginScreen: React.FC = () => {
               </Text>
                 </View>
 
-            <TouchableOpacity
+                <TouchableOpacity
               style={[
                 styles.demoButton,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.line,
+                  backgroundColor: "rgba(3, 17, 24, 0.66)",
+                  borderColor: "#2c526b",
                 },
               ]}
               onPress={() => handleDemoLogin("owner")}
@@ -318,7 +319,7 @@ const LoginScreen: React.FC = () => {
                   Continue as Owner
                 </Text>
                 <Text
-                  style={[styles.demoSubtitle, { color: colors.textDim }]}
+                  style={styles.demoSubtitle}
                 >
                   Full access · books, members, reports, all features
                 </Text>
@@ -326,7 +327,7 @@ const LoginScreen: React.FC = () => {
               <Ionicons
                 name="arrow-forward"
                 size={22}
-                color={colors.textDim}
+                color="#9aa9d4"
               />
             </TouchableOpacity>
 
@@ -334,8 +335,8 @@ const LoginScreen: React.FC = () => {
               style={[
                 styles.demoButton,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.line,
+                  backgroundColor: "rgba(3, 17, 24, 0.66)",
+                  borderColor: "#2c526b",
                 },
               ]}
               onPress={() => handleDemoLogin("manager")}
@@ -347,7 +348,7 @@ const LoginScreen: React.FC = () => {
                   Continue as Manager
                 </Text>
                 <Text
-                  style={[styles.demoSubtitle, { color: colors.textDim }]}
+                  style={styles.demoSubtitle}
                 >
                   Limited access · manage books and members
                 </Text>
@@ -355,14 +356,14 @@ const LoginScreen: React.FC = () => {
               <Ionicons
                 name="arrow-forward"
                 size={22}
-                color={colors.textDim}
+                color="#9aa9d4"
               />
             </TouchableOpacity>
               </View>
 
           {/* Footer */}
               <View style={styles.footer}>
-            <Text style={[styles.footerText, { color: colors.textDim }]}>
+                <Text style={styles.footerText}>
               Powered by Library
             </Text>
               </View>
@@ -381,14 +382,23 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: "center",
-    padding: 24,
+    paddingVertical: 28,
+    paddingHorizontal: 18,
   },
   card: {
     width: "100%",
-    maxWidth: 672,
+    maxWidth: 500,
+    alignSelf: "center",
     borderWidth: 1,
-    borderRadius: 24,
-    padding: 48,
+    borderRadius: 22,
+    paddingHorizontal: 22,
+    paddingTop: 18,
+    paddingBottom: 20,
+    shadowColor: "#02080d",
+    shadowOpacity: 0.58,
+    shadowRadius: 26,
+    shadowOffset: { width: 0, height: 14 },
+    elevation: 10,
   },
   container: {
     alignItems: "center",
@@ -398,98 +408,116 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-end",
     gap: 8,
-    marginBottom: 24,
+    width: "100%",
+    marginBottom: 12,
   },
   langPill: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
+    minWidth: 68,
+    height: 38,
+    paddingHorizontal: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 22,
   },
   langText: {
-    fontSize: 12,
+    fontSize: 18,
     fontWeight: "700",
   },
   title: {
-    fontSize: 40,
-    fontWeight: "700",
-    marginBottom: 8,
+    color: "#00d6ae",
+    fontSize: 52,
+    fontWeight: "800",
+    lineHeight: 58,
+    marginBottom: 4,
+    textAlign: "center",
   },
   subtitle: {
-    fontSize: 20,
-    marginBottom: 34,
+    fontSize: 19,
+    lineHeight: 26,
+    marginBottom: 24,
     textAlign: "center",
   },
   inputGroup: {
     width: "100%",
-    marginBottom: 28,
+    marginBottom: 18,
   },
   inputLabel: {
-    fontSize: 16,
+    color: "#aab9df",
+    fontSize: 14,
     fontWeight: "700",
     letterSpacing: 1,
-    marginBottom: 9,
+    marginBottom: 7,
   },
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 12,
-    borderWidth: 1,
-    height: 62,
+    borderRadius: 14,
+    borderWidth: 1.3,
+    height: 60,
   },
   inputIcon: {
-    width: 66,
+    width: 70,
     textAlign: "center",
   },
   input: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 19,
     paddingVertical: 0,
     paddingHorizontal: 0,
     height: "100%",
   },
   rightIcon: {
-    padding: 8,
-    marginRight: 8,
+    width: 52,
+    height: 60,
+    alignItems: "center",
+    justifyContent: "center",
   },
   rememberRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 0,
-    marginBottom: 26,
+    marginBottom: 22,
   },
   rememberCheckbox: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
   },
   checkbox: {
     width: 20,
     height: 20,
-    borderRadius: 4,
+    borderRadius: 5,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
   rememberText: {
-    fontSize: 16,
+    color: "#e0e4f2",
+    fontSize: 17,
   },
   forgotText: {
-    fontSize: 16,
+    color: "#00d5aa",
+    fontSize: 17,
     fontWeight: "600",
   },
   signInButton: {
+    borderRadius: 14,
+    height: 68,
+    width: "100%",
+    overflow: "hidden",
+    marginBottom: 18,
+  },
+  signInButtonInner: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 12,
-    height: 74,
-    width: "100%",
-    gap: 8,
-    marginBottom: 26,
+    gap: 10,
   },
   signInText: {
-    fontSize: 23,
+    color: "#ffffff",
+    fontSize: 24,
     fontWeight: "700",
   },
   demoSection: {
@@ -497,48 +525,53 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
     borderWidth: 1,
     borderRadius: 16,
-    padding: 26,
-    marginBottom: 20,
+    padding: 18,
+    paddingTop: 14,
+    marginBottom: 18,
   },
   demoDivider: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    marginBottom: 18,
+    marginBottom: 10,
   },
   demoLabel: {
-    fontSize: 16,
+    color: "#b0bee5",
+    fontSize: 15,
     fontWeight: "700",
     letterSpacing: 1,
   },
   demoButton: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
-    minHeight: 80,
-    paddingVertical: 13,
-    paddingHorizontal: 18,
+    minHeight: 74,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
     marginBottom: 10,
-    gap: 12,
+    gap: 10,
   },
   demoTextContainer: {
     flex: 1,
     flexDirection: "column",
   },
   demoTitle: {
+    color: "#00d5aa",
     fontSize: 17,
-    fontWeight: "600",
+    fontWeight: "700",
   },
   demoSubtitle: {
-    fontSize: 13,
+    color: "#a8b6dc",
+    fontSize: 12,
     fontWeight: "500",
     marginTop: 2,
   },
   footer: {
-    paddingTop: 12,
+    paddingTop: 10,
   },
   footerText: {
+    color: "#a8b6dc",
     fontSize: 14,
     fontWeight: "500",
   },

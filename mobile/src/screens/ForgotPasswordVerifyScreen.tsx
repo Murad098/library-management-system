@@ -107,7 +107,8 @@ const ForgotPasswordVerifyScreen: React.FC = () => {
             style={{ marginBottom: 16 }}
           />
 
-          <View style={styles.otpField}>
+          <View style={[styles.formCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
+            <View style={styles.otpField}>
             <Text style={[styles.label, { color: colors.textMuted }]}>
               Verification code
             </Text>
@@ -224,6 +225,7 @@ const ForgotPasswordVerifyScreen: React.FC = () => {
               </Text>
             </TouchableOpacity>
           </View>
+          </View>
         </View>
       </ScrollView>
 
@@ -240,6 +242,15 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   container: { marginBottom: 32 },
+  formCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+  },
   field: { marginTop: 16, marginBottom: 4 },
   label: {
     fontSize: 13,

@@ -93,7 +93,8 @@ const AddMemberScreen: React.FC = () => {
             style={{ marginBottom: 16 }}
           />
 
-          <InputField
+          <View style={[styles.formCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
+            <InputField
             label="Name"
             placeholder="Enter full name"
             value={name}
@@ -210,6 +211,7 @@ const AddMemberScreen: React.FC = () => {
               disabled={isLoading}
             />
           </View>
+          </View>
         </View>
       </ScrollView>
 
@@ -225,6 +227,15 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   container: { paddingBottom: 24 },
+  formCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+  },
   field: { marginBottom: 18 },
   label: {
     fontSize: 13,

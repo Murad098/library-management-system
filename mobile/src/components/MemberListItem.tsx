@@ -143,15 +143,15 @@ const MemberListItem: React.FC<MemberListItemProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 16,
+    borderRadius: 18,
     padding: 14,
     marginBottom: 12,
     borderWidth: 1,
     shadowColor: "#000000",
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.16,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
-    elevation: 3,
+    elevation: 2,
   },
   row: {
     flexDirection: "row",

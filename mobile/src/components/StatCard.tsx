@@ -70,9 +70,9 @@ const StatCard: React.FC<StatCardProps> = ({
         {hint ? <Text style={[styles.hint, { color: colors.textDim }]}>{hint}</Text> : null}
       </View>
       <View
-        style={[styles.iconWrap, { backgroundColor: toneStyle.bg, borderColor: colors.line }]}
+        style={[styles.iconWrap, { backgroundColor: `${toneStyle.icon}20`, borderColor: `${toneStyle.icon}30` }]}
       >
-        <Icon color={toneStyle.icon} size={20} />
+        <Icon color={toneStyle.icon} size={22} />
       </View>
     </View>
   );
@@ -83,34 +83,36 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderRadius: 16,
-    padding: 16,
-    minHeight: 100,
+    borderRadius: 18,
+    padding: 18,
+    minHeight: 118,
     borderWidth: 1,
+    marginBottom: 16,
   },
   content: {
     flex: 1,
     minWidth: 0,
   },
   label: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: "700",
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
     textTransform: "uppercase",
   },
   value: {
-    fontSize: 24,
-    fontWeight: "700",
-    marginTop: 4,
+    fontSize: 38,
+    fontWeight: "800",
+    marginTop: 8,
+    lineHeight: 38,
   },
   hint: {
-    fontSize: 11,
-    marginTop: 2,
+    fontSize: 14,
+    marginTop: 8,
   },
   iconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+    width: 50,
+    height: 50,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 12,

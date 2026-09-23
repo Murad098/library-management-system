@@ -139,15 +139,28 @@ const MainTabs = () => {
     <Tab.Navigator
       initialRouteName="DashboardTab"
       screenOptions={{
-        tabBarActiveTintColor: c.brand,
-        tabBarInactiveTintColor: c.textDim,
+        tabBarActiveTintColor: c.white,
+        tabBarInactiveTintColor: c.textMuted,
         tabBarStyle: {
-          backgroundColor: c.surface,
-          borderTopColor: c.line,
+          backgroundColor: "rgba(18, 21, 31, 0.9)",
+          borderTopWidth: 0,
           height: 72,
           paddingBottom: 8,
-          paddingTop: 7,
+          paddingTop: 8,
+          borderTopLeftRadius: 22,
+          borderTopRightRadius: 22,
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          elevation: 0,
+          shadowOpacity: 0,
         },
+        tabBarItemStyle: {
+          borderRadius: 16,
+          marginHorizontal: 6,
+        },
+        tabBarActiveBackgroundColor: `${c.brand}22`,
         headerShown: false,
         tabBarLabelStyle: { fontSize: 11, fontWeight: "700" },
       }}

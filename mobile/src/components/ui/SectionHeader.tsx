@@ -39,22 +39,14 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
   return (
     <View style={[styles.container, style]}>
       <View style={styles.leftContent}>
-        <View
-          style={[
-            styles.iconWrap,
-            {
-              backgroundColor: `${accent}26`,
-              borderColor: `${accent}4D`,
-            },
-          ]}
-        >
-          <Ionicons name={icon} size={20} color={accent} />
+        <View style={styles.iconWrap}>
+          <Ionicons name={icon} size={23} color={accent} />
         </View>
         <View style={styles.textGroup}>
           <Text
             style={[
               styles.title,
-              { color: colors.white },
+              { color: colors.text },
               titleStyle,
             ]}
           >
@@ -85,7 +77,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 20,
+    marginBottom: 18,
     flexWrap: "wrap",
     gap: 12,
   },
@@ -95,10 +87,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   iconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 14,
-    borderWidth: 1,
+    width: 26,
+    height: 26,
     alignItems: "center",
     justifyContent: "center",
     flex: 0,
@@ -108,8 +98,9 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   title: {
-    fontSize: 25,
-    fontWeight: "700",
+    fontSize: 29,
+    fontWeight: "800",
+    lineHeight: 33,
   },
   subtitle: {
     fontSize: 12,
