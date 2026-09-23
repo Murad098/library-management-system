@@ -26,6 +26,7 @@ import NotificationListItem from "../components/NotificationListItem";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import SectionHeader from "../components/ui/SectionHeader";
 import { useToast } from "../hooks/useToast";
+import { useLanguage } from "../context/LanguageContext";
 
 const NOTIFICATION_TYPES: NotificationType[] = ["info", "success", "warning", "alert"];
 
@@ -45,6 +46,7 @@ const typeColors: Record<NotificationType, string> = {
 
 const NotificationsScreen: React.FC = () => {
   const colors = useThemeColors();
+  const { t } = useLanguage();
   const { Toast, show } = useToast();
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -203,7 +205,7 @@ const NotificationsScreen: React.FC = () => {
       <View style={[styles.loadingContainer, { backgroundColor: colors.base }]}>
         <ActivityIndicator size="large" color={colors.brand} />
         <Text style={[styles.loadingText, { color: colors.textMuted }]}>
-          Loading notifications...
+          {t("loading")}
         </Text>
         <Toast />
       </View>
@@ -214,7 +216,7 @@ const NotificationsScreen: React.FC = () => {
     <View style={[styles.container, { backgroundColor: colors.base }]}>
       <SectionHeader
         icon="notifications"
-        title="Notifications"
+        title={t("notifications")}
         subtitle={`${unreadCount} unread of ${notifications.length} total`}
         accentColor={colors.accent}
         rightContent={

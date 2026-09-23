@@ -5,6 +5,7 @@ import { useTheme } from "../context/ThemeContext";
 import LoginScreen from "../screens/LoginScreen";
 import ForgotPasswordRequestScreen from "../screens/ForgotPasswordRequestScreen";
 import ForgotPasswordVerifyScreen from "../screens/ForgotPasswordVerifyScreen";
+import { useLanguage } from "../context/LanguageContext";
 
 export type AuthStackParamList = {
   Login: { email?: string };
@@ -16,6 +17,7 @@ const Stack = createNativeStackNavigator<AuthStackParamList>();
 
 const AuthStack = () => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const c = theme.colors;
 
   return (
@@ -37,12 +39,12 @@ const AuthStack = () => {
       <Stack.Screen
         name="ForgotPasswordRequest"
         component={ForgotPasswordRequestScreen}
-        options={{ title: "Reset password" }}
+        options={{ title: t("resetPassword") }}
       />
       <Stack.Screen
         name="ForgotPasswordVerify"
         component={ForgotPasswordVerifyScreen}
-        options={{ title: "Verify code" }}
+        options={{ title: t("sendCode") }}
       />
     </Stack.Navigator>
   );

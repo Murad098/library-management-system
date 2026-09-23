@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const Expense = require("../models/Expense");
+const requireAuth = require("../middleware/auth");
+const requireRole = requireAuth.requireRole;
 
 const CATEGORIES = [
   "Food",
@@ -70,8 +72,37 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.put("/:id", async (req, res) => {
+  const title = typeof req.body.title === "string" ? req.body.title.trim() : "";
+  const amount = Number(req.body.amount);
+  const parsedDate = req.body.date ? new Date(req.body.date) : new Date();
+
+  if (!title || !Number.isFinite(amount) || amount <= 0) {
+    return res.status(400).json({ message: "Valid title and amount are required." });
+  }
+
+  try {
+    const expense = await Expense.findByIdAndUpdate(
+      req.params.id,
+      {
+        title,
+        amount,
+        category: CATEGORIES.includes(req.body.category) ? req.body.category : "Other",
+        date: Number.isNaN(parsedDate.getTime()) ? new Date() : parsedDate,
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!expense) return res.status(404).json({ message: "Expense not found." });
+    return res.status(200).json(expense);
+  } catch (err) {
+    console.error("Error updating expense:", err);
+    return res.status(500).json({ message: "Unable to update expense." });
+  }
+});
+
 // Delete expense
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireRole("owner"), async (req, res) => {
   try {
     const expense = await Expense.findByIdAndDelete(req.params.id);
 

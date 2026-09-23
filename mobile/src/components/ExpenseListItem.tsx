@@ -34,12 +34,14 @@ const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
 interface ExpenseListItemProps {
   expense: Expense;
   onDelete?: (id: string) => Promise<void>;
+  onEdit?: (expense: Expense) => void;
   disabled?: boolean;
 }
 
 const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
   expense,
   onDelete,
+  onEdit,
   disabled = false,
 }) => {
   const colors = useThemeColors();
@@ -113,6 +115,8 @@ const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
             {formatCurrencyPrecise(expense.amount)}
           </Text>
           {onDelete && (
+            <>
+            {onEdit && <TouchableOpacity style={styles.editButton} onPress={() => onEdit(expense)}><Ionicons name="create-outline" size={16} color={colors.brand} /></TouchableOpacity>}
             <TouchableOpacity
               style={styles.deleteButton}
               onPress={handleDelete}
@@ -126,7 +130,9 @@ const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
                 <Ionicons name="trash" size={16} color={colors.red} />
               )}
             </TouchableOpacity>
+            </>
           )}
+          {!onDelete && onEdit && <TouchableOpacity style={styles.editButton} onPress={() => onEdit(expense)}><Ionicons name="create-outline" size={16} color={colors.brand} /></TouchableOpacity>}
         </View>
       </View>
     </View>
@@ -193,6 +199,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   deleteButton: {
+    marginTop: 4,
+    padding: 4,
+    minWidth: 36,
+    alignItems: "center",
+  },
+  editButton: {
     marginTop: 4,
     padding: 4,
     minWidth: 36,

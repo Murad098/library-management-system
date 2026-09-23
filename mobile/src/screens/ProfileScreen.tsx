@@ -11,12 +11,12 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import * as SecureStore from "expo-secure-store";
 import * as ImagePicker from "expo-image-picker";
 
 import { useAuth } from "../hooks/useAuth";
 import { useToast } from "../hooks/useToast";
 import { useTheme, useThemeColors } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
 import SectionHeader from "../components/ui/SectionHeader";
 import { getErrorMessage } from "../services/api";
 import { getAvatar, uploadAvatar, changePassword } from "../services/authService";
@@ -29,11 +29,10 @@ const HELP_TIPS = [
   "Change the admin password here whenever it may have been shared.",
 ];
 
-const LANGUAGE_STORAGE_KEY = "language";
-
 const ProfileScreen: React.FC = () => {
   const { user, signOut } = useAuth();
   const { toggleTheme, colorScheme, accent, setAccent } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
   const colors = useThemeColors();
   const { Toast, show } = useToast();
   const TEAL = colors.green;
@@ -49,25 +48,12 @@ const ProfileScreen: React.FC = () => {
   const [showPasswords, setShowPasswords] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const [language, setLanguage] = useState<"en" | "ur">("en");
 
   const togglePanel = (panel: string) => {
     setOpenPanel((current) => (current === panel ? "" : panel));
   };
 
-  useEffect(() => {
-    (async () => {
-      const saved = await SecureStore.getItemAsync(LANGUAGE_STORAGE_KEY);
-      if (saved === "en" || saved === "ur") {
-        setLanguage(saved);
-      }
-    })();
-  }, []);
-
-  const handleLanguage = async (lang: "en" | "ur") => {
-    setLanguage(lang);
-    await SecureStore.setItemAsync(LANGUAGE_STORAGE_KEY, lang);
-  };
+  const handleLanguage = (lang: "en" | "ur") => setLanguage(lang);
 
   const loadAvatar = async () => {
     setAvatarLoading(true);
@@ -202,8 +188,8 @@ const ProfileScreen: React.FC = () => {
       >
         <SectionHeader
           icon="settings"
-          title="Settings"
-          subtitle="Manage your account and preferences"
+          title={t("settings")}
+          subtitle={t("chooseAccent")}
           accentColor={TEAL}
           rightContent={
             <TouchableOpacity
@@ -350,7 +336,7 @@ const ProfileScreen: React.FC = () => {
               </View>
               <View style={styles.menuText}>
                 <Text style={[styles.menuTitle, { color: colors.text }]}>
-                  Dark mode
+                  {t("darkMode")}
                 </Text>
                 <Text style={[styles.menuDesc, { color: colors.textMuted }]}>
                   {colorScheme === "dark"
@@ -440,10 +426,10 @@ const ProfileScreen: React.FC = () => {
               </View>
               <View style={styles.menuText}>
                 <Text style={[styles.menuTitle, { color: colors.text }]}>
-                  Language
+                  {t("language")}
                 </Text>
                 <Text style={[styles.menuDesc, { color: colors.textMuted }]}>
-                  {language === "en" ? "English" : "اردو"}
+                  {language === "en" ? t("english") : t("urdu")}
                 </Text>
               </View>
             </View>

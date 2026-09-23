@@ -10,11 +10,11 @@ import {
   ScrollView,
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 
 import { useThemeColors } from "../context/ThemeContext";
 import { getErrorMessage } from "../services/api";
-import { addMember } from "../services/memberService";
+import { addMember, updateMember } from "../services/memberService";
 import { useToast } from "../hooks/useToast";
 import InputField from "../components/ui/InputField";
 import PrimaryButton from "../components/ui/PrimaryButton";
@@ -24,6 +24,7 @@ import {
   DashboardStackParamList,
   MembersStackParamList,
 } from "../navigation/MainTabs";
+import { useLanguage } from "../context/LanguageContext";
 
 type NavigationProp = NativeStackNavigationProp<
   DashboardStackParamList & MembersStackParamList,
@@ -34,14 +35,17 @@ const STATUSES = ["paid", "unpaid"] as const;
 
 const AddMemberScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RouteProp<DashboardStackParamList & MembersStackParamList, "AddMember">>();
+  const editing = route.params?.member;
   const colors = useThemeColors();
+  const { t } = useLanguage();
   const { Toast, show } = useToast();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [fee, setFee] = useState("");
-  const [status, setStatus] = useState<"paid" | "unpaid">("unpaid");
+  const [name, setName] = useState(editing?.name ?? "");
+  const [email, setEmail] = useState(editing?.email ?? "");
+  const [phone, setPhone] = useState(editing?.phone ?? "");
+  const [fee, setFee] = useState(editing ? String(editing.fee) : "");
+  const [status, setStatus] = useState<"paid" | "unpaid">(editing?.status ?? "unpaid");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
@@ -55,15 +59,17 @@ const AddMemberScreen: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await addMember({
+      const payload = {
         name: name.trim(),
         email: email.trim(),
         phone: phone.trim(),
         fee: Number(fee) || 0,
         status,
-      });
+      };
+      if (editing) await updateMember(editing.id, payload);
+      else await addMember(payload);
 
-      show("Member added successfully.", "success");
+      show(editing ? "Member updated successfully." : "Member added successfully.", "success");
       navigation.goBack();
     } catch (error) {
       show(getErrorMessage(error, "Unable to add member."), "error");
@@ -89,13 +95,13 @@ const AddMemberScreen: React.FC = () => {
         <View style={styles.container}>
           <SectionHeader
             icon="person-add"
-            title="Add Member"
+            title={t("addMember")}
             style={{ marginBottom: 16 }}
           />
 
           <View style={[styles.formCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
             <InputField
-            label="Name"
+            label={t("title")}
             placeholder="Enter full name"
             value={name}
             onChangeText={setName}
@@ -104,7 +110,7 @@ const AddMemberScreen: React.FC = () => {
           />
 
           <InputField
-            label="Email"
+            label={t("emailAddress")}
             placeholder="Enter email address"
             value={email}
             onChangeText={setEmail}

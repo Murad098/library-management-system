@@ -21,6 +21,8 @@ import { normalizeMember } from "../utils/normalize";
 import MemberListItem from "../components/MemberListItem";
 import SectionHeader from "../components/ui/SectionHeader";
 import { MembersStackParamList } from "../navigation/MainTabs";
+import { useLanguage } from "../context/LanguageContext";
+import { useAuth } from "../hooks/useAuth";
 
 type NavigationProp = NativeStackNavigationProp<
   MembersStackParamList,
@@ -32,6 +34,8 @@ const STATUS_FILTERS = ["All", "Paid", "Unpaid"] as const;
 const MembersScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const colors = useThemeColors();
+  const { t } = useLanguage();
+  const { user } = useAuth();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -109,7 +113,8 @@ const MembersScreen: React.FC = () => {
   const renderItem = ({ item }: { item: Member }) => (
     <MemberListItem
       member={item}
-      onDelete={handleDelete}
+      onDelete={user?.role === "owner" ? handleDelete : undefined}
+        onEdit={(member) => navigation.navigate("AddMember", { member })}
       disabled={deletingId === item.id}
     />
   );
@@ -118,7 +123,7 @@ const MembersScreen: React.FC = () => {
     <View style={[styles.container, { backgroundColor: colors.base }]}>
       <SectionHeader
         icon="people"
-        title="Members"
+        title={t("members")}
         subtitle={`${members.length} registered • ${paidCount} paid • ${members.length - paidCount} unpaid`}
       />
 
@@ -137,7 +142,7 @@ const MembersScreen: React.FC = () => {
           />
           <TextInput
             style={[styles.searchInput, { color: colors.text }]}
-            placeholder="Search name, email or phone..."
+            placeholder={`${t("search")} name, email or phone...`}
             placeholderTextColor={colors.textMuted}
             value={search}
             onChangeText={setSearch}

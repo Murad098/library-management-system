@@ -12,12 +12,12 @@ import {
   FlatList,
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { useThemeColors } from "../context/ThemeContext";
 import { getErrorMessage } from "../services/api";
-import { addExpense } from "../services/expenseService";
+import { addExpense, updateExpense } from "../services/expenseService";
 import { useToast } from "../hooks/useToast";
 import InputField from "../components/ui/InputField";
 import PrimaryButton from "../components/ui/PrimaryButton";
@@ -26,6 +26,7 @@ import SectionHeader from "../components/ui/SectionHeader";
 import { ExpensesStackParamList } from "../navigation/MainTabs";
 import { EXPENSE_CATEGORIES } from "../components/ExpenseListItem";
 import { toDateInputValue } from "../utils/format";
+import { useLanguage } from "../context/LanguageContext";
 
 type NavigationProp = NativeStackNavigationProp<
   ExpensesStackParamList,
@@ -34,14 +35,17 @@ type NavigationProp = NativeStackNavigationProp<
 
 const AddExpenseScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RouteProp<ExpensesStackParamList, "AddExpense">>();
+  const editing = route.params?.expense;
   const colors = useThemeColors();
+  const { t } = useLanguage();
   const { Toast, show } = useToast();
 
-  const [title, setTitle] = useState("");
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState(toDateInputValue(new Date()));
+  const [title, setTitle] = useState(editing?.title ?? "");
+  const [amount, setAmount] = useState(editing ? String(editing.amount) : "");
+  const [date, setDate] = useState(editing?.date ? toDateInputValue(new Date(editing.date)) : toDateInputValue(new Date()));
   const [category, setCategory] = useState<typeof EXPENSE_CATEGORIES[number]>(
-    () => EXPENSE_CATEGORIES[0]
+    () => editing?.category as typeof EXPENSE_CATEGORIES[number] || EXPENSE_CATEGORIES[0]
   );
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -64,14 +68,16 @@ const AddExpenseScreen: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await addExpense({
+      const payload = {
         title: title.trim(),
         amount: numericAmount,
         category,
         date,
-      });
+      };
+      if (editing) await updateExpense(editing.id, payload);
+      else await addExpense(payload);
 
-      show("Expense added successfully.", "success");
+      show(editing ? "Expense updated successfully." : "Expense added successfully.", "success");
       navigation.goBack();
     } catch (error) {
       show(getErrorMessage(error, "Unable to add expense."), "error");
@@ -102,13 +108,13 @@ const AddExpenseScreen: React.FC = () => {
         <View style={styles.container}>
           <SectionHeader
             icon="receipt"
-            title="Add Expense"
+            title={t("addExpense")}
             style={{ marginBottom: 16 }}
           />
 
           <View style={[styles.formCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
             <InputField
-            label="Title"
+            label={t("title")}
             placeholder="What was this expense for?"
             value={title}
             onChangeText={setTitle}
@@ -117,7 +123,7 @@ const AddExpenseScreen: React.FC = () => {
 
           <View style={styles.field}>
             <Text style={[styles.label, { color: colors.textMuted }]}>
-              Amount
+              {t("amount")}
             </Text>
             <View
               style={[
@@ -154,7 +160,7 @@ const AddExpenseScreen: React.FC = () => {
 
           <View style={styles.field}>
             <Text style={[styles.label, { color: colors.textMuted }]}>
-              Category
+              {t("category")}
             </Text>
             <TouchableOpacity
               style={[

@@ -18,6 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../hooks/useAuth";
 import { useToast } from "../hooks/useToast";
 import { useThemeColors } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
 import { login } from "../services/authService";
 import { getErrorMessage } from "../services/api";
 import { AuthStackParamList } from "../navigation/AuthStack";
@@ -37,10 +38,11 @@ const LoginScreen: React.FC = () => {
   const { signIn } = useAuth();
   const { Toast, show } = useToast();
   const colors = useThemeColors();
+  const { language, setLanguage, t } = useLanguage();
 
-  const [email, setEmail] = useState(DEMO_OWNER_EMAIL);
-  const [password, setPassword] = useState(DEMO_OWNER_PASSWORD);
-  const [rememberMe, setRememberMe] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -50,7 +52,7 @@ const LoginScreen: React.FC = () => {
     if (isLoading) return;
 
     if (!emailToLogin.trim() || !passwordToLogin) {
-      show("Please enter your email and password.", "error");
+      show(t("pleaseEnterCredentials"), "error");
       return;
     }
 
@@ -61,10 +63,10 @@ const LoginScreen: React.FC = () => {
       const token = response.data.token as string;
 
       await signIn(token, rememberMe);
-      show("Welcome back! Login successful.", "success");
+      show(t("loginSuccess"), "success");
     } catch (error) {
       show(
-        getErrorMessage(error, "Unable to sign in. Please try again."),
+        getErrorMessage(error, t("unableToSignIn")),
         "error"
       );
     } finally {
@@ -83,13 +85,11 @@ const LoginScreen: React.FC = () => {
     const demoPassword =
       role === "owner" ? DEMO_OWNER_PASSWORD : DEMO_MANAGER_PASSWORD;
 
-    if (!demoEmail || !demoPassword) {
-      show("Demo credentials are not configured.", "error");
+    if (!demoEmail || !demoPassword || (role === "manager" && demoEmail === DEMO_OWNER_EMAIL)) {
+      show(t("demoNotConfigured"), "error");
       return;
     }
 
-    setEmail(demoEmail);
-    setPassword(demoPassword);
     await performLogin(demoEmail, demoPassword);
   };
 
@@ -129,32 +129,38 @@ const LoginScreen: React.FC = () => {
                   borderWidth: 1,
                 },
               ]}
+              onPress={() => setLanguage("ur")}
               activeOpacity={0.7}
             >
-                  <Text style={[styles.langText, { color: "#d8def3" }]}>
-                اردو
+                  <Text
+                    style={[styles.langText, { color: "#d8def3" }]}
+                  >
+                    {t("urdu")}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.langPill, { backgroundColor: TEAL }]}
+              style={[styles.langPill, { backgroundColor: language === "en" ? TEAL : "transparent", borderColor: language === "en" ? TEAL : colors.lineStrong, borderWidth: 1 }]}
+              onPress={() => setLanguage("en")}
               activeOpacity={0.7}
             >
-                   <Text style={[styles.langText, { color: colors.white }]}>
-                EN
+                  <Text
+                    style={[styles.langText, { color: colors.white }]}
+                  >
+                    {t("english")}
               </Text>
             </TouchableOpacity>
               </View>
 
           {/* Title */}
-              <Text style={[styles.title, { color: TEAL }]}>Welcome back</Text>
+              <Text style={[styles.title, { color: TEAL }]}>{t("welcomeBack")}</Text>
               <Text style={[styles.subtitle, { color: "#b7c5ee" }] }>
-            Sign in to your Library Management System
+            {t("signInSubtitle")}
               </Text>
 
           {/* USERNAME Input */}
               <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>
-              USERNAME
+              {t("username")}
             </Text>
             <View
               style={[
@@ -173,12 +179,14 @@ const LoginScreen: React.FC = () => {
                 />
               <TextInput
                 style={[styles.input, { color: "#d8def3" }]}
-                placeholder="Email or username"
+                placeholder={t("emailOrUsername")}
                 placeholderTextColor="#9da9d3"
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
-                autoComplete="username"
+                autoComplete="off"
+                textContentType="none"
+                importantForAutofill="no"
                 keyboardType="email-address"
                 inputMode="email"
               />
@@ -188,7 +196,7 @@ const LoginScreen: React.FC = () => {
           {/* PASSWORD Input */}
               <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>
-              PASSWORD
+              {t("password")}
             </Text>
             <View
               style={[
@@ -207,12 +215,14 @@ const LoginScreen: React.FC = () => {
                 />
               <TextInput
                 style={[styles.input, { color: "#d8def3" }]}
-                placeholder="Password"
+                placeholder={t("password")}
                 placeholderTextColor="#9da9d3"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
-                autoComplete="current-password"
+                autoComplete="off"
+                textContentType="none"
+                importantForAutofill="no"
               />
               <TouchableOpacity
                 onPress={() => setShowPassword(!showPassword)}
@@ -254,7 +264,7 @@ const LoginScreen: React.FC = () => {
                 )}
               </View>
               <Text style={[styles.rememberText, { color: colors.text }]}>
-                Remember me
+                {t("rememberMe")}
               </Text>
             </TouchableOpacity>
 
@@ -263,7 +273,7 @@ const LoginScreen: React.FC = () => {
               activeOpacity={0.7}
             >
               <Text style={[styles.forgotText, { color: TEAL }]}>
-                Forgot Password?
+                {t("forgotPassword")}
               </Text>
             </TouchableOpacity>
               </View>
@@ -286,7 +296,7 @@ const LoginScreen: React.FC = () => {
             ) : (
               <>
                 <Text style={[styles.signInText, { color: colors.white }] }>
-                  Sign in
+                  {t("signIn")}
                 </Text>
                 <Ionicons name="arrow-forward" size={27} color={colors.white} />
               </>
@@ -298,7 +308,7 @@ const LoginScreen: React.FC = () => {
               <View style={[styles.demoSection, { borderColor: colors.lineStrong }] }>
                 <View style={styles.demoDivider}>
               <Text style={[styles.demoLabel, { color: colors.textMuted }]}>
-                TRY THE DEMO
+                {t("tryDemo")}
               </Text>
                 </View>
 
@@ -316,12 +326,12 @@ const LoginScreen: React.FC = () => {
               <Ionicons name="person-outline" size={29} color={TEAL} />
               <View style={styles.demoTextContainer}>
                 <Text style={[styles.demoTitle, { color: TEAL }]}>
-                  Continue as Owner
+                  {t("continueOwner")}
                 </Text>
                 <Text
                   style={styles.demoSubtitle}
                 >
-                  Full access · books, members, reports, all features
+                  {t("ownerDescription")}
                 </Text>
               </View>
               <Ionicons
@@ -345,12 +355,12 @@ const LoginScreen: React.FC = () => {
               <Ionicons name="people-outline" size={29} color={TEAL} />
               <View style={styles.demoTextContainer}>
                 <Text style={[styles.demoTitle, { color: TEAL }]}>
-                  Continue as Manager
+                  {t("continueManager")}
                 </Text>
                 <Text
                   style={styles.demoSubtitle}
                 >
-                  Limited access · manage books and members
+                  {t("managerDescription")}
                 </Text>
               </View>
               <Ionicons
@@ -382,16 +392,17 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: "center",
-    paddingVertical: 28,
-    paddingHorizontal: 18,
+    alignItems: "center",
+    paddingVertical: 20,
+    paddingHorizontal: 16,
   },
   card: {
     width: "100%",
-    maxWidth: 500,
+    maxWidth: 430,
     alignSelf: "center",
     borderWidth: 1,
     borderRadius: 22,
-    paddingHorizontal: 22,
+    paddingHorizontal: 20,
     paddingTop: 18,
     paddingBottom: 20,
     shadowColor: "#02080d",
@@ -424,9 +435,9 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   title: {
-    fontSize: 52,
+    fontSize: 38,
     fontWeight: "800",
-    lineHeight: 58,
+    lineHeight: 44,
     marginBottom: 4,
     textAlign: "center",
   },

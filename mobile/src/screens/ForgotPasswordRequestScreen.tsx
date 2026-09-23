@@ -20,6 +20,7 @@ import InputField from "../components/ui/InputField";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import SectionHeader from "../components/ui/SectionHeader";
 import { AuthStackParamList } from "../navigation/AuthStack";
+import { useLanguage } from "../context/LanguageContext";
 
 type NavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
@@ -31,6 +32,7 @@ const ForgotPasswordRequestScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RoutePropType>();
   const colors = useThemeColors();
+  const { t } = useLanguage();
   const { Toast, show } = useToast();
 
   const [email, setEmail] = useState(route.params?.email ?? "");
@@ -83,14 +85,14 @@ const ForgotPasswordRequestScreen: React.FC = () => {
         <View style={styles.container}>
           <SectionHeader
             icon="key"
-            title="Reset your password"
+            title={t("resetPassword")}
             subtitle="Enter your administrator email to receive a 6-digit code."
             style={{ marginBottom: 16 }}
           />
 
           <View style={[styles.formCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
             <InputField
-            label="Email address"
+            label={t("emailAddress")}
             placeholder="Admin email"
             value={email}
             onChangeText={setEmail}
@@ -102,7 +104,7 @@ const ForgotPasswordRequestScreen: React.FC = () => {
           />
 
           <PrimaryButton
-            title="Send code"
+            title={t("sendCode")}
             onPress={handleSubmit}
             loading={isLoading}
             disabled={isLoading}
@@ -115,7 +117,7 @@ const ForgotPasswordRequestScreen: React.FC = () => {
             activeOpacity={0.7}
           >
             <Text style={[styles.backText, { color: colors.textMuted }]}>
-              Back to login
+              {t("backToLogin")}
             </Text>
           </TouchableOpacity>
           </View>

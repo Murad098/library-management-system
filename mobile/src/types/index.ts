@@ -35,18 +35,20 @@ export interface NotificationsResponse {
 export interface AuthSession {
   email: string;
   name: string;
-  role: string;
+  role: "owner" | "manager";
   expiresAt: Date | null;
 }
 
 export interface LoginResponse {
   token: string;
   email: string;
+  role?: "owner" | "manager";
 }
 
 export interface SessionResponse {
   email: string;
   passwordUpdatedAt: string;
+  role?: "owner" | "manager";
 }
 
 export interface AvatarUploadResponse {
@@ -86,6 +88,7 @@ export interface ExpenseApiResponse {
 
 export interface JwtPayload {
   email?: string;
+  role?: "owner" | "manager";
   exp?: number;
   iat?: number;
   [key: string]: unknown;

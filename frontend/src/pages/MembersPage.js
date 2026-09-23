@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Phone, Search, Trash2, UserPlus, Users } from "lucide-react";
+import { Edit3, Phone, Search, Trash2, UserPlus, Users } from "lucide-react";
 
-import { getErrorMessage } from "../services/api";
+import { getErrorMessage, readSessionUser } from "../services/api";
 import { formatCurrency, formatDate, initials } from "../utils/format";
 
 const STATUS_FILTERS = ["All", "Paid", "Unpaid"];
@@ -22,12 +22,13 @@ const StatusBadge = ({ isPaid }) => (
   </span>
 );
 
-const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
+const MembersScreen = ({ members = [], loading = false, onDeleteMember, onUpdateMember }) => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState("");
+  const { role } = readSessionUser();
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -63,6 +64,28 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
       setError(getErrorMessage(err, "Unable to delete member."));
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleEdit = async (member) => {
+    const name = window.prompt("Member name", member.name);
+    if (name === null) return;
+    const email = window.prompt("Member email", member.email);
+    if (email === null) return;
+    const phone = window.prompt("Member phone", member.phone);
+    if (phone === null) return;
+    const fee = window.prompt("Monthly fee", String(member.fee));
+    if (fee === null) return;
+    const status = window.prompt("Status: paid or unpaid", member.status);
+    if (status === null) return;
+
+    try {
+      await onUpdateMember(member.id, {
+        name: name.trim(), email: email.trim(), phone: phone.trim(),
+        fee: Number(fee), status: status === "paid" ? "paid" : "unpaid",
+      });
+    } catch (err) {
+      setError(getErrorMessage(err, "Unable to update member."));
     }
   };
 
@@ -179,7 +202,15 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
                             </p>
                           </div>
 
-                          <button
+                          {role === "owner" && <button
+                            type="button"
+                            onClick={() => handleEdit(member)}
+                            aria-label={`Edit ${member.name}`}
+                            className="-mt-2 flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 hover:bg-brand/10 hover:text-brand"
+                          >
+                            <Edit3 className="h-4 w-4" />
+                          </button>}
+                          {role === "owner" && <button
                             type="button"
                             onClick={() => handleDelete(member)}
                             disabled={deletingId === member.id}
@@ -187,7 +218,7 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
                             className="-mr-2 -mt-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
                           >
                             <Trash2 className="h-4 w-4" />
-                          </button>
+                          </button>}
                         </div>
 
                         <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -268,6 +299,14 @@ const MembersScreen = ({ members = [], loading = false, onDeleteMember }) => {
                         </td>
 
                         <td className="whitespace-nowrap px-4 py-4 text-center">
+                          <button
+                            type="button"
+                            onClick={() => handleEdit(member)}
+                            aria-label={`Edit ${member.name}`}
+                            className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-400 hover:bg-brand/10 hover:text-brand"
+                          >
+                            <Edit3 className="h-4 w-4" />
+                          </button>
                           <button
                             type="button"
                             onClick={() => handleDelete(member)}

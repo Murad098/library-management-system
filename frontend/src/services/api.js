@@ -39,12 +39,13 @@ export const readSessionUser = () => {
   const token = readToken();
   const payload = token ? decodeJwtPayload(token) : null;
   const email = typeof payload?.email === "string" ? payload.email : "";
+  const role = payload?.role === "manager" ? "manager" : "owner";
   const handle = email.split("@")[0] || "";
 
   return {
     email,
     name: handle ? handle.charAt(0).toUpperCase() + handle.slice(1) : "Administrator",
-    role: "Administrator",
+    role,
     expiresAt: payload?.exp ? new Date(payload.exp * 1000) : null,
   };
 };

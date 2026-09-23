@@ -30,6 +30,8 @@ import ExpenseListItem, {
   EXPENSE_CATEGORIES,
 } from "../components/ExpenseListItem";
 import { ExpensesStackParamList } from "../navigation/MainTabs";
+import { useLanguage } from "../context/LanguageContext";
+import { useAuth } from "../hooks/useAuth";
 
 type NavigationProp = NativeStackNavigationProp<
   ExpensesStackParamList,
@@ -43,6 +45,8 @@ const FILTERS = [ALL_EXPENSES, THIS_MONTH, ...EXPENSE_CATEGORIES];
 const ExpensesScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const colors = useThemeColors();
+  const { t } = useLanguage();
+  const { user } = useAuth();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -124,7 +128,8 @@ const ExpensesScreen: React.FC = () => {
   const renderItem = ({ item }: { item: Expense }) => (
     <ExpenseListItem
       expense={item}
-      onDelete={handleDelete}
+      onDelete={user?.role === "owner" ? handleDelete : undefined}
+      onEdit={(expense) => navigation.navigate("AddExpense", { expense })}
       disabled={deletingId === item.id}
     />
   );
@@ -134,7 +139,7 @@ const ExpensesScreen: React.FC = () => {
       <View style={[styles.loadingContainer, { backgroundColor: colors.base }]}>
         <ActivityIndicator size="large" color={colors.brand} />
         <Text style={[styles.loadingText, { color: colors.textMuted }]}>
-          Loading expenses...
+          {t("loading")}
         </Text>
       </View>
     );
@@ -144,7 +149,7 @@ const ExpensesScreen: React.FC = () => {
     <View style={[styles.container, { backgroundColor: colors.base }]}>
       <SectionHeader
         icon="receipt"
-        title="Expenses"
+        title={t("expenses")}
         subtitle={`${expenses.length} record${expenses.length === 1 ? "" : "s"}`}
         accentColor={colors.accent}
       />

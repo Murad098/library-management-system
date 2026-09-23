@@ -79,8 +79,8 @@ const isRateLimited = (key) => {
   return entry.count > RATE_MAX_REQUESTS;
 };
 
-const signToken = (email) =>
-  jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+const signToken = (email, role = "owner") =>
+  jwt.sign({ email, role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
 // Sign in with the admin account. The first successful login using the
 // credentials from the environment seeds the account into the database so
@@ -97,22 +97,27 @@ router.post("/login", async (req, res) => {
     const admin = await Admin.findOne({ email });
 
     if (!admin) {
-      const envEmail = clean(process.env.ADMIN_EMAIL).toLowerCase();
-      const envPassword = process.env.ADMIN_PASSWORD || "";
+      const ownerEmail = clean(process.env.ADMIN_EMAIL).toLowerCase();
+      const ownerPassword = process.env.ADMIN_PASSWORD || "";
+      const managerEmail = clean(process.env.MANAGER_EMAIL).toLowerCase();
+      const managerPassword = process.env.MANAGER_PASSWORD || "";
+      const isOwner = email === ownerEmail && password === ownerPassword;
+      const isManager = email === managerEmail && password === managerPassword;
 
-      if (!envEmail || email !== envEmail || password !== envPassword) {
+      if ((!isOwner && !isManager) || (isManager && !managerEmail)) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
       const passwordHash = await hashPassword(password);
+      const role = isManager ? "manager" : "owner";
 
       await Admin.findOneAndUpdate(
         { email },
-        { $setOnInsert: { email, passwordHash, updatedAt: new Date() } },
+        { $setOnInsert: { email, passwordHash, role, updatedAt: new Date() } },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
 
-      return res.json({ token: signToken(email), email });
+      return res.json({ token: signToken(email, role), email, role });
     }
 
     const isValid = await verifyPassword(password, admin.passwordHash);
@@ -121,7 +126,11 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    return res.json({ token: signToken(admin.email), email: admin.email });
+    return res.json({
+      token: signToken(admin.email, admin.role || "owner"),
+      email: admin.email,
+      role: admin.role || "owner",
+    });
   } catch (error) {
     console.error("Login error:", error);
 
@@ -133,7 +142,7 @@ router.post("/login", async (req, res) => {
 router.get("/me", requireAuth, async (req, res) => {
   try {
     const email = clean(req.user?.email).toLowerCase();
-    const admin = await Admin.findOne({ email }).select("email updatedAt");
+    const admin = await Admin.findOne({ email }).select("email role updatedAt");
 
     if (!admin) {
       return res.status(404).json({ message: "Admin account not found." });
@@ -141,6 +150,7 @@ router.get("/me", requireAuth, async (req, res) => {
 
     return res.json({
       email: admin.email,
+      role: admin.role || "owner",
       passwordUpdatedAt: admin.updatedAt,
     });
   } catch (error) {

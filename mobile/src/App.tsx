@@ -7,6 +7,7 @@ import {
 } from "react-native-paper";
 
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
+import { LanguageProvider } from "./context/LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
 import RootNavigator from "./navigation/RootNavigator";
 
@@ -52,7 +53,9 @@ export default function App() {
     <ThemeProvider>
       <PaperProviderWrapper>
         <AuthProvider>
-          <AppContent />
+          <LanguageProvider>
+            <AppContent />
+          </LanguageProvider>
         </AuthProvider>
       </PaperProviderWrapper>
     </ThemeProvider>

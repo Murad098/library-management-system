@@ -16,6 +16,7 @@ import { formatCurrency, formatDate, initials } from "../utils/format";
 interface MemberListItemProps {
   member: Member;
   onDelete?: (id: string) => Promise<void>;
+  onEdit?: (member: Member) => void;
   disabled?: boolean;
 }
 
@@ -52,6 +53,7 @@ const StatusBadge: React.FC<{ isPaid: boolean; colors: any }> = ({
 const MemberListItem: React.FC<MemberListItemProps> = ({
   member,
   onDelete,
+  onEdit,
   disabled = false,
 }) => {
   const colors = useThemeColors();
@@ -123,6 +125,17 @@ const MemberListItem: React.FC<MemberListItemProps> = ({
       </View>
 
       {onDelete && (
+        <>
+        {onEdit && (
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => onEdit(member)}
+            hitSlop={8}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="create-outline" size={16} color={colors.brand} />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           style={styles.deleteButton}
           onPress={handleDelete}
@@ -130,11 +143,13 @@ const MemberListItem: React.FC<MemberListItemProps> = ({
           disabled={disabled}
           activeOpacity={0.7}
         >
-          {disabled ? (
-            <ActivityIndicator size="small" color={colors.red} />
-          ) : (
-            <Ionicons name="trash" size={16} color={colors.red} />
-          )}
+          {disabled ? <ActivityIndicator size="small" color={colors.red} /> : <Ionicons name="trash" size={16} color={colors.red} />}
+        </TouchableOpacity>
+        </>
+      )}
+      {!onDelete && onEdit && (
+        <TouchableOpacity style={styles.editButton} onPress={() => onEdit(member)}>
+          <Ionicons name="create-outline" size={16} color={colors.brand} />
         </TouchableOpacity>
       )}
     </View>
@@ -221,6 +236,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   deleteButton: {
+    alignSelf: "flex-end",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    minWidth: 50,
+    alignItems: "center",
+  },
+  editButton: {
     alignSelf: "flex-end",
     paddingHorizontal: 8,
     paddingVertical: 4,

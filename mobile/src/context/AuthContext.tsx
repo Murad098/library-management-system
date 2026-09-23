@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       name: handle
         ? handle.charAt(0).toUpperCase() + handle.slice(1)
         : "Administrator",
-      role: "Administrator",
+      role: payload?.role === "manager" ? "manager" : "owner",
       expiresAt: payload?.exp ? new Date(payload.exp * 1000) : null,
     };
   }, []);
@@ -108,6 +108,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     async (loginToken: string, remember = true) => {
       if (remember) {
         await storeToken(loginToken);
+      } else {
+        await clearTokens();
       }
       const session = buildSession(loginToken);
       setToken(loginToken);

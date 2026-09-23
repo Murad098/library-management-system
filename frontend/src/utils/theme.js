@@ -55,4 +55,6 @@ export const applyAccent = (accent) => {
   window.localStorage.setItem(ACCENT_STORAGE_KEY, next);
 };
 
-export default { readTheme, applyTheme };
+const themeApi = { readTheme, applyTheme };
+
+export default themeApi;

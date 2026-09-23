@@ -8,12 +8,13 @@ import {
   Receipt,
   ShoppingBag,
   Tag,
+  Edit3,
   Trash2,
   TrendingUp,
   Utensils,
 } from "lucide-react";
 
-import { getErrorMessage } from "../services/api";
+import { getErrorMessage, readSessionUser } from "../services/api";
 import {
   formatCurrency,
   formatCurrencyPrecise,
@@ -42,6 +43,7 @@ const ExpensesScreen = ({
   loading = false,
   onAddExpense,
   onDeleteExpense,
+  onUpdateExpense,
 }) => {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
@@ -52,6 +54,7 @@ const ExpensesScreen = ({
   const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const { role } = readSessionUser();
 
   const totalAll = useMemo(
     () => expenses.reduce((sum, expense) => sum + expense.amount, 0),
@@ -120,6 +123,26 @@ const ExpensesScreen = ({
       setError(getErrorMessage(err, "Unable to delete expense."));
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleEdit = async (expense) => {
+    const title = window.prompt("Expense title", expense.title);
+    if (title === null) return;
+    const amount = window.prompt("Amount", String(expense.amount));
+    if (amount === null) return;
+    const category = window.prompt(`Category (${CATEGORIES.join(", ")})`, expense.category);
+    if (category === null) return;
+    const date = window.prompt("Date (YYYY-MM-DD)", String(expense.date).slice(0, 10));
+    if (date === null) return;
+
+    try {
+      await onUpdateExpense(expense.id, {
+        title: title.trim(), amount: Number(amount),
+        category: CATEGORIES.includes(category) ? category : "Other", date,
+      });
+    } catch (err) {
+      setError(getErrorMessage(err, "Unable to update expense."));
     }
   };
 
@@ -344,7 +367,15 @@ const ExpensesScreen = ({
                                   </span>
                                 </div>
 
-                                <button
+                                {role === "owner" && <button
+                                  type="button"
+                                  onClick={() => handleEdit(expense)}
+                                  aria-label={`Edit ${expense.title}`}
+                                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-400 hover:bg-brand/10 hover:text-brand"
+                                >
+                                  <Edit3 className="h-4 w-4" />
+                                </button>}
+                                {role === "owner" && <button
                                   type="button"
                                   onClick={() => handleDelete(expense)}
                                   disabled={deletingId === expense.id}
@@ -352,7 +383,7 @@ const ExpensesScreen = ({
                                   className="-mb-2 -mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
                                 >
                                   <Trash2 className="h-4 w-4" />
-                                </button>
+                                </button>}
                               </div>
                             </div>
                           </div>
@@ -409,6 +440,15 @@ const ExpensesScreen = ({
                               </td>
 
                               <td className="whitespace-nowrap px-4 py-4 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => handleEdit(expense)}
+                                  aria-label={`Edit ${expense.title}`}
+                                  title="Edit expense"
+                                  className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 hover:bg-brand/10 hover:text-brand"
+                                >
+                                  <Edit3 className="h-4 w-4" />
+                                </button>
                                 <button
                                   type="button"
                                   onClick={() => handleDelete(expense)}

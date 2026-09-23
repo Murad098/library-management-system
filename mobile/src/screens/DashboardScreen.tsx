@@ -27,6 +27,7 @@ import StatCard from "../components/StatCard";
 import SectionHeader from "../components/ui/SectionHeader";
 import { Ionicons } from "@expo/vector-icons";
 import { DashboardStackParamList } from "../navigation/MainTabs";
+import { useLanguage } from "../context/LanguageContext";
 
 type NavigationProp = NativeStackNavigationProp<
   DashboardStackParamList,
@@ -44,6 +45,7 @@ interface DashboardState {
 const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const colors = useThemeColors();
+  const { t } = useLanguage();
   const TEAL = colors.green;
 
   const [state, setState] = useState<DashboardState>({
@@ -133,7 +135,7 @@ const DashboardScreen: React.FC = () => {
       >
         <ActivityIndicator size="large" color={TEAL} />
         <Text style={[styles.loadingText, { color: colors.textMuted }]}>
-          Loading library data...
+          {t("loading")}
         </Text>
       </View>
     );
@@ -155,7 +157,7 @@ const DashboardScreen: React.FC = () => {
     >
       <SectionHeader
         icon="grid"
-        title="Dashboard"
+        title={t("dashboard")}
         subtitle={`Summary for ${formatMonthYear()}`}
         accentColor={TEAL}
         rightContent={
@@ -165,7 +167,7 @@ const DashboardScreen: React.FC = () => {
             activeOpacity={0.8}
           >
             <Ionicons name="person-add" size={18} color={colors.black} />
-            <Text style={styles.addButtonText}>Add member</Text>
+            <Text style={styles.addButtonText}>{t("addMember")}</Text>
           </TouchableOpacity>
         }
       />

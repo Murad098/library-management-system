@@ -14,6 +14,12 @@ const adminSchema = new mongoose.Schema({
     required: true,
   },
 
+  role: {
+    type: String,
+    enum: ["owner", "manager"],
+    default: "owner",
+  },
+
   avatar: {
     type: Buffer,
     default: null,

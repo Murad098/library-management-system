@@ -29,8 +29,8 @@ import ThemeToggle from "./components/ThemeToggle";
 // Services
 import { clearTokens, getErrorMessage, readToken, UNAUTHORIZED_EVENT } from "./services/api";
 import { applyAccent, applyTheme, readAccent, readTheme } from "./utils/theme";
-import { getMembers, addMember, deleteMember } from "./services/memberService";
-import { getExpenses, addExpense, deleteExpense } from "./services/expenseService";
+import { getMembers, addMember, updateMember, deleteMember } from "./services/memberService";
+import { getExpenses, addExpense, updateExpense, deleteExpense } from "./services/expenseService";
 import {
   addNotification,
   deleteNotification,
@@ -150,6 +150,13 @@ function AppShell({ onLogout }) {
     setMembers((current) => current.filter((member) => member.id !== id));
   };
 
+  const handleUpdateMember = async (id, member) => {
+    const response = await updateMember(id, member);
+    const updated = normalizeMember(response.data);
+    setMembers((current) => current.map((item) => item.id === id ? updated : item));
+    return updated;
+  };
+
   const handleAddExpense = async (expense) => {
     const response = await addExpense(expense);
     const created = normalizeExpense(response.data);
@@ -162,6 +169,13 @@ function AppShell({ onLogout }) {
   const handleDeleteExpense = async (id) => {
     await deleteExpense(id);
     setExpenses((current) => current.filter((expense) => expense.id !== id));
+  };
+
+  const handleUpdateExpense = async (id, expense) => {
+    const response = await updateExpense(id, expense);
+    const updated = normalizeExpense(response.data);
+    setExpenses((current) => current.map((item) => item.id === id ? updated : item));
+    return updated;
   };
 
   const handleAddNotification = async (notification) => {
@@ -269,6 +283,7 @@ function AppShell({ onLogout }) {
                   members={members}
                   loading={loading}
                   onDeleteMember={handleDeleteMember}
+                  onUpdateMember={handleUpdateMember}
                 />
               }
             />
@@ -284,6 +299,7 @@ function AppShell({ onLogout }) {
                   loading={loading}
                   onAddExpense={handleAddExpense}
                   onDeleteExpense={handleDeleteExpense}
+                  onUpdateExpense={handleUpdateExpense}
                 />
               }
             />

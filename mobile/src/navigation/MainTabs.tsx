@@ -12,6 +12,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 
 import { useTheme } from "../context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
+import { useLanguage } from "../context/LanguageContext";
 
 export type MainTabsParamList = {
   DashboardTab: undefined;
@@ -23,17 +24,17 @@ export type MainTabsParamList = {
 
 export type DashboardStackParamList = {
   Dashboard: undefined;
-  AddMember: undefined;
+  AddMember: { member?: import("../types").Member } | undefined;
 };
 
 export type MembersStackParamList = {
   Members: undefined;
-  AddMember: undefined;
+  AddMember: { member?: import("../types").Member } | undefined;
 };
 
 export type ExpensesStackParamList = {
   Expenses: undefined;
-  AddExpense: undefined;
+  AddExpense: { expense?: import("../types").Expense } | undefined;
 };
 
 const Tab = createBottomTabNavigator<MainTabsParamList>();
@@ -43,6 +44,7 @@ const ExpensesStack = createNativeStackNavigator<ExpensesStackParamList>();
 
 const DashboardStackGroup = () => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const c = theme.colors;
 
   return (
@@ -57,12 +59,12 @@ const DashboardStackGroup = () => {
       <DashboardStack.Screen
         name="Dashboard"
         component={DashboardScreen}
-        options={{ title: "Dashboard" }}
+        options={{ title: t("dashboard") }}
       />
       <DashboardStack.Screen
         name="AddMember"
         component={AddMemberScreen}
-        options={{ title: "Add member", presentation: "modal" }}
+        options={{ title: t("addMember"), presentation: "modal" }}
       />
     </DashboardStack.Navigator>
   );
@@ -70,6 +72,7 @@ const DashboardStackGroup = () => {
 
 const MembersStackGroup = () => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const c = theme.colors;
 
   return (
@@ -84,12 +87,12 @@ const MembersStackGroup = () => {
       <MembersStack.Screen
         name="Members"
         component={MembersScreen}
-        options={{ title: "Members" }}
+        options={{ title: t("members") }}
       />
       <MembersStack.Screen
         name="AddMember"
         component={AddMemberScreen}
-        options={{ title: "Add member", presentation: "modal" }}
+        options={{ title: t("addMember"), presentation: "modal" }}
       />
     </MembersStack.Navigator>
   );
@@ -97,6 +100,7 @@ const MembersStackGroup = () => {
 
 const ExpensesStackGroup = () => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const c = theme.colors;
 
   return (
@@ -111,12 +115,12 @@ const ExpensesStackGroup = () => {
       <ExpensesStack.Screen
         name="Expenses"
         component={ExpensesScreen}
-        options={{ title: "Expenses" }}
+        options={{ title: t("expenses") }}
       />
       <ExpensesStack.Screen
         name="AddExpense"
         component={AddExpenseScreen}
-        options={{ title: "Add expense", presentation: "modal" }}
+        options={{ title: t("addExpense"), presentation: "modal" }}
       />
     </ExpensesStack.Navigator>
   );
@@ -133,6 +137,7 @@ const TabIcon: React.FC<TabIconProps> = ({ name, color }) => (
 
 const MainTabs = () => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const c = theme.colors;
 
   return (
@@ -169,7 +174,7 @@ const MainTabs = () => {
         name="DashboardTab"
         component={DashboardStackGroup}
         options={{
-          tabBarLabel: "Dashboard",
+          tabBarLabel: t("dashboard"),
           tabBarIcon: ({ color }) => (
             <TabIcon name="grid" color={color} />
           ),
@@ -179,7 +184,7 @@ const MainTabs = () => {
         name="MembersTab"
         component={MembersStackGroup}
         options={{
-          tabBarLabel: "Members",
+          tabBarLabel: t("members"),
           tabBarIcon: ({ color }) => (
             <TabIcon name="people" color={color} />
           ),
@@ -189,7 +194,7 @@ const MainTabs = () => {
         name="ExpensesTab"
         component={ExpensesStackGroup}
         options={{
-          tabBarLabel: "Expenses",
+          tabBarLabel: t("expenses"),
           tabBarIcon: ({ color }) => (
             <TabIcon name="receipt" color={color} />
           ),
@@ -199,7 +204,7 @@ const MainTabs = () => {
         name="NotificationsTab"
         component={NotificationsScreen}
         options={{
-          tabBarLabel: "Notifications",
+          tabBarLabel: t("notifications"),
           tabBarIcon: ({ color }) => (
             <TabIcon name="notifications" color={color} />
           ),
@@ -209,7 +214,7 @@ const MainTabs = () => {
         name="ProfileTab"
         component={ProfileScreen}
         options={{
-          tabBarLabel: "Profile",
+          tabBarLabel: t("profile"),
           tabBarIcon: ({ color }) => (
             <TabIcon name="person" color={color} />
           ),

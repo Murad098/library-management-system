@@ -17,3 +17,10 @@ function requireAuth(req, res, next) {
 }
 
 module.exports = requireAuth;
+module.exports.requireRole = (...roles) => (req, res, next) => {
+  if (!roles.includes(req.user?.role)) {
+    return res.status(403).json({ message: "This action requires a different account role." });
+  }
+
+  return next();
+};
