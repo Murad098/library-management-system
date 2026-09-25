@@ -64,7 +64,7 @@ const StatCard: React.FC<StatCardProps> = ({
         <Text style={[styles.label, { color: colors.textDim }]}>
           {label}
         </Text>
-        <Text style={[styles.value, { color: toneStyle.text }]}>
+        <Text style={[styles.value, { color: toneStyle.text }]} numberOfLines={1}>
           {value}
         </Text>
         {hint ? <Text style={[styles.hint, { color: colors.textDim }]}>{hint}</Text> : null}

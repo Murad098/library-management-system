@@ -20,10 +20,11 @@ import InputField from "../components/ui/InputField";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import SecondaryButton from "../components/ui/SecondaryButton";
 import SectionHeader from "../components/ui/SectionHeader";
+import { HamburgerButton } from "../components/HamburgerButton";
 import {
   DashboardStackParamList,
   MembersStackParamList,
-} from "../navigation/MainTabs";
+} from "../navigation/MainDrawer";
 import { useLanguage } from "../context/LanguageContext";
 
 type NavigationProp = NativeStackNavigationProp<
@@ -95,13 +96,14 @@ const AddMemberScreen: React.FC = () => {
         <View style={styles.container}>
           <SectionHeader
             icon="person-add"
+            leftAction={<HamburgerButton />}
             title={t("addMember")}
             style={{ marginBottom: 16 }}
           />
 
           <View style={[styles.formCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
             <InputField
-            label={t("title")}
+            label="Name"
             placeholder="Enter full name"
             value={name}
             onChangeText={setName}
@@ -211,7 +213,7 @@ const AddMemberScreen: React.FC = () => {
           <View style={styles.actions}>
             <SecondaryButton title="Cancel" onPress={handleCancel} />
             <PrimaryButton
-              title="Add member"
+              title={editing ? "Update member" : "Add member"}
               onPress={handleSubmit}
               loading={isLoading}
               disabled={isLoading}

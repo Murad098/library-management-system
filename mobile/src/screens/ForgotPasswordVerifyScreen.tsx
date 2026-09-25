@@ -74,7 +74,7 @@ const ForgotPasswordVerifyScreen: React.FC = () => {
       await resetPassword(resetToken, newPassword);
 
       show("Password reset. You can sign in now.", "success");
-      navigation.navigate({ name: "Login", params: { email } });
+      navigation.navigate("Login", { email });
     } catch (error) {
       show(
         getErrorMessage(error, "Unable to reset the password."),
@@ -86,7 +86,7 @@ const ForgotPasswordVerifyScreen: React.FC = () => {
   };
 
   const handleChangeEmail = () => {
-    navigation.navigate({ name: "ForgotPasswordRequest", params: { email } });
+    navigation.navigate("ForgotPasswordRequest", { email });
   };
 
   return (

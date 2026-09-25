@@ -22,13 +22,25 @@ export const clearTokens = async () => {
   await SecureStore.deleteItemAsync(TOKEN_KEY);
 };
 
+let sessionToken: string | null = null;
+
+export const setSessionToken = (token: string | null) => {
+  sessionToken = token;
+};
+
+export const clearSessionToken = () => {
+  sessionToken = null;
+};
+
+export const getSessionToken = () => sessionToken;
+
 export const readSessionUser = async (): Promise<{
   email: string;
   name: string;
   role: string;
   expiresAt: Date | null;
 }> => {
-  const token = await readToken();
+  const token = sessionToken || (await readToken());
   const payload = token ? decodeJwtPayload(token) : null;
   const email = typeof payload?.email === "string" ? payload.email : "";
   const handle = email.split("@")[0] || "";
@@ -38,7 +50,7 @@ export const readSessionUser = async (): Promise<{
     name: handle
       ? handle.charAt(0).toUpperCase() + handle.slice(1)
       : "Administrator",
-    role: "Administrator",
+    role: payload?.role === "manager" ? "manager" : "owner",
     expiresAt: payload?.exp ? new Date(payload.exp * 1000) : null,
   };
 };
@@ -54,7 +66,7 @@ export const getErrorMessage = (
     return (
       (typeof data?.message === "string" && data.message) ||
       (typeof data?.error === "string" && data.error) ||
-      (axiosErr.request ? "Cannot reach the server. Please try again." : fallback)
+      fallback
     );
   }
 
@@ -70,7 +82,7 @@ const api = axios.create({ baseURL: BASE_URL });
 let isClearing = false;
 
 api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
-  const token = await readToken();
+  const token = sessionToken || (await readToken());
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -82,7 +94,7 @@ api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const token = await readToken();
+    const token = sessionToken || (await readToken());
 
     if (error?.response?.status === 401 && token && !isClearing) {
       isClearing = true;

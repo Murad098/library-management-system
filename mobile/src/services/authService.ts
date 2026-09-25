@@ -40,11 +40,7 @@ export const uploadAvatar = (file: {
     type: file.type,
   });
 
-  return api.post("/auth/avatar", form, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  return api.post("/auth/avatar", form);
 };
 
 export const requestPasswordResetOtp = (email: string) =>

@@ -69,7 +69,7 @@ const ForgotPasswordRequestScreen: React.FC = () => {
   };
 
   const handleBackToLogin = () => {
-    navigation.navigate({ name: "Login", params: {} });
+    navigation.navigate("Login");
   };
 
   return (

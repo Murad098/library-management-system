@@ -23,7 +23,8 @@ import InputField from "../components/ui/InputField";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import SecondaryButton from "../components/ui/SecondaryButton";
 import SectionHeader from "../components/ui/SectionHeader";
-import { ExpensesStackParamList } from "../navigation/MainTabs";
+import { HamburgerButton } from "../components/HamburgerButton";
+import { ExpensesStackParamList } from "../navigation/MainDrawer";
 import { EXPENSE_CATEGORIES } from "../components/ExpenseListItem";
 import { toDateInputValue } from "../utils/format";
 import { useLanguage } from "../context/LanguageContext";
@@ -108,6 +109,7 @@ const AddExpenseScreen: React.FC = () => {
         <View style={styles.container}>
           <SectionHeader
             icon="receipt"
+            leftAction={<HamburgerButton />}
             title={t("addExpense")}
             style={{ marginBottom: 16 }}
           />
@@ -187,7 +189,7 @@ const AddExpenseScreen: React.FC = () => {
           <View style={styles.actions}>
             <SecondaryButton title="Cancel" onPress={handleCancel} />
             <PrimaryButton
-              title="Add expense"
+              title={editing ? "Update expense" : "Add expense"}
               onPress={handleSubmit}
               loading={isLoading}
               disabled={isLoading}

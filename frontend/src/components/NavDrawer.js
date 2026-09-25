@@ -73,7 +73,7 @@ function NavDrawer({ open, onClose, onLogout }) {
           <div className="nav-drawer__brand">
             <BrandMark size={52} />
             <span className="brand-word">
-              Member <strong>stack</strong>
+              Library Management
             </span>
           </div>
         </div>

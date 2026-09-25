@@ -5,6 +5,14 @@ const Expense = require("../models/Expense");
 const requireAuth = require("../middleware/auth");
 const requireRole = requireAuth.requireRole;
 
+const parseLocalDateString = (value) => {
+  if (!value) return new Date();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return new Date(value + "T00:00:00");
+  }
+  return new Date(value);
+};
+
 const CATEGORIES = [
   "Food",
   "Transport",
@@ -31,7 +39,7 @@ router.post("/add", async (req, res) => {
     });
   }
 
-  const parsedDate = req.body.date ? new Date(req.body.date) : new Date();
+  const parsedDate = parseLocalDateString(req.body.date);
 
   try {
     const expense = new Expense({
@@ -75,7 +83,7 @@ router.get("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const title = typeof req.body.title === "string" ? req.body.title.trim() : "";
   const amount = Number(req.body.amount);
-  const parsedDate = req.body.date ? new Date(req.body.date) : new Date();
+  const parsedDate = parseLocalDateString(req.body.date);
 
   if (!title || !Number.isFinite(amount) || amount <= 0) {
     return res.status(400).json({ message: "Valid title and amount are required." });

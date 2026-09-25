@@ -172,7 +172,7 @@ function LoginPage({ onSignInSuccess }) {
         <header className="login-head">
           <img className="login-logo" src={BRAND_MARK} alt="" />
           <h1 className="login-title">
-            Member <strong>stack</strong>
+            Library Management <strong>System</strong>
           </h1>
           <p className="login-subtitle">Library management</p>
         </header>

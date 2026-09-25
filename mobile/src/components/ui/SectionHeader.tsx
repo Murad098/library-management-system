@@ -16,6 +16,7 @@ interface SectionHeaderProps {
   icon: SectionHeaderIcon;
   title: string;
   subtitle?: string;
+  leftAction?: React.ReactNode;
   rightContent?: React.ReactNode;
   style?: ViewStyle | ViewStyle[];
   titleStyle?: TextStyle;
@@ -27,6 +28,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
   icon,
   title,
   subtitle,
+  leftAction,
   rightContent,
   style,
   titleStyle,
@@ -38,6 +40,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 
   return (
     <View style={[styles.container, style]}>
+      {leftAction ? <View style={styles.leftActionWrap}>{leftAction}</View> : null}
       <View style={styles.leftContent}>
         <View style={styles.iconWrap}>
           <Ionicons name={icon} size={23} color={accent} />
@@ -80,6 +83,9 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     flexWrap: "wrap",
     gap: 12,
+  },
+  leftActionWrap: {
+    marginRight: 8,
   },
   leftContent: {
     flexDirection: "row",

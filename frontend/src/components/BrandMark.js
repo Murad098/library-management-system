@@ -9,7 +9,7 @@ function BrandMark({ size = 34 }) {
     <span className="brand-mark" style={{ width: size, height: size }}>
       {failed ? (
         <span className="brand-fallback" aria-hidden="true">
-          MS
+          LM
         </span>
       ) : (
         <img

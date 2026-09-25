@@ -13,7 +13,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 
 import { useAuth } from "../hooks/useAuth";
 import { useToast } from "../hooks/useToast";
@@ -27,6 +27,7 @@ type NavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
   "Login"
 >;
+type RoutePropType = RouteProp<AuthStackParamList, "Login">;
 
 const DEMO_OWNER_EMAIL = process.env.EXPO_PUBLIC_DEMO_OWNER_EMAIL || "";
 const DEMO_OWNER_PASSWORD = process.env.EXPO_PUBLIC_DEMO_OWNER_PASSWORD || "";
@@ -35,12 +36,13 @@ const DEMO_MANAGER_PASSWORD = process.env.EXPO_PUBLIC_DEMO_MANAGER_PASSWORD || "
 
 const LoginScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RoutePropType>();
   const { signIn } = useAuth();
   const { Toast, show } = useToast();
   const colors = useThemeColors();
   const { language, setLanguage, t } = useLanguage();
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(route.params?.email ?? "");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -77,7 +79,7 @@ const LoginScreen: React.FC = () => {
   const handleSubmit = () => performLogin(email, password);
 
   const handleForgotPassword = () => {
-    navigation.navigate({ name: "ForgotPasswordRequest", params: {} });
+    navigation.navigate("ForgotPasswordRequest");
   };
 
   const handleDemoLogin = async (role: "owner" | "manager") => {
@@ -230,7 +232,7 @@ const LoginScreen: React.FC = () => {
                 style={styles.rightIcon}
               >
                 <Ionicons
-                  name={showPassword ? "eye-outline" : "eye-outline"}
+                  name={showPassword ? "eye-off-outline" : "eye-outline"}
                   size={27}
                   color="#aebbe7"
                 />
@@ -374,7 +376,7 @@ const LoginScreen: React.FC = () => {
           {/* Footer */}
               <View style={styles.footer}>
                 <Text style={styles.footerText}>
-              Powered by Library
+               Powered by Library Management System
             </Text>
               </View>
             </View>

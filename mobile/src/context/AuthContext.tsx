@@ -7,9 +7,16 @@ import React, {
 } from "react";
 import * as SecureStore from "expo-secure-store";
 
-import { AuthSession, LoginResponse } from "../types";
+import { AuthSession } from "../types";
 import { decodeJwtPayload } from "../utils/jwt";
-import { clearTokens, storeToken, readToken, TOKEN_KEY } from "../services/api";
+import {
+  clearTokens,
+  clearSessionToken,
+  storeToken,
+  readToken,
+  setSessionToken,
+  TOKEN_KEY,
+} from "../services/api";
 
 interface AuthContextValue {
   user: AuthSession | null;
@@ -111,6 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       } else {
         await clearTokens();
       }
+      setSessionToken(loginToken);
       const session = buildSession(loginToken);
       setToken(loginToken);
       setUser(session);
@@ -120,6 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const signOut = useCallback(async () => {
     await clearTokens();
+    clearSessionToken();
     setToken(null);
     setUser(null);
   }, []);
@@ -145,10 +154,3 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-export interface AuthState {
-  user: AuthSession | null;
-  token: string | null;
-  login: (response: LoginResponse) => Promise<void>;
-  logout: () => Promise<void>;
-  refreshSession: () => Promise<void>;
-}

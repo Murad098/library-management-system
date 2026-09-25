@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,10 +27,11 @@ import {
   formatMonthYear,
 } from "../utils/format";
 import SectionHeader from "../components/ui/SectionHeader";
+import { HamburgerButton } from "../components/HamburgerButton";
 import ExpenseListItem, {
   EXPENSE_CATEGORIES,
 } from "../components/ExpenseListItem";
-import { ExpensesStackParamList } from "../navigation/MainTabs";
+import { ExpensesStackParamList } from "../navigation/MainDrawer";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../hooks/useAuth";
 
@@ -136,12 +138,14 @@ const ExpensesScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.base }]}>
+      <SafeAreaView
+        style={[styles.loadingContainer, { backgroundColor: colors.base }]}
+      >
         <ActivityIndicator size="large" color={colors.brand} />
         <Text style={[styles.loadingText, { color: colors.textMuted }]}>
           {t("loading")}
         </Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -149,6 +153,7 @@ const ExpensesScreen: React.FC = () => {
     <View style={[styles.container, { backgroundColor: colors.base }]}>
       <SectionHeader
         icon="receipt"
+        leftAction={<HamburgerButton />}
         title={t("expenses")}
         subtitle={`${expenses.length} record${expenses.length === 1 ? "" : "s"}`}
         accentColor={colors.accent}

@@ -8,8 +8,8 @@ import ForgotPasswordVerifyScreen from "../screens/ForgotPasswordVerifyScreen";
 import { useLanguage } from "../context/LanguageContext";
 
 export type AuthStackParamList = {
-  Login: { email?: string };
-  ForgotPasswordRequest: { email?: string };
+  Login: { email?: string } | undefined;
+  ForgotPasswordRequest: { email?: string } | undefined;
   ForgotPasswordVerify: { email: string };
 };
 

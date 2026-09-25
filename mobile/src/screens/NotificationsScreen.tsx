@@ -25,6 +25,7 @@ import {
 import NotificationListItem from "../components/NotificationListItem";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import SectionHeader from "../components/ui/SectionHeader";
+import { HamburgerButton } from "../components/HamburgerButton";
 import { useToast } from "../hooks/useToast";
 import { useLanguage } from "../context/LanguageContext";
 
@@ -149,12 +150,12 @@ const NotificationsScreen: React.FC = () => {
 
   const handleToggleRead = async (id: string, read: boolean) => {
     try {
-      await markNotificationRead(id, !read);
+      await markNotificationRead(id, read);
       setNotifications((current) =>
-        current.map((n) => (n._id === id ? { ...n, read: !read } : n))
+        current.map((n) => (n._id === id ? { ...n, read: read } : n))
       );
 
-      if (!read) {
+      if (read) {
         setUnreadCount((c) => Math.max(0, c - 1));
       } else {
         setUnreadCount((c) => c + 1);
@@ -216,6 +217,7 @@ const NotificationsScreen: React.FC = () => {
     <View style={[styles.container, { backgroundColor: colors.base }]}>
       <SectionHeader
         icon="notifications"
+        leftAction={<HamburgerButton />}
         title={t("notifications")}
         subtitle={`${unreadCount} unread of ${notifications.length} total`}
         accentColor={colors.accent}

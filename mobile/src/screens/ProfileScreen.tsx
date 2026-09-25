@@ -18,6 +18,7 @@ import { useToast } from "../hooks/useToast";
 import { useTheme, useThemeColors } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
 import SectionHeader from "../components/ui/SectionHeader";
+import { HamburgerButton } from "../components/HamburgerButton";
 import { getErrorMessage } from "../services/api";
 import { getAvatar, uploadAvatar, changePassword } from "../services/authService";
 import { initials } from "../utils/format";
@@ -187,9 +188,9 @@ const ProfileScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
       >
         <SectionHeader
-          icon="settings"
-          title={t("settings")}
-          subtitle={t("chooseAccent")}
+          icon="person"
+          leftAction={<HamburgerButton />}
+          title={t("profile")}
           accentColor={TEAL}
           rightContent={
             <TouchableOpacity

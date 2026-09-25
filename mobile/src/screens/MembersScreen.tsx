@@ -20,7 +20,8 @@ import { getMembers, deleteMember } from "../services/memberService";
 import { normalizeMember } from "../utils/normalize";
 import MemberListItem from "../components/MemberListItem";
 import SectionHeader from "../components/ui/SectionHeader";
-import { MembersStackParamList } from "../navigation/MainTabs";
+import { HamburgerButton } from "../components/HamburgerButton";
+import { MembersStackParamList } from "../navigation/MainDrawer";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../hooks/useAuth";
 
@@ -123,6 +124,7 @@ const MembersScreen: React.FC = () => {
     <View style={[styles.container, { backgroundColor: colors.base }]}>
       <SectionHeader
         icon="people"
+        leftAction={<HamburgerButton />}
         title={t("members")}
         subtitle={`${members.length} registered • ${paidCount} paid • ${members.length - paidCount} unpaid`}
       />

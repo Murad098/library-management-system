@@ -13,6 +13,8 @@ import { useNavigation } from "@react-navigation/native";
 
 import { Member, Expense } from "../types";
 import { useThemeColors } from "../context/ThemeContext";
+import { useDrawer } from "../context/DrawerContext";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   formatCurrency,
   formatDate,
@@ -25,8 +27,9 @@ import { getExpenses } from "../services/expenseService";
 import { getErrorMessage } from "../services/api";
 import StatCard from "../components/StatCard";
 import SectionHeader from "../components/ui/SectionHeader";
+import { HamburgerButton } from "../components/HamburgerButton";
 import { Ionicons } from "@expo/vector-icons";
-import { DashboardStackParamList } from "../navigation/MainTabs";
+import { DashboardStackParamList } from "../navigation/MainDrawer";
 import { useLanguage } from "../context/LanguageContext";
 
 type NavigationProp = NativeStackNavigationProp<
@@ -108,6 +111,7 @@ const DashboardScreen: React.FC = () => {
     loadData();
   }, [loadData]);
 
+  const { setActiveRoute } = useDrawer();
   const { members, expenses, loading, error } = state;
 
   const paidMembers = members.filter((m) => m.status === "paid");
@@ -130,22 +134,22 @@ const DashboardScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <View
+      <SafeAreaView
         style={[styles.loadingContainer, { backgroundColor: colors.base }]}
       >
         <ActivityIndicator size="large" color={TEAL} />
         <Text style={[styles.loadingText, { color: colors.textMuted }]}>
           {t("loading")}
         </Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: colors.base }]}
-      contentContainerStyle={styles.content}
-      refreshControl={
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.base }]}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
         <RefreshControl
           refreshing={state.refreshing}
           onRefresh={handleRefresh}
@@ -157,6 +161,7 @@ const DashboardScreen: React.FC = () => {
     >
       <SectionHeader
         icon="grid"
+        leftAction={<HamburgerButton />}
         title={t("dashboard")}
         subtitle={`Summary for ${formatMonthYear()}`}
         accentColor={TEAL}
@@ -396,9 +401,7 @@ const DashboardScreen: React.FC = () => {
             </Text>
           </View>
           <TouchableOpacity
-            onPress={() =>
-              navigation.getParent()?.navigate("MembersTab" as never)
-            }
+            onPress={() => setActiveRoute("Members")}
             style={styles.viewAllLink}
           >
             <Text style={[styles.viewAllText, { color: TEAL }]}>
@@ -517,9 +520,7 @@ const DashboardScreen: React.FC = () => {
             </Text>
           </View>
           <TouchableOpacity
-            onPress={() =>
-              navigation.getParent()?.navigate("ExpensesTab" as never)
-            }
+            onPress={() => setActiveRoute("Expenses")}
             style={styles.viewAllLink}
           >
             <Text style={[styles.viewAllText, { color: TEAL }]}>
@@ -626,6 +627,7 @@ const DashboardScreen: React.FC = () => {
         </View>
       ) : null}
     </ScrollView>
+    </SafeAreaView>
   );
 };
 
