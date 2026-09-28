@@ -236,15 +236,15 @@ const styles = StyleSheet.create({
   },
   container: { paddingBottom: 24 },
   formCard: {
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
-    padding: 16,
+    padding: 20,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
   },
-  field: { marginBottom: 18 },
+  field: { marginBottom: 16 },
   label: {
     fontSize: 13,
     fontWeight: "600",
@@ -253,10 +253,10 @@ const styles = StyleSheet.create({
   feeRow: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     paddingHorizontal: 14,
-    height: 50,
+    height: 52,
   },
   feePrefix: {
     fontSize: 15,
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   statusButton: {
     flex: 1,
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
     borderWidth: 1,
   },

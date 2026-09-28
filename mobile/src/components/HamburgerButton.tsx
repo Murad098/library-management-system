@@ -15,16 +15,16 @@ export const HamburgerButton: React.FC = () => {
       accessibilityLabel="Open menu"
       hitSlop={12}
     >
-      <Ionicons name="menu" size={24} color={colors.text} />
+      <Ionicons name="menu" size={23} color={colors.text} />
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",

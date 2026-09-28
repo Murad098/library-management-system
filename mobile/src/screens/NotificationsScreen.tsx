@@ -10,6 +10,7 @@ import {
   RefreshControl,
   Modal,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 import { NotificationItem, NotificationType } from "../types";
@@ -203,18 +204,18 @@ const NotificationsScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.base }]}>
+      <SafeAreaView style={[styles.loadingContainer, { backgroundColor: colors.base }]}>
         <ActivityIndicator size="large" color={colors.brand} />
         <Text style={[styles.loadingText, { color: colors.textMuted }]}>
           {t("loading")}
         </Text>
         <Toast />
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.base }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.base }]}>
       <SectionHeader
         icon="notifications"
         leftAction={<HamburgerButton />}
@@ -450,7 +451,7 @@ const NotificationsScreen: React.FC = () => {
       </Modal>
 
       <Toast />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -462,15 +463,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 12,
   },
-  loadingText: { fontSize: 14 },
+  loadingText: { fontSize: 13 },
   headerButtons: {
     flexDirection: "row",
     gap: 6,
   },
   headerButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+    width: 38,
+    height: 38,
+    borderRadius: 12,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
@@ -480,7 +481,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     borderWidth: 1,
-    borderRadius: 14,
+    borderRadius: 16,
     padding: 12,
     marginBottom: 16,
   },
@@ -500,15 +501,15 @@ const styles = StyleSheet.create({
   },
   formField: { marginBottom: 16 },
   fieldLabel: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "600",
     marginBottom: 6,
   },
   input: {
-    borderRadius: 12,
+    borderRadius: 14,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    fontSize: 16,
+    fontSize: 15,
     borderWidth: 1,
   },
   textArea: {
@@ -519,7 +520,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -533,8 +534,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 12,
   },
-  emptyText: { fontSize: 14, textAlign: "center" },
-  listContent: { paddingBottom: 80 },
+  emptyText: { fontSize: 13, textAlign: "center" },
+  listContent: { paddingBottom: 24 },
   modalOverlay: {
     flex: 1,
     alignItems: "center",

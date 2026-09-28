@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
@@ -114,8 +115,8 @@ const LoginScreen: React.FC = () => {
             style={[
               styles.card,
               {
-                backgroundColor: "#061b27",
-                borderColor: "#285063",
+                backgroundColor: colors.raised,
+                     borderColor: colors.line,
               },
             ]}
           >
@@ -126,63 +127,70 @@ const LoginScreen: React.FC = () => {
               style={[
                 styles.langPill,
                 {
-                  backgroundColor: "transparent",
-                  borderColor: colors.lineStrong,
+                  backgroundColor: language === "ur" ? TEAL : "transparent",
+                  borderColor: language === "ur" ? TEAL : colors.lineStrong,
                   borderWidth: 1,
                 },
               ]}
               onPress={() => setLanguage("ur")}
               activeOpacity={0.7}
             >
-                  <Text
-                    style={[styles.langText, { color: "#d8def3" }]}
-                  >
-                    {t("urdu")}
+              <Text
+                style={[styles.langText, { color: language === "ur" ? colors.black : colors.textMuted }]}
+              >
+                {t("urdu")}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.langPill, { backgroundColor: language === "en" ? TEAL : "transparent", borderColor: language === "en" ? TEAL : colors.lineStrong, borderWidth: 1 }]}
+              style={[
+                styles.langPill,
+                {
+                  backgroundColor: language === "en" ? TEAL : "transparent",
+                  borderColor: language === "en" ? TEAL : colors.lineStrong,
+                  borderWidth: 1,
+                },
+              ]}
               onPress={() => setLanguage("en")}
               activeOpacity={0.7}
             >
-                  <Text
-                    style={[styles.langText, { color: colors.white }]}
-                  >
-                    {t("english")}
+              <Text
+                style={[styles.langText, { color: language === "en" ? colors.black : colors.textMuted }]}
+              >
+                {t("english")}
               </Text>
             </TouchableOpacity>
               </View>
 
           {/* Title */}
               <Text style={[styles.title, { color: TEAL }]}>{t("welcomeBack")}</Text>
-              <Text style={[styles.subtitle, { color: "#b7c5ee" }] }>
+              <Text style={[styles.subtitle, { color: colors.textMuted }]}>
             {t("signInSubtitle")}
               </Text>
 
           {/* USERNAME Input */}
               <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>
+            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>
               {t("username")}
             </Text>
             <View
               style={[
                 styles.inputRow,
                 {
-                  backgroundColor: "rgba(2, 15, 21, 0.72)",
+                  backgroundColor: colors.raised,
                   borderColor: TEAL,
                 },
               ]}
             >
-                <Ionicons
-                  name="person-outline"
-                  size={28}
-                  color={TEAL}
-                  style={styles.inputIcon}
-                />
-              <TextInput
-                style={[styles.input, { color: "#d8def3" }]}
-                placeholder={t("emailOrUsername")}
-                placeholderTextColor="#9da9d3"
+              <Ionicons
+                    name="person-outline"
+                    size={24}
+                    color={TEAL}
+                    style={styles.inputIcon}
+                  />
+                <TextInput
+                  style={[styles.input, { color: colors.text }]}
+                  placeholder={t("emailOrUsername")}
+                placeholderTextColor={colors.textDim}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
@@ -197,28 +205,28 @@ const LoginScreen: React.FC = () => {
 
           {/* PASSWORD Input */}
               <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>
+            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>
               {t("password")}
             </Text>
             <View
               style={[
                 styles.inputRow,
                 {
-                  backgroundColor: "rgba(2, 15, 21, 0.72)",
-                  borderColor: "#2876aa",
+                  backgroundColor: colors.raised,
+                   borderColor: TEAL,
                 },
               ]}
             >
-                <Ionicons
+               <Ionicons
                   name="lock-closed-outline"
-                  size={27}
+                  size={24}
                   color={TEAL}
                   style={styles.inputIcon}
                 />
               <TextInput
-                style={[styles.input, { color: "#d8def3" }]}
+                style={[styles.input, { color: colors.text }]}
                 placeholder={t("password")}
-                placeholderTextColor="#9da9d3"
+                placeholderTextColor={colors.textDim}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -232,10 +240,10 @@ const LoginScreen: React.FC = () => {
                 style={styles.rightIcon}
               >
                 <Ionicons
-                  name={showPassword ? "eye-off-outline" : "eye-outline"}
-                  size={27}
-                  color="#aebbe7"
-                />
+                   name={showPassword ? "eye-off-outline" : "eye-outline"}
+                   size={24}
+                   color={colors.textMuted}
+                 />
               </TouchableOpacity>
             </View>
               </View>
@@ -300,7 +308,7 @@ const LoginScreen: React.FC = () => {
                 <Text style={[styles.signInText, { color: colors.white }] }>
                   {t("signIn")}
                 </Text>
-                <Ionicons name="arrow-forward" size={27} color={colors.white} />
+                 <Ionicons name="arrow-forward" size={22} color={colors.white} />
               </>
             )}
               </TouchableOpacity>
@@ -318,20 +326,20 @@ const LoginScreen: React.FC = () => {
               style={[
                 styles.demoButton,
                 {
-                  backgroundColor: "rgba(3, 17, 24, 0.66)",
-                  borderColor: "#2c526b",
+                  backgroundColor: colors.raised,
+                  borderColor: colors.line,
                 },
               ]}
               onPress={() => handleDemoLogin("owner")}
               activeOpacity={0.8}
             >
-              <Ionicons name="person-outline" size={29} color={TEAL} />
+              <Ionicons name="person-outline" size={24} color={TEAL} />
               <View style={styles.demoTextContainer}>
                 <Text style={[styles.demoTitle, { color: TEAL }]}>
                   {t("continueOwner")}
                 </Text>
                 <Text
-                  style={styles.demoSubtitle}
+                   style={[styles.demoSubtitle, { color: colors.textDim }]}
                 >
                   {t("ownerDescription")}
                 </Text>
@@ -339,7 +347,7 @@ const LoginScreen: React.FC = () => {
               <Ionicons
                 name="arrow-forward"
                 size={22}
-                color="#9aa9d4"
+                color={colors.textDim}
               />
             </TouchableOpacity>
 
@@ -347,20 +355,20 @@ const LoginScreen: React.FC = () => {
               style={[
                 styles.demoButton,
                 {
-                  backgroundColor: "rgba(3, 17, 24, 0.66)",
-                  borderColor: "#2c526b",
+                  backgroundColor: colors.raised,
+                  borderColor: colors.line,
                 },
               ]}
               onPress={() => handleDemoLogin("manager")}
               activeOpacity={0.8}
             >
-              <Ionicons name="people-outline" size={29} color={TEAL} />
+              <Ionicons name="people-outline" size={24} color={TEAL} />
               <View style={styles.demoTextContainer}>
                 <Text style={[styles.demoTitle, { color: TEAL }]}>
                   {t("continueManager")}
                 </Text>
                 <Text
-                  style={styles.demoSubtitle}
+                   style={[styles.demoSubtitle, { color: colors.textDim }]}
                 >
                   {t("managerDescription")}
                 </Text>
@@ -368,14 +376,14 @@ const LoginScreen: React.FC = () => {
               <Ionicons
                 name="arrow-forward"
                 size={22}
-                color="#9aa9d4"
+                color={colors.textDim}
               />
             </TouchableOpacity>
               </View>
 
           {/* Footer */}
               <View style={styles.footer}>
-                <Text style={styles.footerText}>
+                <Text style={[styles.footerText, { color: colors.textDim }]}>
                Powered by Library Management System
             </Text>
               </View>
@@ -407,11 +415,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 18,
     paddingBottom: 20,
-    shadowColor: "#02080d",
-    shadowOpacity: 0.58,
-    shadowRadius: 26,
-    shadowOffset: { width: 0, height: 14 },
-    elevation: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.22,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 8,
   },
   container: {
     alignItems: "center",
@@ -425,15 +433,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   langPill: {
-    minWidth: 68,
-    height: 38,
+    minWidth: 72,
+    height: 36,
     paddingHorizontal: 16,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 22,
   },
   langText: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: "700",
   },
   title: {
@@ -454,32 +462,31 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   inputLabel: {
-    color: "#aab9df",
     fontSize: 14,
     fontWeight: "700",
-    letterSpacing: 1,
-    marginBottom: 7,
+    letterSpacing: 0.8,
+    marginBottom: 6,
   },
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 14,
-    borderWidth: 1.3,
+    borderWidth: 1,
     height: 60,
   },
   inputIcon: {
-    width: 70,
+    width: 64,
     textAlign: "center",
   },
   input: {
     flex: 1,
-    fontSize: 19,
+    fontSize: 17,
     paddingVertical: 0,
     paddingHorizontal: 0,
     height: "100%",
   },
   rightIcon: {
-    width: 52,
+    width: 50,
     height: 60,
     alignItems: "center",
     justifyContent: "center",
@@ -489,12 +496,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 0,
-    marginBottom: 22,
+    marginBottom: 18,
   },
   rememberCheckbox: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 8,
   },
   checkbox: {
     width: 20,
@@ -505,16 +512,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   rememberText: {
-    color: "#e0e4f2",
-    fontSize: 17,
+    fontSize: 15,
   },
   forgotText: {
-    fontSize: 17,
+    fontSize: 14,
     fontWeight: "600",
   },
   signInButton: {
     borderRadius: 14,
-    height: 68,
+    height: 60,
     width: "100%",
     overflow: "hidden",
     marginBottom: 18,
@@ -524,11 +530,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 10,
+    gap: 8,
   },
   signInText: {
-    color: "#ffffff",
-    fontSize: 24,
+    fontSize: 17,
     fontWeight: "700",
   },
   demoSection: {
@@ -544,24 +549,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    marginBottom: 10,
+    marginBottom: 12,
   },
   demoLabel: {
-    color: "#b0bee5",
     fontSize: 15,
     fontWeight: "700",
-    letterSpacing: 1,
+    letterSpacing: 0.8,
   },
   demoButton: {
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 14,
     borderWidth: 1,
-    minHeight: 74,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
+    minHeight: 62,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
     marginBottom: 10,
-    gap: 10,
+    gap: 12,
   },
   demoTextContainer: {
     flex: 1,
@@ -572,7 +576,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   demoSubtitle: {
-    color: "#a8b6dc",
     fontSize: 12,
     fontWeight: "500",
     marginTop: 2,
@@ -581,8 +584,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   footerText: {
-    color: "#a8b6dc",
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "500",
   },
 });

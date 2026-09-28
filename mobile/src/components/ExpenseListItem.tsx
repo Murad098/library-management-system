@@ -87,7 +87,7 @@ const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
         </View>
 
         <View style={styles.info}>
-          <Text style={[styles.title, { color: colors.white }]} numberOfLines={1}>
+          <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
             {expense.title}
           </Text>
           <View style={styles.metaRow}>
@@ -111,7 +111,7 @@ const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
         </View>
 
         <View style={styles.amountRow}>
-          <Text style={[styles.amount, { color: colors.white }]}>
+          <Text style={[styles.amount, { color: colors.text }]}>
             {formatCurrencyPrecise(expense.amount)}
           </Text>
           {onDelete && (
@@ -142,24 +142,24 @@ const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
 const styles = StyleSheet.create({
   container: {
     borderRadius: 16,
-    padding: 14,
-    marginBottom: 12,
+    padding: 16,
+    marginBottom: 10,
     borderWidth: 1,
     shadowColor: "#000000",
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
-    elevation: 3,
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 12,
   },
   iconWrap: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
+    width: 38,
+    height: 38,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   title: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "700",
   },
   metaRow: {
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   },
   categoryBadge: {
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 3,
     borderRadius: 8,
     borderWidth: 1,
   },
@@ -199,13 +199,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   deleteButton: {
-    marginTop: 4,
     padding: 4,
     minWidth: 36,
     alignItems: "center",
   },
   editButton: {
-    marginTop: 4,
     padding: 4,
     minWidth: 36,
     alignItems: "center",

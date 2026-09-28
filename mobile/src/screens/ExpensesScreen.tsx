@@ -7,10 +7,9 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
-  Platform,
   ScrollView,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -49,6 +48,8 @@ const ExpensesScreen: React.FC = () => {
   const colors = useThemeColors();
   const { t } = useLanguage();
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
+  const fabBottom = 24 + insets.bottom;
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -150,7 +151,7 @@ const ExpensesScreen: React.FC = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.base }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.base }]}>
       <SectionHeader
         icon="receipt"
         leftAction={<HamburgerButton />}
@@ -185,7 +186,7 @@ const ExpensesScreen: React.FC = () => {
           <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>
             This month
           </Text>
-          <Text style={[styles.summaryValue, { color: colors.white }]}>
+          <Text style={[styles.summaryValue, { color: colors.text }]}>
             {formatCurrency(thisMonthTotal)}
           </Text>
         </View>
@@ -194,7 +195,7 @@ const ExpensesScreen: React.FC = () => {
           <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>
             All time
           </Text>
-          <Text style={[styles.summaryValue, { color: colors.white }]}>
+          <Text style={[styles.summaryValue, { color: colors.text }]}>
             {formatCurrency(allTimeTotal)}
           </Text>
         </View>
@@ -267,13 +268,13 @@ const ExpensesScreen: React.FC = () => {
       )}
 
       <TouchableOpacity
-        style={[styles.fab, { backgroundColor: colors.brand }]}
+        style={[styles.fab, { backgroundColor: colors.brand, bottom: fabBottom }]}
         onPress={() => navigation.navigate("AddExpense")}
         activeOpacity={0.8}
       >
         <Ionicons name="add" size={24} color={colors.black} />
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -291,7 +292,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     borderWidth: 1,
-    borderRadius: 14,
+    borderRadius: 16,
     padding: 12,
     marginBottom: 16,
   },
@@ -310,18 +311,18 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     elevation: 3,
   },
-  summaryLabel: { fontSize: 11, textTransform: "uppercase", fontWeight: "700" },
-  summaryValue: { fontSize: 20, fontWeight: "700", marginTop: 2 },
+  summaryLabel: { fontSize: 12, textTransform: "uppercase", fontWeight: "700" },
+  summaryValue: { fontSize: 22, fontWeight: "700", marginTop: 2 },
   summaryDivider: {
     width: 1,
     height: "60%",
     alignSelf: "center",
   },
   filterContainer: { marginBottom: 12 },
-  filterScroll: { gap: 6, paddingVertical: 2 },
+  filterScroll: { gap: 8, paddingVertical: 4 },
   filterChip: {
     paddingHorizontal: 14,
-    paddingVertical: 7,
+    paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
   },
@@ -335,13 +336,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 12,
   },
-  emptyText: { fontSize: 14, textAlign: "center" },
-  clearFilterText: { fontSize: 14, fontWeight: "600", marginTop: 8 },
+  emptyText: { fontSize: 13, textAlign: "center" },
+  clearFilterText: { fontSize: 13, fontWeight: "600", marginTop: 8 },
   listContent: { paddingBottom: 80 },
   fab: {
     position: "absolute",
     right: 16,
-    bottom: 90,
     width: 56,
     height: 56,
     borderRadius: 28,

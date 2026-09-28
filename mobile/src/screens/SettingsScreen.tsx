@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  SafeAreaView,
   ActivityIndicator,
   Alert,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 import { useAuth } from "../hooks/useAuth";
@@ -112,7 +112,7 @@ const SettingsScreen: React.FC = () => {
 
         {/* ── Theme ── */}
         <TouchableOpacity
-          style={[styles.settingRow, { backgroundColor: colors.surface, borderBottomColor: colors.line }]}
+          style={[styles.settingRow, { backgroundColor: colors.surface, borderColor: colors.line }]}
           onPress={toggleTheme}
           activeOpacity={0.7}
         >
@@ -126,12 +126,12 @@ const SettingsScreen: React.FC = () => {
             </Text>
           </View>
           <View style={[styles.toggleTrack, { backgroundColor: isDark ? TEAL : colors.line }]}>
-            <View style={[styles.toggleThumb, { transform: [{ translateX: isDark ? 22 : 2 }] }]} />
+            <View style={[styles.toggleThumb, { backgroundColor: isDark ? colors.black : colors.text, transform: [{ translateX: isDark ? 22 : 2 }] }]} />
           </View>
         </TouchableOpacity>
 
         {/* ── Color Scheme ── */}
-        <View style={[styles.settingCard, { backgroundColor: colors.surface, borderBottomColor: colors.line }]}>
+        <View style={[styles.settingCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
           <View style={styles.settingRowLeft}>
             <View style={[styles.settingIcon, { backgroundColor: colors.accentSoft, borderColor: `${TEAL}4D` }]}>
               <Ionicons name="color-palette" size={18} color={TEAL} />
@@ -167,7 +167,7 @@ const SettingsScreen: React.FC = () => {
 
         {/* ── Language ── */}
         <TouchableOpacity
-          style={[styles.settingRow, { backgroundColor: colors.surface, borderBottomColor: colors.line }]}
+          style={[styles.settingRow, { backgroundColor: colors.surface, borderColor: colors.line }]}
           onPress={() =>
             setLanguage(language === "en" ? "ur" : "en")
           }
@@ -182,7 +182,7 @@ const SettingsScreen: React.FC = () => {
               {language === "en" ? t("english") : t("urdu")}
             </Text>
           </View>
-          <View style={styles.langPills}>
+          <View style={[styles.langPills, { backgroundColor: colors.raised, borderColor: colors.line }]}>
             <Text
               style={[
                 styles.langPillText,
@@ -206,7 +206,7 @@ const SettingsScreen: React.FC = () => {
 
         {/* ── Change Password ── */}
         <TouchableOpacity
-          style={[styles.settingRow, { backgroundColor: colors.surface, borderBottomColor: colors.line }]}
+          style={[styles.settingRow, { backgroundColor: colors.surface, borderColor: colors.line }]}
           onPress={() => togglePanel("password")}
           activeOpacity={0.7}
         >
@@ -229,7 +229,7 @@ const SettingsScreen: React.FC = () => {
         </TouchableOpacity>
 
         {openPanel === "password" && (
-          <View style={[styles.passwordForm, { backgroundColor: colors.surface, borderBottomColor: colors.line }]}>
+          <View style={[styles.passwordForm, { backgroundColor: colors.surface, borderColor: colors.line }]}>
             <View style={styles.formField}>
               <Text style={[styles.fieldLabel, { color: colors.textMuted }]}>
                 Current password
@@ -342,7 +342,7 @@ const SettingsScreen: React.FC = () => {
                 {saving ? (
                   <ActivityIndicator size="small" color={colors.black} />
                 ) : null}
-                <Text style={styles.submitButtonText}>
+                <Text style={[styles.submitButtonText, { color: colors.black }]}>
                   {saving ? t("save") : t("save")}
                 </Text>
               </TouchableOpacity>
@@ -352,7 +352,7 @@ const SettingsScreen: React.FC = () => {
 
         {/* ── Help & Support ── */}
         <TouchableOpacity
-          style={[styles.settingRow, { backgroundColor: colors.surface, borderBottomColor: colors.line }]}
+          style={[styles.settingRow, { backgroundColor: colors.surface, borderColor: colors.line }]}
           onPress={() => togglePanel("support")}
           activeOpacity={0.7}
         >
@@ -375,7 +375,7 @@ const SettingsScreen: React.FC = () => {
         </TouchableOpacity>
 
         {openPanel === "support" && (
-          <View style={[styles.supportSection, { backgroundColor: colors.surface, borderBottomColor: colors.line }]}>
+          <View style={[styles.supportSection, { backgroundColor: colors.surface, borderColor: colors.line }]}>
             {HELP_TIPS.map((tip) => (
               <View key={tip} style={styles.tipRow}>
                 <View style={[styles.tipDot, { backgroundColor: TEAL }]} />
@@ -384,7 +384,7 @@ const SettingsScreen: React.FC = () => {
                 </Text>
               </View>
             ))}
-            <View style={styles.versionRow}>
+              <View style={[styles.versionRow, { borderColor: colors.line }]}>
               <Ionicons name="information-circle-outline" size={14} color={colors.textDim} />
               <Text style={[styles.versionText, { color: colors.textDim }]}>
                 {t("version")} 1.0.0
@@ -397,7 +397,7 @@ const SettingsScreen: React.FC = () => {
         <TouchableOpacity
           style={[
             styles.logoutRow,
-            { backgroundColor: colors.surface, borderBottomColor: colors.line },
+            { backgroundColor: colors.surface, borderColor: colors.line },
           ]}
           onPress={handleLogout}
           activeOpacity={0.7}
@@ -435,12 +435,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 12,
     padding: 14,
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1,
     marginBottom: 10,
   },
   settingCard: {
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1,
     overflow: "hidden",
     marginBottom: 10,
@@ -477,7 +477,6 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: "#fff",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
@@ -487,11 +486,9 @@ const styles = StyleSheet.create({
   langPills: {
     flexDirection: "row",
     gap: 4,
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
     borderRadius: 999,
     padding: 3,
     borderWidth: 1,
-    borderColor: "rgba(42, 58, 83, 0.5)",
   },
   langPillText: {
     fontSize: 11,
@@ -527,17 +524,17 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   passwordForm: {
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1,
     overflow: "hidden",
     marginBottom: 10,
   },
   formField: { padding: 16, paddingBottom: 0 },
-  fieldLabel: { fontSize: 12, fontWeight: "600", marginBottom: 6 },
+  fieldLabel: { fontSize: 13, fontWeight: "600", marginBottom: 6 },
   passwordInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     position: "relative",
     marginBottom: 12,
@@ -562,31 +559,30 @@ const styles = StyleSheet.create({
   textButton: {
     flex: 1,
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
     borderWidth: 1,
   },
   textButtonText: { fontSize: 14, fontWeight: "600" },
   submitButton: {
     flex: 1,
-    borderRadius: 12,
+    borderRadius: 14,
     paddingVertical: 14,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
-    gap: 6,
+    gap: 8,
   },
   submitButtonText: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#000",
   },
   supportSection: {
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1,
     padding: 16,
     marginBottom: 10,
-    gap: 10,
+    gap: 12,
   },
   tipRow: {
     flexDirection: "row",
@@ -606,7 +602,6 @@ const styles = StyleSheet.create({
     gap: 6,
     marginTop: 8,
     borderTopWidth: 1,
-    borderColor: "rgba(42, 58, 83, 0.5)",
     paddingTop: 10,
   },
   versionText: { fontSize: 12 },
@@ -614,9 +609,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1,
-    padding: 14,
+    padding: 16,
     marginTop: 8,
   },
 });

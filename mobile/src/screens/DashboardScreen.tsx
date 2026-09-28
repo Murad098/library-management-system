@@ -172,7 +172,7 @@ const DashboardScreen: React.FC = () => {
             activeOpacity={0.8}
           >
             <Ionicons name="person-add" size={18} color={colors.black} />
-            <Text style={styles.addButtonText}>{t("addMember")}</Text>
+            <Text style={[styles.addButtonText, { color: colors.black }]}>{t("addMember")}</Text>
           </TouchableOpacity>
         }
       />
@@ -368,7 +368,7 @@ const DashboardScreen: React.FC = () => {
               </View>
             </View>
 
-            <View style={styles.netRow}>
+            <View style={[styles.netRow, { borderTopColor: colors.line }]}>
               <View style={styles.netLabelRow}>
                 <Ionicons name="trending-up" size={16} color={TEAL} />
                 <Text style={[styles.netLabel, { color: colors.textMuted }]}>
@@ -652,14 +652,13 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#000000",
   },
   errorBox: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
     borderWidth: 1,
-    borderRadius: 14,
+    borderRadius: 16,
     padding: 12,
     marginBottom: 16,
   },
@@ -671,7 +670,7 @@ const styles = StyleSheet.create({
   statsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 10,
+    gap: 12,
     marginBottom: 16,
   },
   chartRow: {
@@ -690,11 +689,11 @@ const styles = StyleSheet.create({
   },
   chartHeader: { marginBottom: 12 },
   chartTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
   },
-  chartSubtitle: { fontSize: 12, marginTop: 2 },
-  chartHint: { fontSize: 11, marginTop: 4 },
+  chartSubtitle: { fontSize: 13, marginTop: 3 },
+  chartHint: { fontSize: 12, marginTop: 4 },
   chartContent: { gap: 10 },
   chartStatRow: { gap: 6 },
   chartStatRowItem: {
@@ -729,7 +728,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderTopWidth: 1,
-    borderTopColor: "#2a3a59",
     paddingTop: 12,
     marginTop: 8,
   },
@@ -753,7 +751,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
   },
-  recentSubtitle: { fontSize: 12 },
+  recentSubtitle: { fontSize: 13 },
   viewAllLink: {
     flexDirection: "row",
     alignItems: "center",
@@ -765,25 +763,25 @@ const styles = StyleSheet.create({
   },
   emptyNote: {
     borderRadius: 16,
-    padding: 24,
+    padding: 20,
     alignItems: "center",
     borderWidth: 1,
     gap: 8,
   },
   emptyText: { fontSize: 13 },
-  recentList: { gap: 8 },
+  recentList: { gap: 10 },
   recentMemberRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    borderRadius: 12,
-    padding: 10,
+    gap: 12,
+    borderRadius: 16,
+    padding: 12,
     borderWidth: 1,
   },
   recentMemberAvatar: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
@@ -807,9 +805,9 @@ const styles = StyleSheet.create({
   recentExpenseRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    borderRadius: 12,
-    padding: 10,
+    gap: 12,
+    borderRadius: 16,
+    padding: 12,
     borderWidth: 1,
   },
   recentExpenseIcon: {
@@ -835,7 +833,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     borderWidth: 1,
-    borderRadius: 14,
+    borderRadius: 16,
     padding: 12,
     marginTop: 8,
   },

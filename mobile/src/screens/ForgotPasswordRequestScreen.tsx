@@ -138,13 +138,13 @@ const styles = StyleSheet.create({
   },
   container: { marginBottom: 32 },
   formCard: {
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
-    padding: 16,
+    padding: 20,
     shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
   },
   backButton: {
     alignItems: "center",
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   backText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
   },
 });

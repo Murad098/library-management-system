@@ -73,8 +73,10 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 14,
     alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
-    minHeight: 48,
+    minHeight: 52,
+    paddingHorizontal: 24,
   },
   text: {
     fontWeight: "600",

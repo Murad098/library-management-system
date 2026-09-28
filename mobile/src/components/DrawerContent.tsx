@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -73,14 +72,14 @@ export const DrawerContent: React.FC = () => {
               <Ionicons
                 name={isActive ? (route.iconFocused as any) : (route.icon as any)}
                 size={22}
-                color={isActive ? "#fff" : colors.textMuted}
+                color={isActive ? colors.black : colors.textMuted}
                 style={styles.menuIcon}
               />
               <Text
                 style={[
                   styles.menuLabel,
                   {
-                    color: isActive ? "#fff" : colors.text,
+                    color: isActive ? colors.black : colors.text,
                     fontWeight: isActive ? "600" : "400",
                   },
                 ]}
@@ -143,7 +142,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "72%",
-    maxWidth: 320,
+    maxWidth: 300,
     paddingTop: 0,
   },
   header: {
@@ -180,9 +179,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 14,
     paddingHorizontal: 18,
-    borderRadius: 14,
-    marginBottom: 4,
-    marginLeft: 4,
+    borderRadius: 16,
+    marginBottom: 6,
   },
   menuIcon: {
     marginRight: 14,
@@ -201,9 +199,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -228,7 +226,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 14,
     paddingHorizontal: 16,
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1,
     marginBottom: 20,
   },

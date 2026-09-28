@@ -10,6 +10,7 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 
@@ -182,7 +183,7 @@ const ProfileScreen: React.FC = () => {
   const hasSession = expiresAt && !Number.isNaN(expiresAt.getTime());
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.base }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.base }]}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -234,7 +235,7 @@ const ProfileScreen: React.FC = () => {
             ) : avatarUrl ? (
               <Image
                 source={{ uri: avatarUrl }}
-                style={{ width: "100%", height: "100%", borderRadius: 31 }}
+                style={{ width: "100%", height: "100%" }}
               />
             ) : (
               <Text style={[styles.avatarInitials, { color: colors.black }]}>
@@ -346,7 +347,7 @@ const ProfileScreen: React.FC = () => {
                 </Text>
               </View>
             </View>
-            <View style={styles.toggleSwitch}>
+            <View style={[styles.toggleSwitch, { backgroundColor: colors.raised, borderColor: colors.line }]}>
               <TouchableOpacity
                 style={[
                   styles.toggleTrack,
@@ -375,7 +376,7 @@ const ProfileScreen: React.FC = () => {
             </View>
           </TouchableOpacity>
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.line }]} />
 
           <View style={styles.paletteBlock}>
             <View style={styles.menuRowLeft}>
@@ -409,7 +410,7 @@ const ProfileScreen: React.FC = () => {
             </View>
           </View>
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.line }]} />
 
           {/* Language */}
           <View style={styles.menuRow}>
@@ -434,7 +435,7 @@ const ProfileScreen: React.FC = () => {
                 </Text>
               </View>
             </View>
-            <View style={styles.langPills}>
+            <View style={[styles.langPills, { backgroundColor: colors.raised, borderColor: colors.line }]}>
               <TouchableOpacity
                 style={[
                   styles.langPill,
@@ -488,7 +489,7 @@ const ProfileScreen: React.FC = () => {
             </View>
           </View>
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.line }]} />
 
           {/* Change Password */}
           <TouchableOpacity
@@ -525,7 +526,7 @@ const ProfileScreen: React.FC = () => {
           </TouchableOpacity>
 
           {openPanel === "password" && (
-            <View style={styles.passwordForm}>
+            <View style={[styles.passwordForm, { borderColor: colors.line }]}>
               <View style={styles.formField}>
                 <Text
                   style={[styles.fieldLabel, { color: colors.textMuted }]}
@@ -670,7 +671,7 @@ const ProfileScreen: React.FC = () => {
                       color={colors.black}
                     />
                   ) : null}
-                  <Text style={styles.submitButtonText}>
+                  <Text style={[styles.submitButtonText, { color: colors.black }]}>
                     {saving ? "Saving..." : "Update password"}
                   </Text>
                 </TouchableOpacity>
@@ -678,7 +679,7 @@ const ProfileScreen: React.FC = () => {
             </View>
           )}
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.line }]} />
 
           {/* Help & Support */}
           <TouchableOpacity
@@ -715,7 +716,7 @@ const ProfileScreen: React.FC = () => {
           </TouchableOpacity>
 
           {openPanel === "support" && (
-            <View style={styles.supportSection}>
+              <View style={[styles.supportSection, { borderColor: colors.line }]}>
               {HELP_TIPS.map((tip) => (
                 <View key={tip} style={styles.tipRow}>
                   <View
@@ -764,7 +765,7 @@ const ProfileScreen: React.FC = () => {
       </ScrollView>
 
       <Toast />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -782,24 +783,24 @@ const styles = StyleSheet.create({
   identitySection: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
-    padding: 18,
-    borderRadius: 18,
+    gap: 18,
+    padding: 20,
+    borderRadius: 16,
     borderWidth: 1,
     minWidth: 0,
   },
   avatar: {
     position: "relative",
-    width: 62,
-    height: 62,
-    borderRadius: 31,
+    width: 68,
+    height: 68,
+    borderRadius: 34,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
   },
   avatarInitials: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "700",
   },
   avatarOverlay: {
@@ -812,7 +813,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontSize: 11,
     fontWeight: "600",
-    marginLeft: 78,
+    marginLeft: 86,
   },
   identityText: {
     flex: 1,
@@ -834,7 +835,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     paddingHorizontal: 8,
     paddingVertical: 3,
-    marginTop: 4,
+    marginTop: 8,
     borderRadius: 999,
     borderWidth: 1,
   },
@@ -854,7 +855,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   menuSection: {
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
     overflow: "hidden",
   },
@@ -908,10 +909,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flex: 0,
   },
-  logoutIcon: {
-    backgroundColor: "rgba(248, 111, 111, 0.1)",
-    borderColor: "rgba(248, 111, 111, 0.32)",
-  },
+  logoutIcon: {},
   menuText: {
     flex: 1,
     minWidth: 0,
@@ -926,7 +924,6 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: "rgba(42, 58, 83, 0.5)",
     marginLeft: 52,
     marginRight: 14,
   },
@@ -934,9 +931,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 26,
     borderRadius: 13,
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
     borderWidth: 1,
-    borderColor: "rgba(42, 58, 83, 0.5)",
     alignItems: "flex-start",
     justifyContent: "center",
     padding: 2,
@@ -962,9 +957,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 4,
     padding: 3,
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
     borderWidth: 1,
-    borderColor: "rgba(42, 58, 83, 0.5)",
     borderRadius: 999,
   },
   langPill: {
@@ -982,19 +975,18 @@ const styles = StyleSheet.create({
   },
   passwordForm: {
     borderTopWidth: 1,
-    borderColor: "rgba(42, 58, 83, 0.5)",
     padding: 16,
   },
   formField: { marginBottom: 16 },
   fieldLabel: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "600",
     marginBottom: 6,
   },
   passwordInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     position: "relative",
   },
@@ -1022,7 +1014,7 @@ const styles = StyleSheet.create({
   textButton: {
     flex: 1,
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
     borderWidth: 1,
   },
@@ -1032,23 +1024,21 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     flex: 1,
-    borderRadius: 12,
+    borderRadius: 14,
     paddingVertical: 14,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
-    gap: 6,
+    gap: 8,
   },
   submitButtonText: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#000000",
   },
   supportSection: {
     borderTopWidth: 1,
-    borderColor: "rgba(42, 58, 83, 0.5)",
     padding: 16,
-    gap: 10,
+    gap: 12,
   },
   tipRow: {
     flexDirection: "row",
@@ -1070,9 +1060,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
-    padding: 14,
+    padding: 16,
   },
 });
 

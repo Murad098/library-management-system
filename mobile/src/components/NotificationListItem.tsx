@@ -113,7 +113,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <Text
-            style={[styles.title, { color: colors.white }]}
+            style={[styles.title, { color: colors.text }]}
             numberOfLines={1}
           >
             {item.title}
@@ -178,24 +178,24 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 10,
-    borderRadius: 18,
-    padding: 14,
-    marginBottom: 12,
+    gap: 12,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 10,
     borderWidth: 1,
     shadowColor: "#000000",
-    shadowOpacity: 0.16,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
     elevation: 2,
   },
   iconWrap: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
+    width: 38,
+    height: 38,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 2,
+    marginTop: 1,
     borderWidth: 1,
   },
   content: {
@@ -219,16 +219,16 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   message: {
-    fontSize: 12,
+    fontSize: 13,
     marginTop: 2,
-    lineHeight: 17,
+    lineHeight: 18,
   },
   metaRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     gap: 12,
-    marginTop: 4,
+    marginTop: 6,
   },
   meta: {
     fontSize: 11,

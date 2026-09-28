@@ -80,9 +80,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 18,
+    marginBottom: 20,
     flexWrap: "wrap",
-    gap: 12,
+    gap: 14,
   },
   leftActionWrap: {
     marginRight: 8,
@@ -90,11 +90,11 @@ const styles = StyleSheet.create({
   leftContent: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 14,
   },
   iconWrap: {
-    width: 26,
-    height: 26,
+    width: 28,
+    height: 28,
     alignItems: "center",
     justifyContent: "center",
     flex: 0,
@@ -104,18 +104,18 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   title: {
-    fontSize: 29,
-    fontWeight: "800",
-    lineHeight: 33,
+    fontSize: 28,
+    fontWeight: "700",
+    lineHeight: 32,
   },
   subtitle: {
-    fontSize: 12,
-    marginTop: 2,
+    fontSize: 13,
+    marginTop: 3,
   },
   rightContent: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
   },
 });
 

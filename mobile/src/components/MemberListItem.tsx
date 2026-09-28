@@ -99,7 +99,7 @@ const MemberListItem: React.FC<MemberListItemProps> = ({
         </View>
 
         <View style={styles.info}>
-          <Text style={[styles.name, { color: colors.white }]} numberOfLines={1}>
+          <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
             {member.name}
           </Text>
           <Text style={[styles.email, { color: colors.textMuted }]} numberOfLines={1}>
@@ -119,7 +119,7 @@ const MemberListItem: React.FC<MemberListItemProps> = ({
             Joined {formatDate(member.createdAt)}
           </Text>
         </View>
-        <Text style={[styles.fee, { color: colors.white }]}>
+        <Text style={[styles.fee, { color: colors.text }]}>
           {formatCurrency(member.fee)}
         </Text>
       </View>
@@ -158,41 +158,41 @@ const MemberListItem: React.FC<MemberListItemProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 18,
-    padding: 14,
-    marginBottom: 12,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 10,
     borderWidth: 1,
     shadowColor: "#000000",
-    shadowOpacity: 0.16,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
     elevation: 2,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 8,
+    gap: 12,
   },
   avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
+    width: 38,
+    height: 38,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
   },
   avatarText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "700",
   },
   info: {
     flex: 1,
-    marginLeft: 10,
+    marginLeft: 12,
     minWidth: 0,
   },
   name: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "700",
   },
   email: {
@@ -205,6 +205,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 12,
+    borderWidth: 1,
   },
   statusDot: {
     width: 6,
@@ -219,6 +220,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginTop: 10,
     gap: 8,
   },
   rowDetails: {
@@ -236,17 +238,15 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   deleteButton: {
-    alignSelf: "flex-end",
     paddingHorizontal: 8,
     paddingVertical: 4,
-    minWidth: 50,
+    minWidth: 40,
     alignItems: "center",
   },
   editButton: {
-    alignSelf: "flex-end",
     paddingHorizontal: 8,
     paddingVertical: 4,
-    minWidth: 50,
+    minWidth: 40,
     alignItems: "center",
   },
 });

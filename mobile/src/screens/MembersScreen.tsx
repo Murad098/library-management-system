@@ -9,6 +9,7 @@ import {
   RefreshControl,
   TextInput,
 } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -37,6 +38,8 @@ const MembersScreen: React.FC = () => {
   const colors = useThemeColors();
   const { t } = useLanguage();
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
+  const fabBottom = 24 + insets.bottom;
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -121,7 +124,7 @@ const MembersScreen: React.FC = () => {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.base }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.base }]}>
       <SectionHeader
         icon="people"
         leftAction={<HamburgerButton />}
@@ -232,7 +235,7 @@ const MembersScreen: React.FC = () => {
           >
             <Ionicons name="people-outline" size={32} color={colors.textDim} />
           </View>
-          <Text style={[styles.emptyTitle, { color: colors.white }]}>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>
             No members yet
           </Text>
           <Text style={[styles.emptyText, { color: colors.textMuted }]}>
@@ -243,7 +246,7 @@ const MembersScreen: React.FC = () => {
             onPress={() => navigation.navigate("AddMember")}
             activeOpacity={0.8}
           >
-            <Text style={styles.emptyButtonText}>Add member</Text>
+              <Text style={[styles.emptyButtonText, { color: colors.black }]}>Add member</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -276,13 +279,13 @@ const MembersScreen: React.FC = () => {
       )}
 
       <TouchableOpacity
-        style={[styles.fab, { backgroundColor: colors.brand }]}
+        style={[styles.fab, { backgroundColor: colors.brand, bottom: fabBottom }]}
         onPress={() => navigation.navigate("AddMember")}
         activeOpacity={0.8}
       >
         <Ionicons name="add" size={24} color={colors.black} />
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -326,7 +329,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     borderWidth: 1,
-    borderRadius: 14,
+    borderRadius: 16,
     padding: 12,
     marginBottom: 12,
   },
@@ -356,7 +359,7 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 16, fontWeight: "600" },
   emptyText: { fontSize: 13, textAlign: "center" },
   emptyButton: {
-    borderRadius: 12,
+    borderRadius: 14,
     paddingHorizontal: 24,
     paddingVertical: 12,
     marginTop: 8,
@@ -364,7 +367,6 @@ const styles = StyleSheet.create({
   emptyButtonText: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#000000",
   },
   emptyState: {
     flex: 1,
@@ -377,7 +379,6 @@ const styles = StyleSheet.create({
   fab: {
     position: "absolute",
     right: 16,
-    bottom: 90,
     width: 56,
     height: 56,
     borderRadius: 28,

@@ -1,27 +1,23 @@
 import React, { useRef, useEffect } from "react";
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   Animated,
-  Modal,
   Easing,
   BackHandler,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DrawerContent } from "./DrawerContent";
 import { useDrawer } from "../context/DrawerContext";
 import { useThemeColors } from "../context/ThemeContext";
 
-const DRAWER_WIDTH = 320;
+const DRAWER_WIDTH = 300;
 
 export const DrawerLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { isOpen, closeDrawer } = useDrawer();
   const colors = useThemeColors();
-  const insets = useSafeAreaInsets();
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
 
@@ -67,45 +63,42 @@ export const DrawerLayout: React.FC<{ children: React.ReactNode }> = ({
     closeDrawer();
   };
 
-  if (!isOpen) {
-    return <View style={styles.main}>{children}</View>;
-  }
-
   return (
-    <Modal transparent animationType="none" statusBarTranslucent>
-      {/* Main content (dimmed) */}
-      <View style={styles.modalContainer}>
-        {children}
+    <View style={styles.main}>
+      {children}
 
-        {/* Backdrop */}
-        <Animated.View
-          style={[
-            styles.backdrop,
-            { opacity: overlayOpacity, backgroundColor: "#000" },
-          ]}
-        >
-          <TouchableOpacity
-            style={styles.backdropTouchable}
-            onPress={handleBackdropPress}
-          />
-        </Animated.View>
+      {/* Backdrop — captures taps to dismiss the drawer */}
+      <Animated.View
+        style={[
+          styles.backdrop,
+          { opacity: overlayOpacity, backgroundColor: "#000" },
+        ]}
+        pointerEvents={isOpen ? "auto" : "none"}
+      >
+        <TouchableOpacity
+          style={styles.backdropTouchable}
+          onPress={handleBackdropPress}
+          activeOpacity={1}
+        />
+      </Animated.View>
 
-        {/* Drawer */}
-        <Animated.View
-          style={[
-            styles.drawer,
-            {
-              transform: [{ translateX }],
-              backgroundColor: colors.base,
-              shadowColor: "#000",
-            },
-          ]}
-          accessibilityLabel="Navigation menu"
-        >
-          <DrawerContent />
-        </Animated.View>
-      </View>
-    </Modal>
+      {/* Drawer — always mounted so ScreenContainer views in the children
+          are never re-parented between native roots */}
+      <Animated.View
+        style={[
+          styles.drawer,
+          {
+            transform: [{ translateX }],
+            backgroundColor: colors.base,
+            shadowColor: "#000",
+          },
+        ]}
+        accessibilityLabel="Navigation menu"
+        pointerEvents={isOpen ? "auto" : "none"}
+      >
+        <DrawerContent />
+      </Animated.View>
+    </View>
   );
 };
 
@@ -113,13 +106,9 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
   },
-  modalContainer: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-  },
   backdrop: {
     ...StyleSheet.absoluteFill,
+    zIndex: 5,
   },
   backdropTouchable: {
     flex: 1,

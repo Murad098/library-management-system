@@ -243,13 +243,13 @@ const styles = StyleSheet.create({
   },
   container: { marginBottom: 32 },
   formCard: {
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
-    padding: 16,
+    padding: 20,
     shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
   },
   field: { marginTop: 16, marginBottom: 4 },
   label: {
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   },
   otpField: { marginTop: 16, marginBottom: 4 },
   otpInputContainer: {
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -271,12 +271,12 @@ const styles = StyleSheet.create({
   passwordInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
   },
   passwordInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 15,
     paddingHorizontal: 16,
     paddingVertical: 14,
   },
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     padding: 6,
   },
   secondaryText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
   },
 });

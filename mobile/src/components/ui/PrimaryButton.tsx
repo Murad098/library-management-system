@@ -86,9 +86,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     minHeight: 52,
+    paddingHorizontal: 24,
   },
   text: {
-    fontWeight: "700",
+    fontWeight: "600",
   },
   loading: {
     marginRight: 4,

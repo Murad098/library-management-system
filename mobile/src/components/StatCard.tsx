@@ -61,7 +61,7 @@ const StatCard: React.FC<StatCardProps> = ({
       ]}
     >
       <View style={styles.content}>
-        <Text style={[styles.label, { color: colors.textDim }]}>
+        <Text style={[styles.label, { color: colors.textMuted }]}>
           {label}
         </Text>
         <Text style={[styles.value, { color: toneStyle.text }]} numberOfLines={1}>
@@ -83,11 +83,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderRadius: 18,
-    padding: 18,
-    minHeight: 118,
+    borderRadius: 16,
+    padding: 16,
+    minHeight: 110,
     borderWidth: 1,
-    marginBottom: 16,
+    marginBottom: 0,
   },
   content: {
     flex: 1,
@@ -100,19 +100,19 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   value: {
-    fontSize: 38,
+    fontSize: 32,
     fontWeight: "800",
-    marginTop: 8,
-    lineHeight: 38,
+    marginTop: 6,
+    lineHeight: 34,
   },
   hint: {
-    fontSize: 14,
-    marginTop: 8,
+    fontSize: 12,
+    marginTop: 6,
   },
   iconWrap: {
-    width: 50,
-    height: 50,
-    borderRadius: 14,
+    width: 46,
+    height: 46,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 12,
