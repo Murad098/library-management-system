@@ -55,14 +55,14 @@ const AddExpenseScreen: React.FC = () => {
     if (isLoading) return;
 
     if (!title.trim()) {
-      show("Expense title is required.", "error");
+      show(t("expenseRequired"), "error");
       return;
     }
 
     const numericAmount = Number(amount);
 
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      show("Amount must be greater than zero.", "error");
+      show(t("amountPositive"), "error");
       return;
     }
 
@@ -78,10 +78,10 @@ const AddExpenseScreen: React.FC = () => {
       if (editing) await updateExpense(editing.id, payload);
       else await addExpense(payload);
 
-      show(editing ? "Expense updated successfully." : "Expense added successfully.", "success");
+      show(editing ? t("expenseUpdated") : t("expenseAdded"), "success");
       navigation.goBack();
     } catch (error) {
-      show(getErrorMessage(error, "Unable to add expense."), "error");
+      show(getErrorMessage(error, editing ? t("unableToUpdateExpense") : t("unableToAddExpense")), "error");
     } finally {
       setIsLoading(false);
     }
@@ -117,7 +117,7 @@ const AddExpenseScreen: React.FC = () => {
           <View style={[styles.formCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
             <InputField
             label={t("title")}
-            placeholder="What was this expense for?"
+            placeholder={t("enterExpenseTitle")}
             value={title}
             onChangeText={setTitle}
             autoCapitalize="sentences"
@@ -152,7 +152,7 @@ const AddExpenseScreen: React.FC = () => {
           </View>
 
           <InputField
-            label="Date"
+            label={t("date")}
             placeholder="YYYY-MM-DD"
             value={date}
             onChangeText={setDate}
@@ -187,9 +187,9 @@ const AddExpenseScreen: React.FC = () => {
           </View>
 
           <View style={styles.actions}>
-            <SecondaryButton title="Cancel" onPress={handleCancel} />
+            <SecondaryButton title={t("cancel")} onPress={handleCancel} />
             <PrimaryButton
-              title={editing ? "Update expense" : "Add expense"}
+              title={editing ? t("updateExpense") : t("addExpense")}
               onPress={handleSubmit}
               loading={isLoading}
               disabled={isLoading}
@@ -217,7 +217,7 @@ const AddExpenseScreen: React.FC = () => {
             ]}
           >
             <Text style={[styles.modalTitle, { color: colors.textMuted }]}>
-              Select category
+              {t("selectCategory")}
             </Text>
             <FlatList
               data={EXPENSE_CATEGORIES}

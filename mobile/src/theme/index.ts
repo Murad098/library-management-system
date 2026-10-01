@@ -31,7 +31,6 @@ export const getTheme = (dark: boolean, accent: AccentName = "indigo"): AppTheme
       accentSoft: selected.soft,
       brand: selected.accent,
       brandText: selected.accent,
-      green: selected.accent,
     },
   };
 };

@@ -100,7 +100,7 @@ const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
                 },
               ]}
             >
-              <Text style={[styles.categoryText, { color: colors.accent }]}> 
+              <Text style={[styles.categoryText, { color: colors.accent }]}>
                 {expense.category}
               </Text>
             </View>
@@ -114,25 +114,35 @@ const ExpenseListItem: React.FC<ExpenseListItemProps> = ({
           <Text style={[styles.amount, { color: colors.text }]}>
             {formatCurrencyPrecise(expense.amount)}
           </Text>
-          {onDelete && (
-            <>
-            {onEdit && <TouchableOpacity style={styles.editButton} onPress={() => onEdit(expense)}><Ionicons name="create-outline" size={16} color={colors.brand} /></TouchableOpacity>}
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={handleDelete}
-              hitSlop={8}
-              disabled={disabled}
-              activeOpacity={0.7}
-            >
-              {disabled ? (
-                <ActivityIndicator size="small" color={colors.red} />
-              ) : (
-                <Ionicons name="trash" size={16} color={colors.red} />
+          {(onEdit || onDelete) && (
+            <View style={styles.actions}>
+              {onEdit && (
+                <TouchableOpacity
+                  style={styles.editButton}
+                  onPress={() => onEdit(expense)}
+                  hitSlop={8}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="create-outline" size={16} color={colors.brand} />
+                </TouchableOpacity>
               )}
-            </TouchableOpacity>
-            </>
+              {onDelete && (
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={handleDelete}
+                  hitSlop={8}
+                  disabled={disabled}
+                  activeOpacity={0.7}
+                >
+                  {disabled ? (
+                    <ActivityIndicator size="small" color={colors.red} />
+                  ) : (
+                    <Ionicons name="trash" size={16} color={colors.red} />
+                  )}
+                </TouchableOpacity>
+              )}
+            </View>
           )}
-          {!onDelete && onEdit && <TouchableOpacity style={styles.editButton} onPress={() => onEdit(expense)}><Ionicons name="create-outline" size={16} color={colors.brand} /></TouchableOpacity>}
         </View>
       </View>
     </View>
@@ -197,6 +207,10 @@ const styles = StyleSheet.create({
   amount: {
     fontSize: 13,
     fontWeight: "700",
+  },
+  actions: {
+    flexDirection: "row",
+    gap: 4,
   },
   deleteButton: {
     padding: 4,

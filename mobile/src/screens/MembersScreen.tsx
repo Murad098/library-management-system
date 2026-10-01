@@ -31,7 +31,7 @@ type NavigationProp = NativeStackNavigationProp<
   "Members"
 >;
 
-const STATUS_FILTERS = ["All", "Paid", "Unpaid"] as const;
+const STATUS_FILTERS = ["all", "paid", "unpaid"] as const;
 
 const MembersScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
@@ -45,7 +45,7 @@ const MembersScreen: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const loadMembers = useCallback(async () => {
@@ -84,7 +84,7 @@ const MembersScreen: React.FC = () => {
     const query = search.trim().toLowerCase();
 
     return members.filter((member) => {
-      if (statusFilter !== "All" && member.status !== statusFilter.toLowerCase()) {
+      if (statusFilter !== "all" && member.status !== statusFilter) {
         return false;
       }
 
@@ -199,7 +199,7 @@ const MembersScreen: React.FC = () => {
                   },
                 ]}
               >
-                {filter}
+                {t(filter)}
               </Text>
             </TouchableOpacity>
           );
@@ -222,7 +222,7 @@ const MembersScreen: React.FC = () => {
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.brand} />
           <Text style={[styles.loadingText, { color: colors.textMuted }]}>
-            Loading members...
+            {t("loading")}
           </Text>
         </View>
       ) : members.length === 0 ? (
@@ -236,17 +236,16 @@ const MembersScreen: React.FC = () => {
             <Ionicons name="people-outline" size={32} color={colors.textDim} />
           </View>
           <Text style={[styles.emptyTitle, { color: colors.text }]}>
-            No members yet
-          </Text>
-          <Text style={[styles.emptyText, { color: colors.textMuted }]}>
-            Add your first member to start tracking fees.
+            {t("noMembersYet")}
           </Text>
           <TouchableOpacity
             style={[styles.emptyButton, { backgroundColor: colors.brand }]}
             onPress={() => navigation.navigate("AddMember")}
             activeOpacity={0.8}
           >
-              <Text style={[styles.emptyButtonText, { color: colors.black }]}>Add member</Text>
+            <Text style={[styles.emptyButtonText, { color: colors.black }]}>
+              {t("addMember")}
+            </Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -271,7 +270,7 @@ const MembersScreen: React.FC = () => {
                 color={colors.textDim}
               />
               <Text style={[styles.emptyText, { color: colors.textMuted }]}>
-                No members match the current search or filter.
+                {t("noResults")}
               </Text>
             </View>
           )}

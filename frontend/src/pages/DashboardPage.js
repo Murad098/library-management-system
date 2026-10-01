@@ -25,19 +25,19 @@ const StatCard = ({ label, value, hint, icon: Icon, tone = "default" }) => {
   return (
     <div className="card relative flex flex-col gap-1.5 p-3.5 pr-12 sm:flex-row sm:items-start sm:justify-between sm:gap-3 sm:p-5 sm:pr-5">
       <div className="min-w-0">
-        <div className="text-[10px] font-bold uppercase leading-tight tracking-[0.14em] text-slate-400">
+        <div className="text-[11px] font-semibold uppercase leading-tight tracking-wider text-slate-400">
           {label}
         </div>
-        <div className="mt-1 break-words font-display text-base font-bold text-white tabular-nums sm:mt-1.5 sm:text-2xl">
+        <div className="mt-1 break-words font-display text-xl font-bold text-white tabular-nums sm:mt-1.5 sm:text-3xl">
           {value}
         </div>
-        <div className="mt-0.5 break-words text-[11px] leading-tight text-slate-400 sm:mt-1 sm:text-xs">
+        <div className="mt-0.5 break-words text-xs leading-tight text-slate-400 sm:mt-1">
           {hint}
         </div>
       </div>
 
       <span
-        className={`absolute right-3.5 top-3.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border sm:static sm:h-10 sm:w-10 sm:rounded-xl ${tones[tone]}`}
+        className={`absolute right-3 top-3 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border sm:static sm:h-10 sm:w-10 ${tones[tone]}`}
       >
         <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
       </span>

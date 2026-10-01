@@ -32,23 +32,23 @@ import { useLanguage } from "../context/LanguageContext";
 
 const NOTIFICATION_TYPES: NotificationType[] = ["info", "success", "warning", "alert"];
 
-const typeLabels: Record<NotificationType, string> = {
-  info: "Info",
-  success: "Success",
-  warning: "Warning",
-  alert: "Alert",
-};
-
-const typeColors: Record<NotificationType, string> = {
-  info: "#06b6d4",
-  success: "#22c58e",
-  warning: "#f59e0b",
-  alert: "#f87171",
-};
-
 const NotificationsScreen: React.FC = () => {
   const colors = useThemeColors();
   const { t } = useLanguage();
+
+  const typeLabels: Record<NotificationType, string> = {
+    info: t("typeInfo"),
+    success: t("typeSuccess"),
+    warning: t("typeWarning"),
+    alert: t("typeAlert"),
+  };
+
+  const typeColors: Record<NotificationType, string> = {
+    info: colors.sky,
+    success: colors.green,
+    warning: colors.amber,
+    alert: colors.red,
+  };
   const { Toast, show } = useToast();
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -115,7 +115,7 @@ const NotificationsScreen: React.FC = () => {
     if (submitting) return;
 
     if (!formTitle.trim()) {
-      show("Notification title is required.", "error");
+      show(t("titleRequired"), "error");
       return;
     }
 
@@ -143,7 +143,7 @@ const NotificationsScreen: React.FC = () => {
       setFormTitle("");
       setFormMessage("");
     } catch (err) {
-      show(getErrorMessage(err, "Unable to add notification."), "error");
+      show(getErrorMessage(err, t("unableToAddNotification")), "error");
     } finally {
       setSubmitting(false);
     }
@@ -162,7 +162,7 @@ const NotificationsScreen: React.FC = () => {
         setUnreadCount((c) => c + 1);
       }
     } catch (err) {
-      setError(getErrorMessage(err, "Unable to update notification."));
+      setError(getErrorMessage(err, t("unableToUpdateNotification")));
     }
   };
 
@@ -174,7 +174,7 @@ const NotificationsScreen: React.FC = () => {
       );
       setUnreadCount(0);
     } catch (err) {
-      setError(getErrorMessage(err, "Unable to mark notifications read."));
+      setError(getErrorMessage(err, t("unableToMarkRead")));
     }
   };
 
@@ -190,7 +190,7 @@ const NotificationsScreen: React.FC = () => {
         return current.filter((n) => n._id !== id);
       });
     } catch (err) {
-      setError(getErrorMessage(err, "Unable to delete notification."));
+      setError(getErrorMessage(err, t("unableToDeleteNotification")));
     }
   };
 
@@ -229,7 +229,7 @@ const NotificationsScreen: React.FC = () => {
                 styles.headerButton,
                 {
                   backgroundColor: colors.surface,
-                  borderColor: `${colors.accent}66`,
+                  borderColor: colors.accentSoft,
                   opacity: unreadCount === 0 ? 0.4 : 1,
                 },
               ]}
@@ -246,7 +246,7 @@ const NotificationsScreen: React.FC = () => {
             <TouchableOpacity
               style={[
                 styles.headerButton,
-                { backgroundColor: colors.surface, borderColor: `${colors.accent}66` },
+                { backgroundColor: colors.surface, borderColor: colors.accentSoft },
               ]}
               onPress={handleRefresh}
               activeOpacity={0.7}
@@ -276,13 +276,13 @@ const NotificationsScreen: React.FC = () => {
           styles.formCard,
           {
             backgroundColor: colors.surface,
-            borderColor: `${colors.accent}66`,
+            borderColor: colors.accentSoft,
             shadowColor: colors.accent,
           },
         ]}
       >
         <Text style={[styles.formLabel, { color: colors.textMuted }]}>
-          New notification
+          {t("newNotification")}
         </Text>
 
         <View style={styles.formField}>
@@ -298,7 +298,7 @@ const NotificationsScreen: React.FC = () => {
                 borderColor: colors.line,
               },
             ]}
-            placeholder="Notification title"
+             placeholder={t("notificationTitle")}
             placeholderTextColor={colors.textMuted}
             value={formTitle}
             onChangeText={setFormTitle}
@@ -308,7 +308,7 @@ const NotificationsScreen: React.FC = () => {
 
         <View style={styles.formField}>
           <Text style={[styles.fieldLabel, { color: colors.textMuted }]}>
-            Type
+             {t("typeLabel")}
           </Text>
           <TouchableOpacity
             style={[
@@ -334,7 +334,7 @@ const NotificationsScreen: React.FC = () => {
 
         <View style={styles.formField}>
           <Text style={[styles.fieldLabel, { color: colors.textMuted }]}>
-            Message (optional)
+             {t("messageOptional")}
           </Text>
           <TextInput
             style={[
@@ -346,7 +346,7 @@ const NotificationsScreen: React.FC = () => {
                 borderColor: colors.line,
               },
             ]}
-            placeholder="Notification message..."
+             placeholder={t("notificationMessage")}
             placeholderTextColor={colors.textMuted}
             value={formMessage}
             onChangeText={setFormMessage}
@@ -357,7 +357,7 @@ const NotificationsScreen: React.FC = () => {
         </View>
 
         <PrimaryButton
-          title="Add notification"
+          title={t("addNotification")}
           onPress={handleAddNotification}
           loading={submitting}
           disabled={submitting}
@@ -372,7 +372,7 @@ const NotificationsScreen: React.FC = () => {
             color={colors.textDim}
           />
           <Text style={[styles.emptyText, { color: colors.textMuted }]}>
-            No notifications yet.
+             {t("noNotificationsYet")}
           </Text>
         </View>
       ) : (

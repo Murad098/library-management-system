@@ -15,30 +15,25 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../hooks/useAuth";
 import { useToast } from "../hooks/useToast";
 import { useTheme, useThemeColors } from "../context/ThemeContext";
-import { useLanguage } from "../context/LanguageContext";
+import { useLanguage, TranslationKey } from "../context/LanguageContext";
 import SectionHeader from "../components/ui/SectionHeader";
 import { HamburgerButton } from "../components/HamburgerButton";
 import { getErrorMessage } from "../services/api";
 import { changePassword } from "../services/authService";
 
-const HELP_TIPS = [
-  "Add members from Members → Add member and set their monthly fee.",
-  "Keep the Paid / Unpaid status current so collection totals stay accurate.",
-  "Record every library expense so the dashboard net figure stays correct.",
-  "Change the admin password here whenever it may have been shared.",
-];
+const PROFILE_HELP_KEYS = ["helpTip1", "helpTip2", "helpTip3", "helpTip4"] as const;
 
 const ACCENT_OPTIONS: {
   value: string;
-  label: string;
+  labelKey: TranslationKey;
   color: string;
 }[] = [
-  { value: "emerald", label: "Emerald", color: "#20d6a0" },
-  { value: "crimson", label: "Crimson", color: "#ff5364" },
-  { value: "indigo", label: "Indigo", color: "#6252f4" },
-  { value: "amber", label: "Amber", color: "#f5a623" },
-  { value: "slate", label: "Slate", color: "#8fa1c0" },
-  { value: "rose", label: "Rose", color: "#f04473" },
+  { value: "emerald", labelKey: "accentEmerald", color: "#20d6a0" },
+  { value: "crimson", labelKey: "accentCrimson", color: "#ff5364" },
+  { value: "indigo", labelKey: "accentIndigo", color: "#6252f4" },
+  { value: "amber", labelKey: "accentAmber", color: "#f5a623" },
+  { value: "slate", labelKey: "accentSlate", color: "#8fa1c0" },
+  { value: "rose", labelKey: "accentRose", color: "#f04473" },
 ];
 
 const SettingsScreen: React.FC = () => {
@@ -64,12 +59,12 @@ const SettingsScreen: React.FC = () => {
     if (saving) return;
 
     if (newPassword.length < 6) {
-      show("New password must be at least 6 characters.", "error");
+      show(t("passwordTooShort"), "error");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      show("New password and confirmation do not match.", "error");
+      show(t("passwordsDoNotMatch"), "error");
       return;
     }
 
@@ -81,20 +76,20 @@ const SettingsScreen: React.FC = () => {
       setNewPassword("");
       setConfirmPassword("");
       setOpenPanel("");
-      show("Password updated successfully.", "success");
+      show(t("passwordChanged"), "success");
     } catch (error) {
-      show(getErrorMessage(error, "Unable to update password."), "error");
+      show(getErrorMessage(error, t("unableToChangePassword")), "error");
     } finally {
       setSaving(false);
     }
-  }, [saving, currentPassword, newPassword, confirmPassword]);
+  }, [saving, currentPassword, newPassword, confirmPassword, t]);
 
   const handleLogout = useCallback(() => {
-    Alert.alert("Log out?", "You will need to sign in again to continue.", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Log out", style: "destructive", onPress: signOut },
+    Alert.alert(t("logout") + "?", t("logoutConfirm"), [
+      { text: t("cancel"), style: "cancel" },
+      { text: t("logout"), style: "destructive", onPress: signOut },
     ]);
-  }, [signOut]);
+  }, [signOut, t]);
 
   const isDark = colorScheme === "dark";
 
@@ -116,7 +111,7 @@ const SettingsScreen: React.FC = () => {
           onPress={toggleTheme}
           activeOpacity={0.7}
         >
-          <View style={[styles.settingIcon, { backgroundColor: `${TEAL}1A`, borderColor: `${TEAL}4D` }]}>
+          <View style={[styles.settingIcon, { backgroundColor: colors.accentSoft, borderColor: colors.accentSoft }]}>
             <Ionicons name={isDark ? "moon" : "sunny"} size={18} color={TEAL} />
           </View>
           <View style={styles.settingText}>
@@ -133,7 +128,7 @@ const SettingsScreen: React.FC = () => {
         {/* ── Color Scheme ── */}
         <View style={[styles.settingCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
           <View style={styles.settingRowLeft}>
-            <View style={[styles.settingIcon, { backgroundColor: colors.accentSoft, borderColor: `${TEAL}4D` }]}>
+            <View style={[styles.settingIcon, { backgroundColor: colors.accentSoft, borderColor: colors.accentSoft }]}>
               <Ionicons name="color-palette" size={18} color={TEAL} />
             </View>
             <View style={styles.settingText}>
@@ -159,7 +154,7 @@ const SettingsScreen: React.FC = () => {
                 activeOpacity={0.8}
               >
                 <View style={[styles.accentSwatch, { backgroundColor: option.color }]} />
-                <Text style={[styles.accentLabel, { color: colors.text }]}>{option.label}</Text>
+                <Text style={[styles.accentLabel, { color: colors.text }]}>{t(option.labelKey)}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -173,7 +168,7 @@ const SettingsScreen: React.FC = () => {
           }
           activeOpacity={0.7}
         >
-          <View style={[styles.settingIcon, { backgroundColor: `${TEAL}1A`, borderColor: `${TEAL}4D` }]}>
+          <View style={[styles.settingIcon, { backgroundColor: colors.accentSoft, borderColor: colors.accentSoft }]}>
             <Ionicons name="language" size={18} color={TEAL} />
           </View>
           <View style={styles.settingText}>
@@ -218,7 +213,7 @@ const SettingsScreen: React.FC = () => {
               {t("changePassword")}
             </Text>
             <Text style={[styles.settingDesc, { color: colors.textMuted }]}>
-              Update your account password
+               {t("updateAccountPassword")}
             </Text>
           </View>
           <Ionicons
@@ -232,7 +227,7 @@ const SettingsScreen: React.FC = () => {
           <View style={[styles.passwordForm, { backgroundColor: colors.surface, borderColor: colors.line }]}>
             <View style={styles.formField}>
               <Text style={[styles.fieldLabel, { color: colors.textMuted }]}>
-                Current password
+                {t("pwdCurrent")}
               </Text>
               <View
                 style={[
@@ -242,7 +237,7 @@ const SettingsScreen: React.FC = () => {
               >
                 <TextInput
                   style={[styles.passwordInput, { color: colors.text }]}
-                  placeholder="Enter current password"
+                  placeholder={t("currentPassword")}
                   placeholderTextColor={colors.textDim}
                   value={currentPassword}
                   onChangeText={setCurrentPassword}
@@ -254,7 +249,7 @@ const SettingsScreen: React.FC = () => {
 
             <View style={styles.formField}>
               <Text style={[styles.fieldLabel, { color: colors.textMuted }]}>
-                New password
+                {t("pwdNew")}
               </Text>
               <View
                 style={[
@@ -264,7 +259,7 @@ const SettingsScreen: React.FC = () => {
               >
                 <TextInput
                   style={[styles.passwordInput, { color: colors.text }]}
-                  placeholder="At least 6 characters"
+                  placeholder={t("passwordMinLength")}
                   placeholderTextColor={colors.textDim}
                   value={newPassword}
                   onChangeText={setNewPassword}
@@ -277,7 +272,7 @@ const SettingsScreen: React.FC = () => {
                   activeOpacity={0.7}
                 >
                   <Text style={[styles.eyeText, { color: TEAL }]}>
-                    {showPasswords ? "Hide" : "Show"}
+                    {showPasswords ? t("hide") : t("show")}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -285,7 +280,7 @@ const SettingsScreen: React.FC = () => {
 
             <View style={styles.formField}>
               <Text style={[styles.fieldLabel, { color: colors.textMuted }]}>
-                Confirm new password
+                {t("pwdConfirm")}
               </Text>
               <View
                 style={[
@@ -295,7 +290,7 @@ const SettingsScreen: React.FC = () => {
               >
                 <TextInput
                   style={[styles.passwordInput, { color: colors.text }]}
-                  placeholder="Re-enter new password"
+                  placeholder={t("reEnterPassword")}
                   placeholderTextColor={colors.textDim}
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
@@ -308,7 +303,7 @@ const SettingsScreen: React.FC = () => {
                   activeOpacity={0.7}
                 >
                   <Text style={[styles.eyeText, { color: TEAL }]}>
-                    {showPasswords ? "Hide" : "Show"}
+                    {showPasswords ? t("hide") : t("show")}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -343,7 +338,7 @@ const SettingsScreen: React.FC = () => {
                   <ActivityIndicator size="small" color={colors.black} />
                 ) : null}
                 <Text style={[styles.submitButtonText, { color: colors.black }]}>
-                  {saving ? t("save") : t("save")}
+                  {saving ? t("saving") : t("updatePassword")}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -356,7 +351,7 @@ const SettingsScreen: React.FC = () => {
           onPress={() => togglePanel("support")}
           activeOpacity={0.7}
         >
-          <View style={[styles.settingIcon, { backgroundColor: `${TEAL}1A`, borderColor: `${TEAL}4D` }]}>
+          <View style={[styles.settingIcon, { backgroundColor: colors.accentSoft, borderColor: colors.accentSoft }]}>
             <Ionicons name="help-circle" size={18} color={TEAL} />
           </View>
           <View style={styles.settingText}>
@@ -364,7 +359,7 @@ const SettingsScreen: React.FC = () => {
               {t("helpAndSupport")}
             </Text>
             <Text style={[styles.settingDesc, { color: colors.textMuted }]}>
-              Tips for using the system
+              {t("tipsForUsing")}
             </Text>
           </View>
           <Ionicons
@@ -376,11 +371,11 @@ const SettingsScreen: React.FC = () => {
 
         {openPanel === "support" && (
           <View style={[styles.supportSection, { backgroundColor: colors.surface, borderColor: colors.line }]}>
-            {HELP_TIPS.map((tip) => (
-              <View key={tip} style={styles.tipRow}>
+            {PROFILE_HELP_KEYS.map((key) => (
+              <View key={key} style={styles.tipRow}>
                 <View style={[styles.tipDot, { backgroundColor: TEAL }]} />
                 <Text style={[styles.tipText, { color: colors.textMuted }]}>
-                  {tip}
+                  {t(key)}
                 </Text>
               </View>
             ))}
@@ -415,7 +410,7 @@ const SettingsScreen: React.FC = () => {
               {t("logout")}
             </Text>
             <Text style={[styles.settingDesc, { color: colors.textDim }]}>
-              End this session
+              {t("endSession")}
             </Text>
           </View>
         </TouchableOpacity>

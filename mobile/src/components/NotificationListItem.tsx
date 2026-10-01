@@ -11,41 +11,43 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { NotificationItem, NotificationType } from "../types";
 import { useThemeColors } from "../context/ThemeContext";
+import { useLanguage, TranslationKey } from "../context/LanguageContext";
 import { formatDate } from "../utils/format";
 
-const TYPE_META: Record<
-  NotificationType,
-  {
-    label: string;
-    icon: keyof typeof Ionicons.glyphMap;
-    colorKey: "sky" | "green" | "amber" | "red";
-    bgAlpha: string;
-  }
-> = {
+type TypeMeta = {
+  icon: keyof typeof Ionicons.glyphMap;
+  colorKey: "sky" | "green" | "amber" | "red";
+  bgAlpha: string;
+};
+
+const TYPE_META: Record<NotificationType, TypeMeta> = {
   info: {
-    label: "Info",
     icon: "information-circle",
     colorKey: "sky",
     bgAlpha: "1A",
   },
   success: {
-    label: "Success",
     icon: "checkmark-circle",
     colorKey: "green",
     bgAlpha: "1A",
   },
   warning: {
-    label: "Warning",
     icon: "warning",
     colorKey: "amber",
     bgAlpha: "1A",
   },
   alert: {
-    label: "Alert",
     icon: "alert-circle",
     colorKey: "red",
     bgAlpha: "1A",
   },
+};
+
+const TYPE_LABELS: Record<NotificationType, TranslationKey> = {
+  info: "typeInfo",
+  success: "typeSuccess",
+  warning: "typeWarning",
+  alert: "typeAlert",
 };
 
 interface NotificationListItemProps {
@@ -62,10 +64,12 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({
   disabled = false,
 }) => {
   const colors = useThemeColors();
+  const { t } = useLanguage();
 
   const meta = TYPE_META[item.type] || TYPE_META.info;
   const color = colors[meta.colorKey];
   const bgColor = `${color}${meta.bgAlpha}`;
+  const typeLabel = t(TYPE_LABELS[item.type]);
 
   const handleToggleRead = () => {
     if (onToggleRead && !disabled) {
@@ -95,10 +99,10 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({
       style={[
         styles.container,
         {
-          backgroundColor: colors.surface,
-          borderColor: `${colors.accent}45`,
+           backgroundColor: colors.surface,
+          borderColor: colors.accentSoft,
         },
-        !item.read && { backgroundColor: `${colors.brand}0A` },
+        !item.read && { backgroundColor: colors.accentSoft },
       ]}
     >
       <View
@@ -134,7 +138,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({
 
         <View style={styles.metaRow}>
           <Text style={[styles.meta, { color: colors.textDim }]}>
-            {meta.label} • {formatDate(item.createdAt)}
+             {typeLabel} • {formatDate(item.createdAt)}
           </Text>
 
           <TouchableOpacity
@@ -148,7 +152,7 @@ const NotificationListItem: React.FC<NotificationListItemProps> = ({
               <ActivityIndicator size="small" color={colors.textDim} />
             ) : (
               <Text style={[styles.actionText, { color: colors.textMuted }]}>
-                {item.read ? "Mark unread" : "Mark read"}
+                {item.read ? t("markUnread") : t("markRead")}
               </Text>
             )}
           </TouchableOpacity>

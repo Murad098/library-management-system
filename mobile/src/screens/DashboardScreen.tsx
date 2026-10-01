@@ -49,7 +49,7 @@ const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const colors = useThemeColors();
   const { t } = useLanguage();
-  const TEAL = colors.green;
+  const TEAL = colors.accent;
 
   const [state, setState] = useState<DashboardState>({
     members: [],
@@ -193,7 +193,7 @@ const DashboardScreen: React.FC = () => {
           </Text>
           <TouchableOpacity onPress={loadData}>
             <Text style={[styles.retryText, { color: colors.red }]}>
-              Retry
+              {t("retry")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -201,21 +201,21 @@ const DashboardScreen: React.FC = () => {
 
       <View style={styles.statsGrid}>
         <StatCard
-          label="Members"
+          label={t("members")}
           value={members.length}
           hint={`${paidMembers.length} paid • ${unpaidMembers.length} unpaid`}
           icon={(props) => <Ionicons name="people" {...props} />}
           tone="default"
         />
         <StatCard
-          label="Fees collected"
+          label={t("feesCollected")}
           value={formatCurrency(collected)}
           hint={`of ${formatCurrency(expected)} expected`}
           icon={(props) => <Ionicons name="wallet" {...props} />}
           tone="green"
         />
         <StatCard
-          label="Outstanding"
+          label={t("outstanding")}
           value={formatCurrency(outstanding)}
           hint={`${unpaidMembers.length} member${
             unpaidMembers.length === 1 ? "" : "s"
@@ -226,7 +226,7 @@ const DashboardScreen: React.FC = () => {
           tone={outstanding > 0 ? "red" : "green"}
         />
         <StatCard
-          label="Expenses"
+          label={t("expenses")}
           value={formatCurrency(totalExpenses)}
           hint={`${expenses.length} record${
             expenses.length === 1 ? "" : "s"
@@ -249,10 +249,10 @@ const DashboardScreen: React.FC = () => {
         >
           <View style={styles.chartHeader}>
             <Text style={[styles.chartTitle, { color: colors.text }]}>
-              Fee collection
+             {t("feeCollection")}
             </Text>
             <Text style={[styles.chartSubtitle, { color: colors.textMuted }]}>
-              Paid members against expected monthly fees
+              {t("feeCollectionSubtitle")}
             </Text>
           </View>
           <View style={styles.chartContent}>
@@ -283,7 +283,7 @@ const DashboardScreen: React.FC = () => {
               style={[styles.chartHint, { color: colors.textMuted }]}
             >
               {members.length === 0
-                ? "No members yet. Add a member to start tracking fees."
+                ? t("noMembersYet")
                 : `${paidMembers.length} of ${members.length} members have paid.`}
             </Text>
           </View>
@@ -392,7 +392,7 @@ const DashboardScreen: React.FC = () => {
         <View style={styles.recentHeader}>
           <View>
             <Text style={[styles.recentTitle, { color: colors.text }]}>
-              Recent members
+              {t("recentMembers")}
             </Text>
             <Text
               style={[styles.recentSubtitle, { color: colors.textMuted }]}
@@ -498,7 +498,7 @@ const DashboardScreen: React.FC = () => {
                       },
                     ]}
                   >
-                    {member.status === "paid" ? "Paid" : "Unpaid"}
+                    {member.status === "paid" ? t("paid") : t("unpaid")}
                   </Text>
                 </View>
               </View>
@@ -511,12 +511,12 @@ const DashboardScreen: React.FC = () => {
         <View style={styles.recentHeader}>
           <View>
             <Text style={[styles.recentTitle, { color: colors.text }]}>
-              Recent expenses
+              {t("recentExpenses")}
             </Text>
             <Text
               style={[styles.recentSubtitle, { color: colors.textMuted }]}
             >
-              Latest spending recorded
+              {t("latestSpending")}
             </Text>
           </View>
           <TouchableOpacity
@@ -546,7 +546,7 @@ const DashboardScreen: React.FC = () => {
               color={colors.textDim}
             />
             <Text style={[styles.emptyText, { color: colors.textMuted }]}>
-              No expenses recorded yet.
+              {t("noExpensesRecorded")}
             </Text>
           </View>
         ) : (
@@ -622,7 +622,7 @@ const DashboardScreen: React.FC = () => {
         >
           <Ionicons name="checkmark-circle" size={16} color={colors.green} />
           <Text style={[styles.allCollectedText, { color: colors.green }]}>
-            All member fees are fully collected.
+            {t("allFeesCollected")}
           </Text>
         </View>
       ) : null}
@@ -670,8 +670,8 @@ const styles = StyleSheet.create({
   statsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12,
-    marginBottom: 16,
+    gap: 10,
+    marginBottom: 14,
   },
   chartRow: {
     flexDirection: "column",

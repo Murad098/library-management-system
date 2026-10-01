@@ -24,12 +24,7 @@ import { getErrorMessage } from "../services/api";
 import { getAvatar, uploadAvatar, changePassword } from "../services/authService";
 import { initials } from "../utils/format";
 
-const HELP_TIPS = [
-  "Add members from Members → Add member and set their monthly fee.",
-  "Keep the Paid / Unpaid status current so collection totals stay accurate.",
-  "Record every library expense so the dashboard net figure stays correct.",
-  "Change the admin password here whenever it may have been shared.",
-];
+const PROFILE_HELP_KEYS = ["helpTip1", "helpTip2", "helpTip3", "helpTip4"] as const;
 
 const ProfileScreen: React.FC = () => {
   const { user, signOut } = useAuth();
@@ -93,8 +88,8 @@ const ProfileScreen: React.FC = () => {
 
     if (status !== "granted") {
       Alert.alert(
-        "Permission required",
-        "Please allow access to your photos to change the profile picture."
+        t("permissionRequired"),
+        t("photoAccessRequired")
       );
       return;
     }
@@ -124,10 +119,10 @@ const ProfileScreen: React.FC = () => {
       await uploadAvatar(file);
       await loadAvatar();
       setAvatarError("");
-      show("Profile photo updated.", "success");
+      show(t("profilePhotoUpdated"), "success");
     } catch (error) {
-      setAvatarError(getErrorMessage(error, "Unable to update the profile photo."));
-      show(getErrorMessage(error, "Unable to update the profile photo."), "error");
+      setAvatarError(getErrorMessage(error, t("unableToUpdatePhoto")));
+      show(getErrorMessage(error, t("unableToUpdatePhoto")), "error");
     } finally {
       setAvatarLoading(false);
     }
@@ -137,12 +132,12 @@ const ProfileScreen: React.FC = () => {
     if (saving) return;
 
     if (newPassword.length < 6) {
-      show("New password must be at least 6 characters.", "error");
+      show(t("passwordTooShort"), "error");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      show("New password and confirmation do not match.", "error");
+      show(t("passwordsDoNotMatch"), "error");
       return;
     }
 
@@ -154,19 +149,19 @@ const ProfileScreen: React.FC = () => {
       setNewPassword("");
       setConfirmPassword("");
       setOpenPanel("");
-      show("Password updated successfully.", "success");
+      show(t("passwordChanged"), "success");
     } catch (error) {
-      show(getErrorMessage(error, "Unable to update password."), "error");
+      show(getErrorMessage(error, t("unableToChangePassword")), "error");
     } finally {
       setSaving(false);
     }
   };
 
   const handleLogout = () => {
-    Alert.alert("Log out?", "You will need to sign in again to continue.", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(t("logout") + "?", t("logoutConfirm"), [
+      { text: t("cancel"), style: "cancel" },
       {
-        text: "Log out",
+        text: t("logout"),
         style: "destructive",
         onPress: signOut,
       },
@@ -263,10 +258,10 @@ const ProfileScreen: React.FC = () => {
 
           <View style={styles.identityText}>
             <Text style={[styles.profileName, { color: colors.text }]}>
-              {name || "Administrator"}
+              {name || t("administrator")}
             </Text>
             <Text style={[styles.profileEmail, { color: colors.textMuted }]}>
-              {email || "Signed in"}
+              {email || t("signedIn")}
             </Text>
 
             <View
@@ -284,7 +279,7 @@ const ProfileScreen: React.FC = () => {
                 color={TEAL}
               />
               <Text style={[styles.roleText, { color: TEAL }]}>
-                {role || "Administrator"}
+                {role || t("administrator")}
               </Text>
             </View>
           </View>
@@ -342,8 +337,8 @@ const ProfileScreen: React.FC = () => {
                 </Text>
                 <Text style={[styles.menuDesc, { color: colors.textMuted }]}>
                   {colorScheme === "dark"
-                    ? "Dark theme active"
-                    : "Light theme active"}
+                    ? t("themeDark")
+                    : t("themeLight")}
                 </Text>
               </View>
             </View>
@@ -384,18 +379,18 @@ const ProfileScreen: React.FC = () => {
                 <Ionicons name="color-palette" size={18} color={TEAL} />
               </View>
               <View style={styles.menuText}>
-                <Text style={[styles.menuTitle, { color: colors.text }]}>Color scheme</Text>
-                <Text style={[styles.menuDesc, { color: colors.textMuted }]}>Choose your accent color</Text>
+                <Text style={[styles.menuTitle, { color: colors.text }]}>{t("colorScheme")}</Text>
+                <Text style={[styles.menuDesc, { color: colors.textMuted }]}>{t("chooseAccent")}</Text>
               </View>
             </View>
             <View style={styles.paletteGrid}>
               {([
-                ["emerald", "Emerald", "#20d6a0"],
-                ["crimson", "Crimson", "#ff5364"],
-                ["indigo", "Indigo", "#6252f4"],
-                ["amber", "Amber", "#f5a623"],
-                ["slate", "Slate", "#8fa1b8"],
-                ["rose", "Rose", "#f04473"],
+                ["emerald", t("accentEmerald"), "#20d6a0"],
+                ["crimson", t("accentCrimson"), "#ff5364"],
+                ["indigo", t("accentIndigo"), "#6252f4"],
+                ["amber", t("accentAmber"), "#f5a623"],
+                ["slate", t("accentSlate"), "#8fa1b8"],
+                ["rose", t("accentRose"), "#f04473"],
               ] as const).map(([value, label, color]) => (
                 <TouchableOpacity
                   key={value}
@@ -547,7 +542,7 @@ const ProfileScreen: React.FC = () => {
                       styles.passwordInput,
                       { color: colors.text },
                     ]}
-                    placeholder="Enter current password"
+                    placeholder={t("currentPassword")}
                     placeholderTextColor={colors.textMuted}
                     value={currentPassword}
                     onChangeText={setCurrentPassword}
@@ -577,7 +572,7 @@ const ProfileScreen: React.FC = () => {
                       styles.passwordInput,
                       { color: colors.text },
                     ]}
-                    placeholder="At least 6 characters"
+                    placeholder={t("passwordMinLength")}
                     placeholderTextColor={colors.textMuted}
                     value={newPassword}
                     onChangeText={setNewPassword}
@@ -590,7 +585,7 @@ const ProfileScreen: React.FC = () => {
                     activeOpacity={0.7}
                   >
                     <Text style={[styles.eyeText, { color: TEAL }]}>
-                      {showPasswords ? "Hide" : "Show"}
+                      {showPasswords ? t("hide") : t("show")}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -616,7 +611,7 @@ const ProfileScreen: React.FC = () => {
                       styles.passwordInput,
                       { color: colors.text },
                     ]}
-                    placeholder="Re-enter new password"
+                    placeholder={t("reEnterPassword")}
                     placeholderTextColor={colors.textMuted}
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
@@ -629,7 +624,7 @@ const ProfileScreen: React.FC = () => {
                     activeOpacity={0.7}
                   >
                     <Text style={[styles.eyeText, { color: TEAL }]}>
-                      {showPasswords ? "Hide" : "Show"}
+                      {showPasswords ? t("hide") : t("show")}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -672,7 +667,7 @@ const ProfileScreen: React.FC = () => {
                     />
                   ) : null}
                   <Text style={[styles.submitButtonText, { color: colors.black }]}>
-                    {saving ? "Saving..." : "Update password"}
+                    {saving ? t("saving") : t("updatePassword")}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -717,13 +712,13 @@ const ProfileScreen: React.FC = () => {
 
           {openPanel === "support" && (
               <View style={[styles.supportSection, { borderColor: colors.line }]}>
-              {HELP_TIPS.map((tip) => (
-                <View key={tip} style={styles.tipRow}>
+              {PROFILE_HELP_KEYS.map((key) => (
+                <View key={key} style={styles.tipRow}>
                   <View
                     style={[styles.tipDot, { backgroundColor: TEAL }]}
                   />
                   <Text style={[styles.tipText, { color: colors.textMuted }]}>
-                    {tip}
+                    {t(key)}
                   </Text>
                 </View>
               ))}

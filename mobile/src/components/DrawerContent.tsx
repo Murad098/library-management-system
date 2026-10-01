@@ -103,7 +103,7 @@ export const DrawerContent: React.FC = () => {
       >
         {/* User Info */}
         <View style={styles.userInfo}>
-          <View style={[styles.avatar, { backgroundColor: colors.accent + "30" }]}>
+          <View style={[styles.avatar, { backgroundColor: colors.accentSoft }]}>
             <Text style={[styles.avatarText, { color: colors.accent }]}>
               {userInitials}
             </Text>

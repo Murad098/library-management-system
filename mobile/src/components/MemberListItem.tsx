@@ -11,7 +11,9 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { Member } from "../types";
 import { useThemeColors } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
 import { formatCurrency, formatDate, initials } from "../utils/format";
+import StatusBadge from "./ui/StatusBadge";
 
 interface MemberListItemProps {
   member: Member;
@@ -20,36 +22,6 @@ interface MemberListItemProps {
   disabled?: boolean;
 }
 
-const StatusBadge: React.FC<{ isPaid: boolean; colors: any }> = ({
-  isPaid,
-  colors,
-}) => (
-  <View
-    style={[
-      styles.statusBadge,
-      {
-        backgroundColor: isPaid ? `${colors.green}1A` : `${colors.red}1A`,
-        borderColor: isPaid ? `${colors.green}4D` : `${colors.red}4D`,
-      },
-    ]}
-  >
-    <View
-      style={[
-        styles.statusDot,
-        { backgroundColor: isPaid ? colors.green : colors.red },
-      ]}
-    />
-    <Text
-      style={[
-        styles.statusText,
-        { color: isPaid ? colors.green : colors.red },
-      ]}
-    >
-      {isPaid ? "Paid" : "Unpaid"}
-    </Text>
-  </View>
-);
-
 const MemberListItem: React.FC<MemberListItemProps> = ({
   member,
   onDelete,
@@ -57,6 +29,8 @@ const MemberListItem: React.FC<MemberListItemProps> = ({
   disabled = false,
 }) => {
   const colors = useThemeColors();
+  const { t } = useLanguage();
+  const isPaid = member.status === "paid";
 
   const handleDelete = () => {
     Alert.alert(`Delete ${member.name}?`, "This cannot be undone.", [
@@ -107,7 +81,11 @@ const MemberListItem: React.FC<MemberListItemProps> = ({
           </Text>
         </View>
 
-        <StatusBadge isPaid={member.status === "paid"} colors={colors} />
+        <StatusBadge
+          label={isPaid ? t("paid") : t("unpaid")}
+          variant={isPaid ? "paid" : "unpaid"}
+          style={{ marginLeft: 8 }}
+        />
       </View>
 
       <View style={styles.rowBottom}>
@@ -124,33 +102,34 @@ const MemberListItem: React.FC<MemberListItemProps> = ({
         </Text>
       </View>
 
-      {onDelete && (
-        <>
-        {onEdit && (
-          <TouchableOpacity
-            style={styles.editButton}
-            onPress={() => onEdit(member)}
-            hitSlop={8}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="create-outline" size={16} color={colors.brand} />
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={handleDelete}
-          hitSlop={8}
-          disabled={disabled}
-          activeOpacity={0.7}
-        >
-          {disabled ? <ActivityIndicator size="small" color={colors.red} /> : <Ionicons name="trash" size={16} color={colors.red} />}
-        </TouchableOpacity>
-        </>
-      )}
-      {!onDelete && onEdit && (
-        <TouchableOpacity style={styles.editButton} onPress={() => onEdit(member)}>
-          <Ionicons name="create-outline" size={16} color={colors.brand} />
-        </TouchableOpacity>
+      {(onEdit || onDelete) && (
+        <View style={styles.actions}>
+          {onEdit && (
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => onEdit(member)}
+              hitSlop={8}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="create-outline" size={16} color={colors.brand} />
+            </TouchableOpacity>
+          )}
+          {onDelete && (
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={handleDelete}
+              hitSlop={8}
+              disabled={disabled}
+              activeOpacity={0.7}
+            >
+              {disabled ? (
+                <ActivityIndicator size="small" color={colors.red} />
+              ) : (
+                <Ionicons name="trash" size={16} color={colors.red} />
+              )}
+            </TouchableOpacity>
+          )}
+        </View>
       )}
     </View>
   );
@@ -198,24 +177,6 @@ const styles = StyleSheet.create({
   email: {
     fontSize: 12,
   },
-  statusBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  statusDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  statusText: {
-    fontSize: 11,
-    fontWeight: "600",
-  },
   rowBottom: {
     flexDirection: "row",
     alignItems: "center",
@@ -236,6 +197,10 @@ const styles = StyleSheet.create({
   fee: {
     fontSize: 15,
     fontWeight: "700",
+  },
+  actions: {
+    flexDirection: "row",
+    gap: 4,
   },
   deleteButton: {
     paddingHorizontal: 8,

@@ -73,7 +73,7 @@ export const lightColors: ThemeColors = {
   text: "#0f172a",
   textMuted: "#64748b",
   textDim: "#94a3b8",
-  green: "#ee7881",
+  green: "#22c55e",
   red: "#dc2626",
   amber: "#d97706",
   sky: "#0284c7",

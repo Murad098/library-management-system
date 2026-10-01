@@ -57,6 +57,12 @@ const ExpensesScreen: React.FC = () => {
   const [filter, setFilter] = useState(ALL_EXPENSES);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  const filterLabel = (f: string) => {
+    if (f === ALL_EXPENSES) return t("all");
+    if (f === THIS_MONTH) return t("thisMonth");
+    return f;
+  };
+
   const loadExpenses = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -184,7 +190,7 @@ const ExpensesScreen: React.FC = () => {
       >
         <View>
           <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>
-            This month
+            {t("thisMonth")}
           </Text>
           <Text style={[styles.summaryValue, { color: colors.text }]}>
             {formatCurrency(thisMonthTotal)}
@@ -193,7 +199,7 @@ const ExpensesScreen: React.FC = () => {
         <View style={[styles.summaryDivider, { backgroundColor: colors.line }]} />
         <View>
           <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>
-            All time
+            {t("allTime")}
           </Text>
           <Text style={[styles.summaryValue, { color: colors.text }]}>
             {formatCurrency(allTimeTotal)}
@@ -228,7 +234,7 @@ const ExpensesScreen: React.FC = () => {
                     { color: isActive ? colors.black : colors.textMuted },
                   ]}
                 >
-                  {f}
+                  {filterLabel(f)}
                 </Text>
               </TouchableOpacity>
             );
@@ -240,12 +246,12 @@ const ExpensesScreen: React.FC = () => {
         <View style={styles.emptyContainer}>
           <Ionicons name="receipt-outline" size={48} color={colors.textDim} />
           <Text style={[styles.emptyText, { color: colors.textMuted }]}>
-            No expenses match the filter.
+             {t("noResults")}
           </Text>
           {filter !== ALL_EXPENSES && (
             <TouchableOpacity onPress={handleClearFilter} activeOpacity={0.7}>
               <Text style={[styles.clearFilterText, { color: colors.brand }]}>
-                Clear filter
+                {t("clearFilter")}
               </Text>
             </TouchableOpacity>
           )}

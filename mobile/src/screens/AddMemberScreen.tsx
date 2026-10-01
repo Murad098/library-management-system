@@ -53,7 +53,7 @@ const AddMemberScreen: React.FC = () => {
     if (isLoading) return;
 
     if (!name.trim() || !email.trim() || !phone.trim()) {
-      show("Name, email and phone are required.", "error");
+      show(t("requiredFields"), "error");
       return;
     }
 
@@ -70,10 +70,10 @@ const AddMemberScreen: React.FC = () => {
       if (editing) await updateMember(editing.id, payload);
       else await addMember(payload);
 
-      show(editing ? "Member updated successfully." : "Member added successfully.", "success");
+      show(editing ? t("memberUpdated") : t("memberAdded"), "success");
       navigation.goBack();
     } catch (error) {
-      show(getErrorMessage(error, "Unable to add member."), "error");
+      show(getErrorMessage(error, editing ? t("unableToUpdateMember") : t("unableToAddMember")), "error");
     } finally {
       setIsLoading(false);
     }
@@ -103,8 +103,8 @@ const AddMemberScreen: React.FC = () => {
 
           <View style={[styles.formCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
             <InputField
-            label="Name"
-            placeholder="Enter full name"
+            label={t("name")}
+            placeholder={t("enterName")}
             value={name}
             onChangeText={setName}
             autoCapitalize="words"
@@ -113,7 +113,7 @@ const AddMemberScreen: React.FC = () => {
 
           <InputField
             label={t("emailAddress")}
-            placeholder="Enter email address"
+            placeholder={t("enterEmail")}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -122,8 +122,8 @@ const AddMemberScreen: React.FC = () => {
           />
 
           <InputField
-            label="Phone"
-            placeholder="Enter phone number"
+            label={t("phone")}
+            placeholder={t("enterPhone")}
             value={phone}
             onChangeText={setPhone}
             keyboardType="phone-pad"
@@ -132,7 +132,7 @@ const AddMemberScreen: React.FC = () => {
 
           <View style={styles.field}>
             <Text style={[styles.label, { color: colors.textMuted }]}>
-              Monthly Fee
+              {t("monthlyFee")}
             </Text>
             <View
               style={[
@@ -163,7 +163,7 @@ const AddMemberScreen: React.FC = () => {
 
           <View style={styles.field}>
             <Text style={[styles.label, { color: colors.textMuted }]}>
-              Fee Status
+              {t("feeStatus")}
             </Text>
             <View style={styles.statusRow}>
               {STATUSES.map((s) => {
@@ -202,7 +202,7 @@ const AddMemberScreen: React.FC = () => {
                         },
                       ]}
                     >
-                      {s === "paid" ? "Paid" : "Unpaid"}
+                      {t(s)}
                     </Text>
                   </TouchableOpacity>
                 );
@@ -211,9 +211,9 @@ const AddMemberScreen: React.FC = () => {
           </View>
 
           <View style={styles.actions}>
-            <SecondaryButton title="Cancel" onPress={handleCancel} />
+            <SecondaryButton title={t("cancel")} onPress={handleCancel} />
             <PrimaryButton
-              title={editing ? "Update member" : "Add member"}
+              title={editing ? t("updateMember") : t("addMember")}
               onPress={handleSubmit}
               loading={isLoading}
               disabled={isLoading}
